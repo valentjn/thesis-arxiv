@@ -1,0 +1,80 @@
+\setdictum{%
+  Who are you? How did you get in my house?%
+}{%
+  Donald E. Knuth about one-based array indices in algorithms
+  (according to \texttt{xkcd}\footnotemark)%
+}
+
+\longchapter{%
+  Algorithms for B-Splines on Sparse Grids%
+}{%
+  Algorithms for B-Splines on\texorpdfstring{\\}{ }Sparse Grids%
+}{%
+  Algorithms for B-Splines on Sparse Grids%
+}
+\footnotetext{\url{https://xkcd.com/163/}}
+\label{chap:40algorithms}
+
+\initial{0.6em}{L}{ittle is known}
+about the algorithmic challenges
+that hierarchical bases of B-spline type (or even of general type) pose
+on sparse grids.
+In general, we are not able to directly apply the sparse grid algorithms
+that were designed for hat functions $\bspl{l,i}{1}$.
+Hence, we have to generalize these algorithms
+to higher-order B-splines $\bspl{l,i}{p}$
+or even to arbitrary tensor product basis functions.
+The main problem is the larger support
+of higher-order B-splines when compared to degree $p = 1$.
+The larger support introduces new dependencies between
+values of grid points that cannot be resolved with conventional algorithms.
+
+This chapter gives an overview of six algorithms for B-splines
+on sparse grids.
+Two of these algorithms are already known
+\multicite{Griebel92Combination,Balder94Adaptive},
+while the remaining four are new.
+Correctness results are given for every algorithm.
+We use hierarchization as the exemplary problem for our algorithms,
+but the ideas of the algorithms can be generalized to any linear operator.
+Furthermore, most algorithms are not tailored to B-splines $\bspl{l,i}{p}$,
+but applicable to general tensor product basis functions $\basis{l,i}$.
+Whether an algorithmic approach is feasible for the sparse grid at hand
+or not depends on the grid's type:
+full grid, dimensionally adaptive sparse grid, or
+spatially adaptive sparse grid.
+The more assumptions the grid satisfies, the faster and
+easier the corresponding algorithms will be.
+
+\Cref{sec:41problem} explains hierarchization as our example problem
+and defines the notation used in this chapter.
+The remaining four sections treat the three different types of grids:
+First, \cref{sec:42fullGrids} deals with full grids to formalize and repeat
+the well-known \up.
+Second, \cref{sec:43dimAdaptive} focuses on algorithms for
+dimensionally adaptive sparse grids.
+Third, \cref{sec:44spatAdaptiveBFS} and \cref{sec:45spatAdaptiveUP}
+treat arbitrary (spatially adaptive) sparse grids,
+which is the most interesting case for us.
+\Cref{sec:44spatAdaptiveBFS} employs \bfs for hierarchization,
+while \cref{sec:45spatAdaptiveUP} uses the \up\punctfix{.}
+
+This original chapter is the main theoretical contribution of this thesis.
+Although the unidirectional principle in \cref{sec:42fullGrids} and
+the combination technique in \cref{sec:43dimAdaptive} are well-known,
+the presentation with formal proofs of correctness is new.
+Parts of the chapter have already been published in scientific papers,
+namely \cref{sec:44spatAdaptiveBFS} \cite{Valentin18Fundamental}.
+The weakly fundamental splines (\cref{sec:454wfs}) and the
+Hermite hierarchization method (\cref{sec:455hermiteHierarchization})
+are based on an idea by Dr.\ Stefan Zimmer (University of Stuttgart, Germany).
+
+
+
+\input{document/41problem}
+\input{document/42fullGrids}
+\input{document/43dimAdaptive}
+\input{document/44spatAdaptiveBFS}
+\input{document/45spatAdaptiveUP}
+
+\cleardoublepage

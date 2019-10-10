@@ -1,0 +1,73 @@
+% needed for custom switches
+\RequirePackage{etoolbox}
+
+% ======================================================================
+% Toggle Settings
+% ======================================================================
+
+% draftMode switch:
+% show draft watermark, disabling overrides checkMode, debugMode, and
+% showGlossaryDefinitionsMode (see below)
+\newtoggle{draftMode}
+\togglefalse{draftMode}
+
+% checkMode switch:
+% show all overfull/underfull boxes, show unknown hyphenations
+\newtoggle{checkMode}
+\toggletrue{checkMode}
+
+% debugMode switch:
+% show all boxes, glues, and kerning info
+\newtoggle{debugMode}
+\togglefalse{debugMode}
+
+% showGlossaryDefinitionsMode switch:
+% print definition of glossary entries in the text body
+\newtoggle{showGlossaryDefinitionsMode}
+\togglefalse{showGlossaryDefinitionsMode}
+
+% flipBookMode switch:
+% add flip book images in corners of page
+\newtoggle{flipBookMode}
+\toggletrue{flipBookMode}
+
+% partialCompile switches:
+% only compile a single chapter to save compilation time
+\newtoggle{partialCompileMode}
+\togglefalse{partialCompileMode}
+
+% select chapters to compile for partialCompileMode = true
+\includeonly{%
+  %document/10introduction,
+  %document/20sparseGrids,
+  %document/30BSplines,
+  %document/40algorithms,
+  %document/50optimization,
+  %document/60topoOpt,
+  %document/70muscle,
+  %document/80finance,
+  %document/90conclusion,
+  %document/a10proofs,
+  %document/a20testProblems,
+  %document/a30topoOptDetails,
+}
+
+% ======================================================================
+% Toggle Logic
+% ======================================================================
+
+% disable checkMode, showGlossaryDefinitionsMode, and debugMode
+% if draftMode is disabled
+\iftoggle{draftMode}{}{
+  \togglefalse{checkMode}
+  \togglefalse{debugMode}
+  \togglefalse{showGlossaryDefinitionsMode}
+}
+
+% compile everything if partialCompileMode is disabled
+\makeatletter
+\iftoggle{partialCompileMode}{}{
+  % disable the \includeonly mechanism
+  \@partswfalse
+}
+\makeatother

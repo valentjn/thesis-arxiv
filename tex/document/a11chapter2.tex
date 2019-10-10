@@ -1,0 +1,244 @@
+\section{Proofs for Chapter 2}
+\label{sec:a11chapter2}
+
+\disableornamentsfornextheadingtrue
+\subsection{Proof of the Size of the Regular Sparse Grid with Coarse Boundaries}
+\label{sec:a111proofGridSizeCoarseBoundary}
+
+\propGridSizeCoarseBoundary*
+
+\begin{proof}
+  Note that the outer union in the definition of $\coarselevelset{n}{d}{b}$ in
+  \eqref{eq:coarseBoundary2} is indeed disjoint.
+  Therefore,
+  \begin{equation}
+    \setsize{\coarseregsgset{n}{d}{b}}
+    = \sum_{\substack{\*l \in \nat^d\\\normone{\*l} \le n}}
+    \setsize{\hiset{\*l}} +
+    \hspace*{-5mm}\sum_{
+      \substack{
+        \*l \in \natz^d \setminus \nat^d\\
+        (\normone{\vecmax(\*l, \*1)} \le n - b + 1) \lor
+        (\*l = \*0)
+      }
+    }\hspace*{-10mm} \setsize{\hiset{\*l}}.
+  \end{equation}
+  The first sum is the number $\setsize{\interiorregsgset{n}{d}}$
+  of interior grid points in $\regsgset{n}{d}$.
+  The second sum can be split into summands
+  with the same number $q$ of zero entries,
+  which we count with
+  $N_\*l \ceq \setsize{\{t \mid l_t = 0\}}
+  = \normone{\vecmax(\*l, \*1)} - \normone{\*l}$,
+  and the same level sum $m = \normone{\*l}$:
+  \begin{equation}
+    \setsize{\coarseregsgset{n}{d}{b}}
+    = \setsize{\interiorregsgset{n}{d}} + 2^d +
+    \sum_{q=1}^{d-1} \sum_{m=d-q}^{n-b-q+1}
+    \sum_{
+      \substack{
+        \*l \in \natz^d\\
+        N_\*l = q,\,\normone{\*l} = m}
+    }\hspace*{-4mm} \setsize{\hiset{\*l}},
+  \end{equation}
+  where $2^d$ is the summand for $\*l = \*0$
+  (number $\setsize{\hiset{\*0}}$ of corners of $\clint{\*0, \*1}$).
+  The limits of the sum over $m$ are $d-q$,
+  since there are $d-q$ entries $\ge 1$ in a level vector
+  with $q$ zero entries, and $n-b-q+1$,
+  since $m = \normone{\*l}
+  = \normone{\vecmax(\*l, \*1)} - N_\*l
+  \le n-b+1 - N_\*l
+  = n-b-q+1$.
+  
+  \vspace*{2em}
+  
+  In general, the innermost summand $\setsize{\hiset{\*l}}$ equals
+  $\setsize{\hiset{\*l}}
+  = \prod_{\{t \mid l_t \ge 1\}} 2^{l_t-1} \cdot \prod_{\{t \mid l_t = 0\}} 2
+  = 2^{\normone{\*l} - d + 2N_\*l}$.
+  The number of innermost summands is given by
+  \begin{equation}
+    \setsize{\{\*l \in \natz^d \mid N_\*l = q,\; \normone{\*l} = m\}}
+    = \binom{d}{q} \setsize{\{\*l \in \nat^{d-q} \mid \normone{\*l} = m\}}
+    = \binom{d}{q} \binom{m-1}{d-q-1}.
+  \end{equation}
+  This can be seen by first putting $q$ zeros in $d$ places,
+  for which there are $\binom{d}{q}$ possibilities, and then
+  counting all positive vectors of length $d - q$ with level sum $m$,
+  which can be done in $\binom{m-1}{d-q-1}$ ways.
+  Thus,
+  \begin{subequations}
+    \begin{align}
+      \setsize{\coarseregsgset{n}{d}{b}}
+      &= \setsize{\interiorregsgset{n}{d}} + 2^d +
+      \sum_{q=1}^{d-1} \binom{d}{q} \sum_{m=d-q}^{n-b-q+1}
+      2^{m - d + 2q} \binom{m-1}{d-q-1}.\\[1em]
+      \intertext{%
+        After shifting the index $m \to (m + d - q)$ and slightly
+        rearranging the terms, we obtain%
+      }
+      \cdots
+      &= \setsize{\interiorregsgset{n}{d}} + 2^d +
+      \sum_{q=1}^{d-1} 2^q \binom{d}{q} \sum_{m=0}^{n-d-b+1}
+      2^m \binom{(d-q)-1+m}{(d-q)-1}.\\[1em]
+      \intertext{%
+        We can now use \thmref{lemma:numberOfGridPointsInterior} to
+        conclude that%
+      }
+      \cdots
+      &= \setsize{\interiorregsgset{n}{d}} +
+      \sum_{q=1}^d 2^q \binom{d}{q}
+      \setsize{\interiorregsgset{n-q-b+1}{d-q}}
+    \end{align}
+  \end{subequations}
+  as desired.
+\end{proof}
+
+\vspace*{2em}
+
+
+
+\breakpagebeforenextheadingtrue
+\subsection{%
+  Correctness Proof of the Construction of the Regular Sparse Grid
+  with Coarse Boundaries%
+}
+\label{sec:a112proofInvariantCoarseBoundary}
+
+\propInvariantCoarseBoundary*
+
+\begin{proof}
+  First, we show that every inserted level $\*l' \in \natz^t$ in the inner loop
+  can be found on the right-hand side of \eqref{eq:coarseInvariant}.
+  If $\*l' \ceq (\*l, 0)$
+  is inserted for some $\*l \in \levelset^{(t-1)}$,
+  then we have $\normone{\vecmax(\*l, \*1)} \le n-d+t-b$ or
+  $\*l = \*0$ by \cref{line:algCoarseBoundary1} of
+  \cref{alg:coarseBoundary}.
+  In the first case, we have
+  \begin{equation}
+    \normone{\vecmax(\*l', \*1)}
+    = \normone{\vecmax(\*l, \*1)} + 1
+    \le n - d + t - b + 1,
+  \end{equation}
+  and in the second case $\*l' = \vec{0}$.
+  In either case, $\*l'$ is contained in the \rhs of
+  \eqref{eq:coarseInvariant}.
+  
+  If $\*l' \ceq (\*l, l_t)$ is inserted
+  for some $\*l \in \levelset^{(t-1)}$ and
+  $l_t \in \{1, \dotsc, l^\ast\}$, then there are,
+  depending on whether $\*l \in \nat^{t-1}$, two cases:
+  \begin{itemize}
+    \item
+    \mbox{If $\*l \in \nat^{t-1}$, then $\*l' \in \nat^t$ and}
+    $\normone{\*l'} \le \normone{\*l} + l^\ast = n - d + t$
+    due to \cref{line:algCoarseBoundary2},
+    i.e., $\*l'$ is contained in the first set of the \rhs of
+    \eqref{eq:coarseInvariant}.
+    
+    \item
+    \mbox{If $\*l \notin \nat^{t-1}$, then $\*l' \notin \nat^t$ and}
+    $\normone{\vecmax(\*l', \*1)}
+    \le \normone{\vecmax(\*l, \*1)} + l^\ast
+    = n - d + t - b + 1$
+    due to \cref{line:algCoarseBoundary3},
+    i.e., $\*l$ is contained in the second set of the \rhs of
+    \eqref{eq:coarseInvariant}.
+  \end{itemize}
+  Thus, all levels that the algorithm inserts into $\levelset^{(t)}$
+  can be found on the \rhs of \eqref{eq:coarseInvariant}.
+  
+  It remains to prove that all levels on the \rhs of
+  \eqref{eq:coarseInvariant}
+  are eventually inserted by the algorithm into $\levelset^{(t)}$.
+  We prove this by induction over $t = 1, \dotsc, d$.
+  For $t = 1$, the \rhs of \eqref{eq:coarseInvariant} equals
+  $\{l \in \natz \mid l \le n-d+1\}$, which is just $\levelset^{(1)}$
+  (see \cref{line:algCoarseBoundary6} of \cref{alg:coarseBoundary}).
+  For the induction step $(t - 1) \to t$, we assume
+  the validity of the induction hypothesis
+  \begin{equation}
+    \label{eq:proofCoarseInductionHypothesis}
+    \begin{aligned}
+      \levelset^{(t-1)}
+      &= \{\*l \in \nat^{t-1} \mid
+      \normone{\*l} \le n-d+t-1\} \dotcup {}\\
+      &\hphantom{{}={}}
+      \paren*{
+        \{\*l \in \natz^{t-1} \setminus \nat^{t-1} \mid
+        \normone{\vecmax(\*l, \*1)} \le n-d+t-b\} \cup
+        \{\vec{0}\}
+      }.
+    \end{aligned}
+  \end{equation}
+  The \rhs of \eqref{eq:coarseInvariant} has three parts,
+  so we check for elements $\*l' \in \natz^t$
+  of each of the three sets that they are appended to $\levelset^{(t)}$
+  eventually.
+  
+  First, let $\*l' = (\*l, l_t)$ be in the first set of the \rhs,
+  i.e., $\*l' \in \nat^t$ (in particular $l_t \ge 1$) and
+  $\normone{\*l'} \le n - d + t$.
+  Note that $\*l$ will be encountered in the inner loop, as
+  $\*l \in \nat^{t-1}$ and
+  $\normone{\*l} = \normone{\*l'} - l_t \le n - d + t - 1$,
+  which implies $\*l \in \levelset^{(t-1)}$ by the induction
+  hypothesis \eqref{eq:proofCoarseInductionHypothesis}.
+  Since $1 \le l_t \le l^\ast$
+  (due to
+  $l_t = \normone{\*l'} - \normone{\*l} \le n-d+t - \normone{\*l} = l^\ast$),
+  the level $\*l'$ is inserted into $\levelset^{(t)}$ during the innermost loop
+  in \cref{line:algCoarseBoundary4} of \cref{alg:coarseBoundary}.
+  
+  Second, let $\*l' = (\*l, l_t)$
+  be in the second set of the \rhs, i.e., we have
+  $\*l' \notin \nat^t$ and
+  $\normone{\vecmax(\*l', \*1)} \le n-d+t-b+1$.
+  Here, there are three cases:
+  \begin{enumerate}
+    \item
+    $l_t \ge 1$:
+    This implies $\*l \notin \nat^{t-1}$ and 
+    $\normone{\vecmax(\*l, \*1)}
+    = \normone{\vecmax(\*l', \*1)} - l_t
+    \le n-d+t-b$.
+    Consequently, $\*l \in \levelset^{(t-1)}$ by the induction hypothesis
+    \eqref{eq:proofCoarseInductionHypothesis}.
+    As $1 \le l_t \le l^\ast$
+    (due to $l_t \le n-d+t-b+1 -
+    \normone{\vecmax(\*l, \*1)} = l^\ast$),
+    $\*l$ is added to $\levelset^{(t)}$ in \cref{line:algCoarseBoundary4}.
+    
+    \item
+    $l_t = 0$ and $\*l \in \nat^{t-1}$:
+    This implies $\normone{\*l} = \normone{\*l'}
+    = \normone{\vecmax(\*l', \*1)} - 1
+    \le n - d + t - b
+    \le n - d + t - 1$ since $b \ge 1$.
+    Again, by the induction hypothesis
+    \eqref{eq:proofCoarseInductionHypothesis},
+    $\*l$ is added to $\levelset^{(t)}$ in \cref{line:algCoarseBoundary5}
+    due to
+    $\normone{\vecmax(\*l, \*1)}
+    = \normone{\*l} \le n - d + t - b$.
+    
+    \item
+    $l_t = 0$ and $\*l \notin \nat^{t-1}$:
+    This implies $\normone{\vecmax(\*l, \*1)}
+    = \normone{\vecmax(\*l', \*1)} - 1
+    \le n - d + t - b$.
+    Again, by the induction hypothesis
+    \eqref{eq:proofCoarseInductionHypothesis},
+    $\*l$ is added to $\levelset^{(t)}$ in \cref{line:algCoarseBoundary5}.
+  \end{enumerate}
+  
+  \noindent
+  Third, let $\*l = (\vec{0}, 0) \in \natz^t$
+  be in the third set of the \rhs.
+  This level is appended in \cref{line:algCoarseBoundary5}
+  to $\levelset^{(t)}$, since $\*l' = \vec{0} \in \natz^{t-1}$
+  is in $\levelset^{(t-1)}$ by the
+  induction hypothesis~\eqref{eq:proofCoarseInductionHypothesis}.
+\end{proof}

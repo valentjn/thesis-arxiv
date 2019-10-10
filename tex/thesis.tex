@@ -1,0 +1,77 @@
+% create and set switches
+\input{preamble/switches}
+
+% set main document class (KOMA-Script's scrbook)
+\documentclass[
+  % align equation numbers left to the equation
+  leqno,
+]{scrbook}
+
+% include packages
+\input{preamble/packages}
+
+% set package options
+\input{preamble/settings}
+
+% define notation
+\input{preamble/notation}
+
+% define acronyms
+\input{preamble/acronyms}
+
+\begin{document}
+  % book cover
+  \input{document/cover}
+  
+  \iftoggle{partialCompileMode}{}{
+    % title page
+    \input{document/titlepage}
+    
+    % dedication
+    \input{document/dedication}
+  }
+  
+  % progress page
+  \iftoggle{draftMode}{
+    \input{document/progress}
+  }{}
+  
+  \iftoggle{partialCompileMode}{}{
+    % table of contents, create bookmark
+    \input{document/contents}
+    
+    % lists of floats and theorems
+    \input{document/floats}
+    
+    % list of symbols and acronyms
+    \input{document/glossary}
+    
+    % abstract
+    \input{document/abstract}
+    
+    % preface
+    \input{document/preface}
+  }
+  
+  % chapters
+  \include{document/10introduction}
+  \include{document/20sparseGrids}
+  \include{document/30BSplines}
+  \include{document/40algorithms}
+  \include{document/50optimization}
+  \include{document/60topoOpt}
+  \include{document/70muscle}
+  \include{document/80finance}
+  \include{document/90conclusion}
+  
+  % start appendix
+  \appendix
+  
+  % appendix chapters
+  \include{document/a10proofs}
+  \include{document/a20testProblems}
+  \include{document/a30topoOptDetails}
+  
+  % bibliography
+  \input{document/bibliography}
+\end{document}

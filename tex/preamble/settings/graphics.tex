@@ -1,0 +1,44 @@
+% ======================================================================
+% Graphics
+% ======================================================================
+
+% location of graphics files
+\graphicspath{{../gfx/}}
+
+% prefer JPGs over PNGs for smaller file size
+\DeclareGraphicsExtensions{.pdf,.jpg,.png}
+
+% TikZ libraries
+\usetikzlibrary{
+  % arrow types
+  arrows.meta,
+  % coordinate calculations
+  calc,
+  % zig-zag lines
+  decorations.pathmorphing,
+  % curly braces
+  decorations.pathreplacing,
+  % text along paths
+  decorations.text,
+  % color gradients
+  fadings,
+  % shadows
+  shadows,
+}
+
+% set default line width to same as in Matplotlib plots
+% created by helper.figure
+\tikzset{every picture/.style={line width=1pt}}
+
+% set default arrow tip
+\tikzset{>={Stealth[length=5.5pt,width=5.5pt]}}
+
+% draw circle arc around center (standard in TikZ is
+% the specification of the first point on the arc)
+% [draw options] (center) (initial angle:final angle:radius)
+\def\centerarc[#1](#2)(#3:#4:#5){
+  \draw[#1] ($(#2)+({(#5)*cos(#3)},{(#5)*sin(#3)})$) arc (#3:#4:#5);
+}
+
+% width of contours around text with \contour
+\contourlength{1.5pt}

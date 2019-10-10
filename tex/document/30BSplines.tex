@@ -1,0 +1,94 @@
+\setdictum{%
+  B-splines are not enough!%
+}{%
+  In a talk at the 2017 SIAM Conference on\\
+  Computational Science and Engineering%
+}
+
+\chapter{Hierarchical B-Splines}
+\label{chap:30BSplines}
+
+\initial{-0.05em}{P}{iecewise linear ``hat functions''} $\bspl{l,i}{1}$,
+which served in the previous chapter as the motivation
+to define sparse grids for arbitrary tensor product basis functions,
+are not continuously differentiable.
+This has two implications.
+First, the approximation order of hat functions
+is lower than the order of other basis function types
+such as higher-degree splines \cite{Sickel11Spline}
+or the piecewise polynomial basis by Bungartz \cite{Bungartz98Finite}.
+Second, we cannot compute globally continuous gradients of the
+interpolant of a smooth objective function
+if we use non-smooth basis functions%
+\footnote{%
+  \dots{} which include the hat function basis as well as
+  the piecewise polynomials by Bungartz.%
+}.
+However, the availability of continuous gradients is
+crucial in gradient-based optimization,
+which is highly important in
+the scope of simulation technology (see \cref{chap:10introduction}) and
+which we target in this thesis.
+In this chapter, we define the hierarchical and
+higher-order B-spline basis
+as a generalization of the well-known hat functions
+to obtain both higher-order approximations
+and continuous derivatives.
+
+The first to study B-splines was Schoenberg in 1946
+\cite{Schoenberg46Contributions},
+but he claimed that they had already been known to Laplace
+\cite{Boor76Splines}.
+It was also Schoenberg who coined the term ``B-splines,''
+which is short for ``basis splines'' \cite{Schoenberg67Spline}.
+De~Boor pioneered B-splines, developed basic algorithms, and
+proved fundamental theoretical results \cite{Boor72Calculating}.
+Research and industry recognized the possibilities of B-splines when
+the \fem emerged in the 1960s.
+The \fem remains one of the driving forces behind the research of
+B-splines \cite{Hoellig03Finite} as the recent rise of \iga shows
+\multicite{Cottrell09Isogeometric,Hoellig12Finite}.
+Researchers have also applied B-splines to
+geometric modeling with \nurbs
+\multicite{Cohen01Geometric,Hoellig13Approximation},
+financial mathematics \cite{Pflueger10Spatially},
+molecular and atomic physics
+\multicite{Bachau01Applications,McCurdy04Implementation},
+and numerous other scientific and industrial areas
+\multicite{Valentin12Spline,Martin17WEB}.
+Theoretical and practical aspects of B-splines on sparse grids
+have also been studied before
+\multicite{%
+  Pandey08Regression,%
+  Pflueger10Spatially,%
+  Sickel11Spline,%
+  Valentin16Hierarchical%
+}.
+
+In this chapter, we define hierarchical B-splines on sparse grids.
+The chapter is divided into two sections:
+First, we define hierarchical B-splines for both
+uniform and non-uniform knot sequences in \cref{sec:31standardBSplines}.
+Second, we learn in \cref{sec:32notAKnot} that the boundary behavior
+of the standard uniform B-spline basis is problematic.
+Incorporating not-a-knot boundary conditions into the B-spline basis
+mitigates the problems caused by the boundary behavior.
+
+\Cref{sec:311uniform} is a repetition of the definition
+of nodal B-splines \multicite{Hoellig03Finite,Hoellig13Approximation} and
+hierarchical B-splines \multicite{Pflueger10Spatially,Valentin14Hierarchische}.
+Original contributions of the thesis in this chapter are the proof of
+the linear independence of hierarchical B-splines in
+\cref{sec:312proofHierarchicalSplitting}
+(improved version of \cite{Valentin14Hierarchische},
+published in \cite{Valentin16Hierarchical}),
+the modified hierarchical Clenshaw-Curtis B-splines in
+\cref{sec:314nonUniform}, and
+the hierarchical not-a-knot B-spline basis in \cref{sec:32notAKnot}.
+
+
+
+\input{document/31standardBSplines}
+\input{document/32notAKnot}
+
+\cleardoublepage

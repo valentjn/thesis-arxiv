@@ -1,0 +1,891 @@
+\section{Uniform and Non-Uniform Hierarchical B-Splines}
+\label{sec:31standardBSplines}
+
+\minitoc{83mm}{7}
+
+\noindent
+In this section, we mainly follow the presentation of
+\multicite{Pflueger10Spatially,Valentin14Hierarchische,Valentin16Hierarchical}
+to define hierarchical B-splines
+starting from the well-known nodal B-spline basis
+\multicite{Hoellig03Finite,Hoellig13Approximation,Quak16About}.
+Note that thanks to the groundwork laid in \cref{chap:20sparseGrids},
+especially \thmref{lemma:tensorProductLinearIndependence} and
+\thmref{prop:splittingUVToMV},
+it suffices to study the univariate case
+of all bases that will be defined in the rest of this thesis.
+The multivariate case is treated canonically by tensor products.
+
+
+
+\subsection{Uniform Hierarchical B-Splines}
+\label{sec:311uniform}
+
+\paragraph{Cardinal B-splines}
+
+The \term{cardinal B-spline}
+$\cardbspl{p}\colon \real \to \real$ of \term{degree} $p \in \natz$
+is defined by
+\begin{equation}
+  \label{eq:cardinalBSpline}
+  \cardbspl{p}(x)
+  \ceq
+  \begin{cases}
+    \displaystyle\int_0^1 \cardbspl{p-1}(x - y) \diff{}y,&p \ge 1,\\
+    \charfun{\hopint{0, 1}}(x),&p = 0,
+  \end{cases}
+\end{equation}
+where $\charfun{\hopint{0, 1}}$ is the characteristic function of
+the half-open unit interval $\hopint{0, 1}$
+(see \cite{Hoellig13Approximation}).
+The cardinal B-spline $\cardbspl{p}$ has the following properties
+\cite{Hoellig03Finite},
+which are shown in \cref{fig:cardinalBSplineProps}:
+
+\begin{figure}
+  \includegraphics{cardinalBSplineProps_1}%
+  \caption[%
+    Properties of cardinal B-splines%
+  ]{%
+    Eight properties of cardinal B-splines using the quadratic case
+    $p = 2$ as an example.\\
+    \lefthphantom{1.}{5.}\,
+    $\cardbspl{p}$ is compactly supported on $\clint{0, p+1}$.\\
+    \lefthphantom{2.}{5.}\,
+    $\cardbspl{p}$ is symmetric and $0 \le \cardbspl{p} \le 1$.\\
+    \lefthphantom{3.}{5.}\,
+    $\cardbspl{p}$ is a weighted combination of
+    $\cardbspl{p-1}$ \emph{\textcolor{C0}{(blue)}} and
+    $\cardbspl{p-1}({\cdot} - 1)$ \emph{\textcolor{C1}{(red)}.}\\
+    \lefthphantom{4.}{5.}\,
+    $\cardbspl{p}$ is a piecewise polynomial of degree $p$.\\
+    \lefthphantom{5.}{5.}\,
+    $\deriv{x}{\cardbspl{p}}$ \emph{(dashed)}
+    is the difference of
+    $\cardbspl{p-1}$ \emph{\textcolor{C0}{(blue)}} and
+    $\cardbspl{p-1}({\cdot} - 1)$ \emph{\textcolor{C1}{(red)}.}\\
+    \lefthphantom{6.}{5.}\,
+    $\cardbspl{p}$ has unit integral.\\
+    \lefthphantom{7.}{5.}\,
+    $\cardbspl{p}$ is the convolution of
+    $\cardbspl{p-1}$ \emph{\textcolor{C0}{(blue)}} and $\cardbspl{0}$.\\
+    \lefthphantom{8.}{5.}\,
+    Hat function \emph{\textcolor{C0}{(blue)}} and
+    Gaussian function \emph{\textcolor{C1}{(red)}}
+    are special cases of $\cardbspl{p}$.%
+  }%
+  \label{fig:cardinalBSplineProps}%
+\end{figure}
+
+\begin{enumerate}
+  \item
+  \emph{Compact support:}
+  The support of $\cardbspl{p}$ is given by $\supp \cardbspl{p} = \clint{0, p + 1}$.
+  
+  \item
+  \emph{Bounds and symmetry:}
+  The cardinal B-spline $\cardbspl{p}$ is non-negative and bounded from above by one.
+  It is symmetric with respect to $x = \tfrac{p+1}{2}$, i.e.,
+  $\cardbspl{p}(x) = \cardbspl{p}(p + 1 - x)$.
+  
+  \item
+  \emph{Recursion:}
+  The cardinal B-spline $\cardbspl{p}$ ($p \ge 1$)
+  satisfies the following recurrence relation
+  (which can be used as an alternative definition):
+  \begin{equation}
+    \cardbspl{p}(x)
+    = \frac{x}{p} \cardbspl{p-1}(x) + \frac{p+1-x}{p} \cardbspl{p-1}(x-1).
+  \end{equation}
+  
+  \item
+  \emph{Spline:}
+  On every \term{knot interval} $\hopint{k, k+1}$ for $k = 0, \dotsc, p$,
+  $\cardbspl{p}$ is a polynomial of degree~$p$, i.e.,
+  $\cardbspl{p}$ is a spline of degree $p$ (piecewise polynomial).
+  
+  \item
+  \emph{Derivative:}
+  At the \term{knots} $k = 0, \dotsc, p + 1$,
+  $\cardbspl{p}$ is $(p - 1)$ times continuously differentiable (if $p \ge 1$).
+  The derivative can be computed by differentiating
+  \eqref{eq:cardinalBSpline}:
+  \begin{equation}
+    \label{eq:cardinalBSplineDerivative}
+    \deriv{x}{\cardbspl{p}}(x)
+    = \cardbspl{p-1}(x) - \cardbspl{p-1}(x-1),\quad
+    x \in \real.
+  \end{equation}
+  
+  \item
+  \emph{Integral:}
+  The B-spline $\cardbspl{p}$ has unit integral, i.e.,
+  $\int_{\real} \cardbspl{p}(x) \dx = 1$.
+  
+  \item
+  \emph{Convolution:}
+  The integral in the definition of $\cardbspl{p}$
+  is the convolution $\cardbspl{p-1} \convolution \cardbspl{0}$
+  of the B-spline $\cardbspl{p-1}$
+  of degree $p - 1$ with the B-spline $\cardbspl{0}$ of degree zero.
+  
+  \item
+  \emph{Generalization:}
+  As a special case, $\cardbspl{1}$ is a hat function,
+  interpolating the data
+  $\{(k, \kronecker{k}{1}) \mid k \in \integer\}$.
+  For $p \to \infty$, the normalized cardinal B-splines converge
+  pointwise to the standard Gaussian function
+  $\cardbspl{\infty}(x) \ceq (2\pi)^{-1/2} \exp(-x^2/2)$ \cite{Unser92Asymptotic}:%
+  \footnote{%
+    This can also be seen as a consequence of the central limit theorem
+    applied to uniformly distributed random variables.
+    The pointwise convergence of the probability density functions
+    can be proven from the convergence
+    in distribution using a converse to Scheffé's theorem
+    \cite{Boos85Converse}.%
+  }
+  \vspace{-0.5em}
+  \begin{equation}
+    \lim_{p \to \infty}
+    c^p \cardbspl{p}(c^p x + \tfrac{p+1}{2})
+    = \cardbspl{\infty}(x),\quad
+    c^p \ceq \sqrt{\frac{p+1}{12}},\quad
+    x \in \real.
+  \end{equation}
+\end{enumerate}
+
+The cardinal B-splines of the first degrees are shown in
+\cref{fig:cardinalBSpline}.
+Due to the convolution property,
+cardinal B-splines of degree $p \ge 2$ are ``smoothed versions''
+of the hat function.
+This is shown in the flip book animation in the bottom left corner
+of the even-numbered pages of this thesis.
+
+\begin{figure}
+  \includegraphics{cardinalBSpline_1}%
+  \caption[%
+    Cardinal B-splines%
+  ]{%
+    Cardinal B-splines $\cardbspl{p}$ up to quintic degree $p = 5$.%
+  }%
+  \label{fig:cardinalBSpline}%
+\end{figure}
+
+\paragraph{Definition of uniform hierarchical B-splines}
+
+\usenotation{zzzzp}
+As for the hat functions in \cref{chap:20sparseGrids},
+we can use the cardinal B-spline $\cardbspl{p}$ as a ``parent function'' to
+define the uniform hierarchical B-spline
+$\bspl{l,i}{p}\colon \clint{0, 1} \to \real$ of level~$l \in \natz$ and index
+$i \in \hiset{l}$ via an affine parameter transformation
+\cite{Pflueger10Spatially}:
+\begin{equation}
+  \label{eq:uniformHierarchicalBSplineUV}
+  \bspl{l,i}{p}(x)
+  \ceq \cardbspl{p}(\tfrac{x}{\ms{l}} + \tfrac{p+1}{2} - i).
+\end{equation}
+The support of $\bspl{l,i}{p}$ is given
+by $\supp \bspl{l,i}{p} = \clint{0, 1} \cap \clint{\gp{l,i-(p+1)/2}, \gp{l,i+(p+1)/2}}$.
+The hat function basis $\bspl{l,i}{1}$ defined in
+\eqref{eq:hatFunctionUV} is a special case of
+\eqref{eq:uniformHierarchicalBSplineUV} for $p = 1$,
+which allows us to use the same notation $\bspl{l,i}{p}$ for both.
+Note that due to the \term{translation invariance} of $\bspl{l,i}{p}$
+(i.e., the basis functions are the same up to scaling and translation),
+it suffices to precompute and implement the polynomial pieces of $\cardbspl{p}$
+to enable evaluations of all hierarchical B-splines
+$\bspl{l,i}{p}$ ($l \in \natz$, $i \in \hiset{l}$).
+
+\begin{figure}
+  \subcaptionbox{%
+    Nodal B-splines $\bspl{l,i}{p}$ ($i \in \hiset{l}$) and grid points $\gp{l,i}$
+    \emph{(dots).}%
+  }[67mm]{%
+    \includegraphics{hierarchicalBasis_4}%
+  }%
+  \hfill%
+  \begin{tikzpicture}
+    \draw[decorate,decoration={brace,aspect=0.153}] (0,-8.5) -- (0,0);
+    \node[anchor=east,inner sep=0mm] at (-0.15,-7.208) {$= \bigoplus$};
+  \end{tikzpicture}%
+  \hfill%
+  \subcaptionbox{%
+    Hierarchical B-splines $\bspl{l',i'}{p}$ ($l' \le l$, $i' \in \hiset{l'}$)
+    and grid points $\gp{l',i'}$
+    \emph{(dots).}%
+  }[69mm]{%
+    \includegraphics{hierarchicalBasis_5}%
+  }%
+  \caption[%
+    Nodal and hierarchical B-splines%
+  ]{%
+    Univariate nodal and hierarchical cubic B-splines ($p = 3$)
+    \vspace{0.1em}%
+    up to level $l = 3$.
+    When restricting all functions to $\rspldomain{l}{p}$
+    \emph{(thick black line),}
+    \vspace{-0.2em}%
+    the nodal space $\restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}$
+    decomposes into the direct sum of the hierarchical subspaces
+    $\restrictspace{\hsbspl{l'}{p}}{\rspldomain{l}{p}}$ ($l' \le l$).%
+  }%
+  \label{fig:hierarchicalBSpline}%
+\end{figure}
+
+\paragraph{Odd and even degrees}
+
+In this thesis, we will only allow odd degrees $p = 1, 3, 5, \dotsc$
+for hierarchical B-splines.
+Many theoretical considerations fail for even degrees.
+The basic reason is that for odd degrees, the knots of
+$\bspl{l,i}{p}$ coincide with the grid points \cite{Valentin14Hierarchische}
+\begin{equation}
+  \gp{l,i-(p+1)/2},\quad
+  \dotsc,\quad
+  \gp{l,i},\quad
+  \dotsc,\quad
+  \gp{l,i+(p+1)/2}.
+\end{equation}
+For even degrees $p$, the knots of $\bspl{l,i}{p}$ lie exactly in
+the middle between two subsequent grid points:
+\begin{equation}
+  \gp{l,i-p/2} - \frac{\ms{l}}{2},\quad
+  \dotsc,\quad
+  \gp{l,i} - \frac{\ms{l}}{2},\quad
+  \gp{l,i} + \frac{\ms{l}}{2},\quad
+  \dotsc,\quad
+  \gp{l,i+p/2} + \frac{\ms{l}}{2}.
+\end{equation}
+This fact has many adverse implications on the hierarchical basis.
+The most crucial implication is
+that for even degrees $p$,
+the hierarchical splitting \eqref{eq:hierSplittingUV} does not hold.
+Furthermore,
+we would not be able to define non-uniform hierarchical B-splines as
+simple as for odd degrees and
+fundamental splines would not be defined at all
+(as we will see in \cref{sec:443fundamentalSplines}).
+Additionally,
+odd degrees include the hat function case~($p = 1$) and the
+most commonly applied cubic degree~($p = 3$).
+Therefore,
+it is reasonable to restrict ourselves to odd degrees
+for the rest of the thesis.
+
+
+
+\subsection{Non-Uniform B-Splines and Proof of the Hierarchical Splitting}
+\label{sec:312proofHierarchicalSplitting}
+
+\paragraph{Non-uniform B-splines and spline space}
+
+With the hierarchical B-splines $\bspl{l,i}{p}$, we can define
+the nodal spaces $\nsbspl{l}{p}$ and hierarchical subspaces $\hsbspl{l}{p}$
+as in \cref{chap:20sparseGrids}.
+However, in order for the hierarchical splitting \eqref{eq:hierSplittingUV}
+to be correct, we have to prove that the conditions of
+\thmref{lemma:hierSplittingUV} are satisfied.
+To investigate how the nodal space $\nsbspl{l}{p}$ looks like,
+we introduce the notion of non-uniform B-splines.
+
+\begin{definition}[non-uniform B-splines]
+  \label{def:nonUniformBSpline}
+  Let $m, p \in \natz$ and $\knotseq = (\knot{0}, \dotsc, \knot{m+p})$ be an
+  increasing sequence of real numbers \term{(knot sequence).}
+  For $k = 0, \dotsc, m - 1$,
+  the \term{(non-uniform) B-spline} $\nonunifbspl{k,\knotseq}{p}$ of degree $p$
+  with knots~$\knotseq$ and index $k$ is defined by the
+  Cox--de~Boor recurrence
+  \multicite{Cox72Numerical,Boor72Calculating,Hoellig13Approximation}
+  \begin{equation}
+    \nonunifbspl{k,\knotseq}{p}(x)
+    \ceq
+    \begin{cases}
+      \dfrac{x - \knot{k}}{\knot{k+p} - \knot{k}} \nonunifbspl{k,\knotseq}{p-1}(x) +
+      \dfrac{\knot{k+p+1} - x}{\knot{k+p+1} - \knot{k+1}}
+      \nonunifbspl{k+1,\knotseq}{p-1}(x),&p \ge 1,\\
+      \charfun{\hopint{\knot{k}, \knot{k+1}}}(x),&p = 0.
+    \end{cases}
+    \hspace*{-4mm}
+  \end{equation}
+\end{definition}
+Note that when choosing $\knotseq = (0, 1, \dotsc, p + 1)$ and
+$k = 0$, we obtain the cardinal B-spline~$\cardbspl{p}$.
+\Cref{def:nonUniformBSpline} can be used to characterize
+the nodal space $\nsbspl{l}{p}$:
+
+\begin{proposition}[spline space]
+  \label{prop:splineSpace}
+  Let $\knotseq = (\knot{0}, \dotsc, \knot{m+p})$ be a knot sequence.
+  Then, the B-splines $\nonunifbspl{k,\knotseq}{p}$ ($k = 0, \dotsc, m - 1$)
+  form a basis of the \term{spline space}
+  \begin{equation}
+    \nonunifsplspace{\knotseq}{p}
+    \ceq \spn\{\nonunifbspl{k,\knotseq}{p} \mid k = 0, \dotsc, m - 1\}.
+  \end{equation}
+  $\nonunifsplspace{\knotseq}{p}$ contains exactly those functions that are continuous
+  on $\spldomain{\knotseq}{p} \ceq \clint{\knot{p}, \knot{m}}$,
+  polynomials of degree $\le p$ on every knot interval
+  $\hopint{\knot{k}, \knot{k+1}}$ in
+  $\spldomain{\knotseq}{p}$
+  ($k = p, \dotsc, m - 1$) and at least $(p - 1)$ times
+  continuously differentiable at every knot $\knot{k}$ in the interior of
+  $\spldomain{\knotseq}{p}$ ($k = p + 1, \dotsc, m - 1$).
+\end{proposition}
+
+\begin{proof}
+  See \cite{Hoellig13Approximation}.
+\end{proof}
+
+This proposition gives the reason for the letter ``B'' in ``B-splines,''
+which stands for ``basis'' (of the space of splines) \cite{Schoenberg67Spline}.
+One example of a knot sequence and the corresponding B-splines is
+given in \cref{fig:splineSpaceGeneral}.
+The key observation is that B-splines of a knot sequence $\knotseq$
+do not form a basis of the spline space on the union
+$\clint{\knot{0}, \knot{m+p}}$ of the B-spline supports.
+Instead, they form a basis of the spline space
+on a proper sub-interval $\spldomain{\knotseq}{p}$.
+Intuitively, for every point in $\spldomain{\knotseq}{p}$ that is not a knot,
+exactly $p + 1$ B-splines must be \term{relevant} (i.e., non-zero)
+to uniquely span the spline space,
+as on every knot interval, the spline is a polynomial of degree $\le p$
+and therefore, there must be $p + 1$ degrees of freedom.
+Outside $\spldomain{\knotseq}{p}$, there are too few relevant B-splines
+to span the spline space.
+This fact,
+which is shown in \cref{fig:splineSpaceUniform},
+forces us to restrict the nodal space and the hierarchical subspaces
+to~$\spldomain{\knotseq}{p}$:
+
+\begin{figure}
+  \includegraphics{splineSpace_1}%
+  \caption[%
+    Non-uniform B-splines with knot sequence and interpolation domain%
+  ]{%
+    Knot sequence $\knotseq = (\knot{0}, \dotsc, \knot{m+p})$
+    \vphantom{$\nonunifbspl{0,\knotseq}{p}$}%
+    with the corresponding $m = 7$ non-uniform cubic B-splines
+    $\nonunifbspl{k,\knotseq}{p}$ ($k = 0, \dotsc, m - 1$, $p = 3$).
+    On $\spldomain{\knotseq}{p}$ \emph{(thick line, delimited by dashed lines),}
+    which starts with the last knot interval of the first B-spline
+    $\nonunifbspl{0,\knotseq}{p}$
+    and ends with the first knot interval of the last B-spline
+    $\nonunifbspl{m-1,\knotseq}{p}$,
+    the B-splines span the spline space $\nonunifsplspace{\knotseq}{p}$.
+    Elements of this space are splines $\spl\colon \spldomain{\knotseq}{p} \to \real$
+    \emph{(black line),}
+    which are linear combinations
+    $\spl = \sum_{k=0}^{m-1} \interpcoeff{k} \nonunifbspl{k,\knotseq}{p}$
+    of the B-splines.%
+  }%
+  \label{fig:splineSpaceGeneral}%
+\end{figure}
+
+\begin{figure}
+  \includegraphics{splineSpace_2}%
+  \caption[%
+    Uniform nodal B-splines and knot sequence%
+  ]{%
+    Uniform knot sequence $\nodalknotseq{l}{p}$ \emph{(ticks on horizontal axis)}
+    and corresponding nodal cubic B-splines ($p = 3$) of level $l = 3$.
+    In the domain $\clint{0, 1}$ \emph{(delimited by dashed lines),}
+    the grid points $\fgset{l}$ \emph{\textcolor{mittelblau}{(blue dots)}}
+    coincide with the B-spline knots.
+    The spline interpolation domain
+    $\rspldomain{l}{p} \ceq \spldomain{\nodalknotseq{l}{p}}{p}$
+    \emph{(thick line)}
+    is only a proper subset of~$\clint{0, 1}$.%
+  }%
+  \label{fig:splineSpaceUniform}%
+\end{figure}
+
+\begin{corollary}[nodal B-spline space]
+  \label{cor:nodalBSplineSpace}
+  The restricted nodal B-splines $\restrictfcn{\bspl{l,i}{p}}{\rspldomain{l}{p}}$
+  ($i = 0, \dotsc, 2^l$)
+  of level $l \in \natz$ are
+  a basis of the spline space $\nonunifsplspace{\nodalknotseq{l}{p}}{p}$,
+  where
+  \begin{subequations}
+    \begin{gather}
+      \nodalknot{l,k}{p}
+      \ceq (k - \tfrac{p+1}{2}) \ms{l},\quad
+      k = 0, \dotsc, m + p,\quad
+      m \ceq 2^l + 1,\\
+      \rspldomain{l}{p} \ceq [\tfrac{p-1}{2} \ms{l},\;
+      1 - \tfrac{p-1}{2} \ms{l}],
+    \end{gather}
+  \end{subequations}
+  and consequently
+  \begin{equation}
+    \restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}
+    = \restrictedsplspace{l}{p}
+    \ceq \nonunifsplspace{\nodalknotseq{l}{p}}{p}.
+  \end{equation}
+\end{corollary}
+
+\begin{proof}
+  We have $\bspl{l,i}{p} = \nonunifbspl{i,\nodalknotseq{l}{p}}{p}$ for
+  $i = 0, \dotsc, m - 1$,
+  as the B-splines on both sides have the same knots.
+  The assertions now follow from \thmref{prop:splineSpace}.
+\end{proof}
+
+\vspace{1em}
+
+Note that $\rspldomain{l}{p}$ might contain only a single point or even be empty,
+if $p$ is too large or $l$ is too small.
+However, the corresponding B-splines $\bspl{l,i}{p}$ are still linearly
+independent on~$\clint{0, 1}$ (see \cite{Hoellig13Approximation}).
+Similarly, the corollary also implies that the hierarchical functions
+$\bspl{l,i}{p}$ of level $l$ ($i \in \hiset{l}$)
+are linearly independent on $\clint{0, 1}$.
+
+\paragraph{Hierarchical splitting for uniform B-splines}
+
+We can use \cref{prop:splineSpace} and \cref{cor:nodalBSplineSpace}
+to prove the hierarchical splitting for the uniform B-spline basis
+\cite{Valentin16Hierarchical}.
+
+\begin{lemma}[hierarchical B-splines in nodal space]
+  \label{lemma:hierBSplineInNodalSpace}
+  The restricted hierarchical subspaces
+  $\restrictspace{\hsbspl{l'}{p}}{\rspldomain{l}{p}}$ ($l' \le l$) are
+  subspaces of the restricted nodal space $\restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}$.
+\end{lemma}
+
+\begin{proof}
+  Every function $\bspl{l',i'}{p}$ ($i' \in \hiset{l'}$) is continuous on
+  $\rspldomain{l}{p}$, a polynomial of degree $\le p$ on every knot interval
+  of $\nodalknotseq{l}{p}$ (due to $p$ odd),
+  and at the knots themselves at least $(p - 1)$ times continuously
+  differentiable.
+  \Cref{prop:splineSpace} implies $\bspl{l',i'}{p} \in \restrictedsplspace{l}{p}$
+  and from \cref{cor:nodalBSplineSpace}, it follows
+  $\bspl{l',i'}{p} \in \restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}$.
+  As the functions $\bspl{l',i'}{p}$ ($i' \in \hiset{l'}$) span
+  $\restrictspace{\hsbspl{l'}{p}}{\rspldomain{l}{p}}$, we can conclude
+  $\restrictspace{\hsbspl{l'}{p}}{\rspldomain{l}{p}} \subset \restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}$.
+\end{proof}
+
+\vspace{1em}
+
+It is crucial to note that this lemma does not hold for even $p$,
+as the knots of the B-splines of level $l - 1$ are not contained in the
+knots of level $l$.
+This implies that in general,
+$\restrictspace{\hsbspl{l-1}{p}}{\rspldomain{l}{p}}$
+is not contained in $\restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}$
+for even degrees $p$.
+Therefore, the hierarchical splitting equation \eqref{eq:hierSplittingUV}
+does not hold.
+
+\begin{restatable}[hierarchical B-splines are linearly independent]{%
+  proposition%
+}{%
+  propHierBSplineLinearlyIndependent%
+}
+  \label{prop:hierBSplineLinearlyIndependent}
+  The hierarchical B-splines
+  $\bspl{l',i'}{p}$ ($l' \le l$, $i' \in \hiset{l'}$)
+  are linearly independent.
+\end{restatable}
+
+\begin{proof}
+  See \cref{sec:a121proofHierBSplineLinearlyIndependent}.
+\end{proof}
+
+\vspace{1em}
+
+Although we have to restrict all functions and spaces to $\rspldomain{l}{p}$,
+\thmref{lemma:hierSplittingUV} is still applicable to prove that
+the hierarchical splitting equation \eqref{eq:hierSplittingUV}
+is correct for hierarchical B-splines:
+
+\begin{corollary}[hierarchical splitting for uniform B-splines]
+  \label{cor:hierSplittingBSpline}
+  The hierarchical splitting \eqref{eq:hierSplittingUV}
+  holds for the hierarchical B-spline basis
+  if restricting all functions to $\rspldomain{l}{p}$:
+  \begin{equation}
+    \restrictedsplspace{l}{p}
+    = \restrictspace{\nsbspl{l}{p}}{\rspldomain{l}{p}}
+    = \bigoplus_{l'=0}^l \restrictspace{\hsbspl{l'}{p}}{\rspldomain{l}{p}}.
+  \end{equation}
+\end{corollary}
+
+\begin{proof}
+  Analogously to the proof of \thmref{lemma:hierSplittingUV}
+  and apply \thmref{cor:nodalBSplineSpace}.
+\end{proof}
+
+\vspace{1em}
+
+This corollary is also visualized in \cref{fig:hierarchicalBSpline}.
+We can now proceed to define
+multivariate nodal spaces $\nsbspl{\*l}{p}$,
+multivariate hierarchical subspaces $\hsbspl{\*l}{p}$, and
+sparse grid spaces $\regsgspace[p]{n}{d}$ as in \cref{chap:20sparseGrids}.
+Note that it is possible to choose different degrees $p_t$ for
+different dimensions $t = 1, \dotsc, d$,
+since the hierarchical splitting \eqref{eq:hierSplittingMV} does not
+require the bases in each dimension to be the same.
+Consequently, we can define degree-dimension-adaptive
+(so-called \term{$hp$-adaptive}) sparse grids
+$\regsgspace[\*p]{n}{d}$ for arbitrary odd degree vectors $\*p$.
+
+In the course of this thesis, we will derive multiple variations
+of the standard hierarchical B-spline basis.
+We will not repeat formal proofs of the hierarchical splitting equation
+\eqref{eq:hierSplittingUV}
+(i.e., verifying the two conditions of \cref{lemma:hierSplittingUV})
+for each of these bases for the sake of brevity.
+The idea of the proof of \cref{prop:hierBSplineLinearlyIndependent},
+which is inductively exploiting the smoothness conditions given by
+B-splines of previous levels, can be transferred to similar B-spline
+bases.
+
+
+
+\subsection{Modification}
+\label{sec:313modification}
+
+\paragraph{Marsden's identity}
+
+Similar to the piecewise linear case in \cref{sec:242modified},
+Pflüger defined modified
+hierarchical B-splines to obtain reasonable values on the boundary
+without having to place grid points there \cite{Pflueger10Spatially}.
+The main motivation is to define basis
+functions $\bspl[\modified]{l,i}{p}$ that satisfy natural boundary
+conditions, i.e.,
+\begin{equation}
+  \label{eq:naturalBoundaryConditions}
+  \deriv[2]{x}{\bspl[\modified]{l,i}{p}}(x) = 0,\quad
+  x \in \bndrydomain{\clint{0, 1}} = \{0, 1\}.
+\end{equation}
+Originally, this requirement stems from financial problems
+\cite{Pflueger10Spatially}.
+For the left boundary,
+\eqref{eq:naturalBoundaryConditions} can be satisfied by
+modifying the left-most function $\bspl{l,1}{p}$ such that
+$\bspl[\modified]{l,1}{p}(x) = 2 - \tfrac{x}{\ms{l}}$ is a linear polynomial
+when $x$ is ``near'' the boundary.
+As in \cite{Pflueger10Spatially},
+we append $\bspl{l,1}{p}$ with
+B-splines $\bspl{l,i}{p}$ with index $i \le 0$ and
+use \term{Marsden's identity} to compute the corresponding coefficients.
+The identity enables us to explicitly compute the B-spline coefficients
+of an arbitrary polynomial of degree $\le p$ by giving an explicit formula
+for the B-spline coefficients of shifted monomials $({\cdot} - y)^p$.
+Interestingly, the coefficients are polynomials themselves (in $y$):
+
+\vspace*{0pt plus 0.5fill}
+
+\begin{lemma}[Marsden's identity]
+  \label{lemma:marsden}
+  Let $p \in \natz$ and
+  $\knotseq = (\knot{0}, \dotsc, \knot{m+p})$ be a knot sequence.
+  Then, for all $x \in \spldomain{\knotseq}{p}$ and $y \in \real$,
+  \begin{equation}
+    \label{eq:marsden}
+    (x - y)^p
+    = \sum_{k=0}^{m-1}
+    \;\bracket*{(\knot{k+1} - y) \dotsm (\knot{k+p} - y)}\;
+    \nonunifbspl{k,\knotseq}{p}(x).
+  \end{equation}
+\end{lemma}
+
+\begin{proof}
+  See \cite{Hoellig13Approximation}.
+\end{proof}
+
+\vspace*{0pt plus 1fill}
+
+\paragraph{Modified hierarchical B-splines}
+
+By extending the sum in Marsden's identity to $i \in \integer$ and
+comparing the coefficients of $y^p$ and $y^{p-1}$ of both sides,
+we obtain representations for the first two monomials:
+\begin{equation}
+  1
+  = \sum_{i \in \integer} \bspl{l,i}{p}(x),\quad
+  x
+  = \sum_{i \in \integer} \gp{l,i} \bspl{l,i}{p}(x),\quad
+  x \in \real.
+\end{equation}
+This can be used to derive a definition for $\bspl[\modified]{l,i}{p}$:
+\begin{equation}
+  \label{eq:modifiedBSplineConstruction}
+  2 - \frac{x}{\ms{l}}
+  = 2 \sum_{i \in \integer} \bspl{l,i}{p}(x)
+  - \frac{1}{\ms{l}} \sum_{i \in \integer} \gp{l,i} \bspl{l,i}{p}(x)
+  = \sum_{i \in \integer} (2 - i) \bspl{l,i}{p}(x),\quad
+  x \in \real.
+\end{equation}
+Note that only the B-splines with $i \ge 1 - \tfrac{p+1}{2}$
+are relevant for the unit interval
+as all other B-splines vanish in $\clint{0, 1}$.
+Pflüger omits summands with $i > 1$ as he only wants to modify
+$\bspl{l,1}{p}$ left of its grid point $\gp{l,1}$ \cite{Pflueger10Spatially}.
+The right-most function $\bspl[\modified]{l,2^l-1}{p}$ can be derived
+analogously by mirroring $\bspl[\modified]{l,1}{p}$ at $x = \tfrac{1}{2}$.
+\pagebreak%
+For~$l = 1$, again the ``constant one'' function is taken for the definition
+of modified hierarchical B-splines (see \cref{fig:modifiedBSpline}):
+{%
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  \begin{equation}
+    \label{eq:modifiedBSplineDefinition}
+    \bspl[\modified]{l,i}{p}(x)
+    \ceq
+    \begin{cases}
+      1,&
+      l = 1,\quad i = 1,\\
+      \displaystyle\sum_{i'=1-(p+1)/2}^1\!\!\!\! (2 - i') \bspl{l,i'}{p}(x),&
+      l \ge 2,\quad i = 1,\\
+      \bspl{l,i}{p}(x),&
+      l \ge 2,\quad i \in \hiset{l} \setminus \{1, 2^l - 1\},\\
+      \bspl[\modified]{l,1}{p}(1 - x),&
+      l \ge 2,\quad i = 2^l - 1.
+    \end{cases}
+  \end{equation}%
+}%
+By \thmref{prop:splineSpace},
+this definition implies that
+$\bspl{l,1}{p}(x) = 2 - \tfrac{x}{\ms{l}}$ ($l \ge 2$)
+is only valid for $x \in \clint{0, \tfrac{5-p}{2} \ms{l}}$, i.e.,
+the second derivative at $x = 0$ vanishes only for $p \le 5$.
+For higher degrees, it is non-zero, albeit very small
+in its absolute value.
+To enforce natural boundary conditions
+for higher than quintic degrees,
+the upper bound of $i'$ in the sum in \eqref{eq:modifiedBSplineDefinition}
+must be extended to $\tfrac{p+1}{2}$.
+In addition, more than just the left-most and the right-most inner
+hierarchical B-spline must be modified for $p \ge 5$,
+as the size of the supports of $\bspl{l,i}{p}$ increases
+for growing $p$.
+
+\begin{figure}
+  \subcaptionbox{%
+    Construction of the modified
+    \vphantom{$\bspl[\modified]{l',i'}{p}$}\vspace{-0.2em}%
+    hierarchical cubic B-spline
+    $\bspl[\modified]{l',1}{p}$ (\emph{dashed,} $l' \ge 2$)
+    \vphantom{$\bspl[\modified]{l',i'}{p}$}\vspace{-0.2em}%
+    as a linear combination of neighboring B-splines $\bspl{l',i'}{p}$.%
+    \vphantom{$\bspl[\modified]{l',i'}{p}$}%
+  }[72mm]{%
+    \includegraphics{modifiedBSpline_1}%
+  }%
+  \hfill%
+  \subcaptionbox{%
+    Modified hierarchical cubic B-splines
+    \vphantom{$\bspl[\modified]{l',i'}{p}$}\vspace{-0.2em}%
+    $\bspl[\modified]{l',i'}{p}$
+    ($l' = 1, \dotsc, l$, $i' \in \hiset{l'}$) and
+    \vphantom{$\bspl[\modified]{l',i'}{p}$}\vspace{-0.2em}%
+    grid points $\gp{l',i'}$
+    \emph{(dots).}%
+    \vphantom{$\bspl[\modified]{l',i'}{p}$}%
+  }[72mm]{%
+    \includegraphics{hierarchicalBasis_6}%
+  }%
+  \caption[%
+    Modified hierarchical B-splines%
+  ]{%
+    Construction of modified hierarchical cubic B-splines ($p = 3$) and
+    the resulting basis up to level $l = 3$.%
+  }%
+  \label{fig:modifiedBSpline}%
+\end{figure}
+
+
+
+\subsection{Non-Uniform Hierarchical B-Splines}
+\label{sec:314nonUniform}
+
+Sparse grid spaces and their corresponding grid point sets,
+as we have defined them in \cref{chap:20sparseGrids},
+are completely independent of the actual location of the grid points
+$\gp{l,i}$.
+Therefore, it is possible to use different distributions for the grid points
+than the standard equidistant choice of $\gp{l,i} = i \cdot \ms{l}$,
+if the basis functions are altered accordingly
+\cite{Valentin14Hierarchische}.
+\usenotation{zzzzcc}
+The so-called Chebyshev points $\ccgp{l,i}$ and the
+resulting Clenshaw--Curtis grids and B-splines will serve as an example.
+
+\paragraph{Chebyshev points and Clenshaw--Curtis grids}
+
+The \term{Chebyshev points} $\ccgp{l,i}$ of level $l \in \natz$
+are defined as
+\begin{equation}
+  \ccgp{l,i}
+  \ceq \frac{1 - \cos(\pi \gp{l,i})}{2},\quad
+  i = 0, \dotsc, 2^l,
+\end{equation}
+see \cite{Xu16Chebyshev} for example.
+Chebyshev points are the locations of the extrema%
+\footnote{%
+  The literature sometimes uses the name ``Chebyshev points'' for
+  the roots of $T_{2^l}$, which are closely connected with the extrema.
+  One way to distinguish them is to call the extrema
+  ``Chebyshev--Lobatto points'' and the roots
+  ``Chebyshev--Gauss points'' \cite{Xu16Chebyshev}.%
+}
+of the Chebyshev polynomials $T_{2^l}$, defined as
+$T_{2^l}\colon \clint{0, 1} \to \real$,
+$T_{2^l}(x) \ceq \cos(2^l \arccos(2x - 1))$.
+They are geometrically obtained
+by dividing a semicircle into $2^l$ equally-sized
+segments and subsequently orthogonally projecting the
+segment endpoints onto the diameter
+(see \cref{fig:pointSplittingChebyshev}).
+Analytically, they are determined by minimizing
+the interpolation error term in polynomial interpolation.
+The most practical use of Chebyshev points is in
+polynomial interpolation to avoid Runge's phenomenon and in
+numerical integration (quadrature), resulting in the
+so-called Clenshaw--Curtis quadrature rules.
+
+\begin{SCfigure}
+  \includegraphics{pointSplitting_2}%
+  \caption[%
+    Decomposition of the set of univariate Clenshaw--Curtis grid points%
+  ]{%
+    The set of Chebyshev points $\fgset[\cc]{l}$ of level
+    $l = 4$ \emph{(top)}
+    decomposes into hierarchical grids of level $l' \le l$
+    (compare with \cref{fig:pointSplittingUniform}).
+    The Chebyshev points are constructed as
+    the orthogonal projection of the
+    endpoints of $2^l$ equally-sized segments
+    of a semicircle onto its diameter \emph{\textcolor{C8}{(gray, top)}.}%
+  }%
+  \label{fig:pointSplittingChebyshev}%
+\end{SCfigure}
+
+In some settings, it may be beneficial to use full or sparse grids consisting
+of Chebyshev points, which are then called \term{Clenshaw--Curtis grids,}
+instead of uniform grids.
+Besides the already mentioned advantages for polynomials and
+quadrature, Clenshaw--Curtis grids can help to reduce interpolation
+errors in a neighborhood of the boundary of the domain due to the increased
+grid point density near the boundary
+(at the cost of a lower grid point density in the interior).
+If we want to use Chebyshev points as grid points for sparse grids,
+we have to employ an appropriate basis to ensure that interpolation
+is still possible.
+
+\paragraph{Hierarchical Clenshaw--Curtis B-splines}
+
+The \term{hierarchical Clenshaw--Curtis B-spline}
+$\bspl[\cc]{l,i}{p}$ of level $l \in \natz$ and index
+$i \in \hiset{l}$ is defined as \cite{Valentin14Hierarchische}
+\begin{equation}
+  \bspl[\cc]{l,i}{p}
+  \ceq \nonunifbspl{i,\nodalknotseq[\cc]{l}{p}}{p},
+\end{equation}
+where
+\begin{subequations}
+  \label{eq:clenshawCurtisBSplineKnots}
+  \begin{gather}
+    \nodalknot[\cc]{l,k}{p}
+    \ceq
+    \begin{cases}
+      (k - \frac{p+1}{2}) \cdot \ccgp{l,1},&
+      k = 0,\, \dotsc,\, \frac{p-1}{2},\\
+      \ccgp{l,k-(p+1)/2},&
+      k = \frac{p+1}{2},\, \dotsc,\, 2^l + \frac{p+1}{2},\\
+      1 + (k - 2^l - \frac{p+1}{2}) \cdot \ccgp{l,1},&
+      k = 2^l + \frac{p+3}{2},\, \dotsc,\, 2^l + p + 1,
+    \end{cases}\\
+    k = 0, \dotsc, m + p,\quad
+    m \ceq 2^l + 1.
+  \end{gather}
+\end{subequations}
+For the construction of the knot sequence $\nodalknotseq[\cc]{l}{p}$,
+the Chebyshev points $\ccgp{l,i}$
+are equidistantly extended onto the real line $\real$.
+As for the standard hierarchical B-spline basis,
+it is now straightforward to define nodal spaces
+$\nsbspl[\cc]{l}{p}$
+and hierarchical subspaces $\hsbspl[\cc]{l}{p}$ as well as
+sparse grid spaces $\regsgspace[p,\cc]{n}{d}$ and
+grid point sets $\regsgset[\cc]{n}{d}$
+using tensor products of Clenshaw--Curtis B-splines
+and Cartesian products of Chebyshev point sets.
+The one-dimensional cubic Clenshaw--Curtis basis and a
+sparse Clenshaw--Curtis grid are shown in \cref{fig:clenshawCurtis}.
+
+\begin{figure}
+  \subcaptionbox{%
+    Hierarchical cubic Clenshaw--Curtis B-splines
+    $\bspl[\cc]{l',i'}{p}$
+    ($l' \le l$, $i' \in \hiset{l'}$, $p = 3$) and
+    \vspace{-0.2em}%
+    modified Clenshaw--Curtis B-splines
+     $\bspl[\cc,\modified]{l',i'}{p}$
+    \emph{(dashed).}%
+  }[72mm]{%
+    \includegraphics{hierarchicalBasis_7}%
+  }%
+  \hfill%
+  \subcaptionbox{%
+    Sparse Clenshaw--Curtis grid $\regsgset[\cc]{n}{d}$
+    of level $n = 4$ in $d = 2$ dimensions.%
+  }[72mm]{%
+    \includegraphics{sg_7}%
+  }%
+  \caption[%
+    Clenshaw--Curtis B-splines and sparse grids%
+  ]{%
+    Clenshaw--Curtis B-splines and sparse grids.%
+  }%
+  \label{fig:clenshawCurtis}%
+\end{figure}
+
+Note that Clenshaw--Curtis B-splines
+$\bspl[\cc]{l,i}{p}$ are not translation-invariant,
+in contrast to uniform B-splines $\bspl{l,i}{p}$.
+As a result, both implementation effort and computation time for evaluation
+are significantly higher for Clenshaw--Curtis B-splines than
+for uniform B-splines,
+as the Clenshaw--Curtis B-splines cannot be precomputed.
+
+\paragraph{Modification and generalizations}
+
+We define \term{modified hierarchical Clenshaw--Curtis B-splines}
+$\bspl[\cc,\modified]{l,i}{p}$ using the
+same method as in \cref{eq:modifiedBSplineDefinition}.
+Here, the second derivative of $\bspl[\cc,\modified]{l,1}{p}$
+does not vanish at $x = 0$ even for degrees $p \le 5$,
+as the formula \eqref{eq:modifiedBSplineConstruction}
+derived from \thmref{lemma:marsden} assumes uniform knots.
+However, since most of the B-spline knots in the summation formula
+lie outside $\clint{0, 1}$ and are thus uniform according
+to \cref{eq:clenshawCurtisBSplineKnots},
+the absolute deviation of the second derivative from zero is small.
+Again, to enforce natural boundary conditions,
+we can recompute the coefficients
+of the components $\bspl[\cc]{l,i'}{p}$
+dynamically with Marsden's identity using the correct Chebyshev knots
+in \cref{eq:marsden}.
+
+Note that our framework permits arbitrary grid point distributions
+$\gp{l,i}^\ast$,
+as long as two requirements are met:
+First, their number should grow exponentially
+(i.e., there are $2^l + 1$ points $\gp{l,i}^\ast$ in each level $l \in \natz$),
+and second, they should be nested
+(i.e., \cref{eq:rewriteGridPoint} holds).
+Appropriate non-uniform B-spline bases can be defined analogously
+to Clenshaw--Curtis B-splines.

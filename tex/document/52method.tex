@@ -1,0 +1,218 @@
+\section{Optimization of Surrogates on Sparse Grids}
+\label{sec:52method}
+
+\minitoc{72mm}{5}
+
+\noindent
+The methods presented in the last section can be combined to a
+``meta-method'' for surrogate optimization.
+The surrogates are constructed as interpolants on spatially adaptive
+sparse grids, which we explain in the following.
+
+
+
+\subsection{Novak--Ritter Adaptivity Criterion}
+\label{sec:521novakRitter}
+
+The classic surplus-based refinement strategy for
+spatially adaptive sparse grids is not tailored to optimization,
+as this refinement strategy aims to minimize the overall $\Ltwo$ error.
+However, in optimization, it is reasonable to generate more
+points in regions where we suspect the global minimum to be
+to increase the interpolant's accuracy in these regions.
+Hence, we employ an adaptivity criterion proposed by
+Novak and Ritter \cite{Novak96Global} for hyperbolic cross points.
+The Novak--Ritter criterion has also been applied to sparse grids
+\multicite{Ferenczi05Globale,Valentin14Hierarchische,Valentin16Hierarchical}.
+
+\paragraph{$m$-th order children}
+
+As usual, the criterion works iteratively:
+Starting with an initial regular sparse grid of a very coarse level,
+the criterion selects a specific point $\gp{\*l,\*i}$ in each iteration
+and inserts all its children into the grid.
+This process is repeated until a given number $\ngpMax$ of grid points is
+reached,
+since we evaluate $\objfun$ at every grid point once, and we assume that
+function evaluations dominate the overall complexity.
+The difference to common refinement criteria is that
+a point may be selected multiple times, in which case
+\term{higher-order children} are inserted.
+The $m$-th order children $\gp{\*l',\*i'}$ of a grid point $\gp{\*l,\*i}$
+satisfy
+\begin{equation}
+  \label{eq:indirectChild}
+  \*l'_{-t} = \*l^{}_{-t},\;\,
+  \*i'_{-t} = \*i^{}_{-t},\;\,
+  l'_t = l^{}_t + m,\;\,
+  i'_t \in
+  \begin{cases}
+    \{1\},&(l_t = 0) \land (i_t = 0),\\
+    \{2^m - 1\},&(l_t = 0) \land (i_t = 1),\\
+    \{2^m i_t - 1,\, 2^m i_t + 1\},&\hphantom{(}l_t > 0,
+  \end{cases}
+\end{equation}
+where $m \in \nat$ and $t \in \{1, \dotsc, d\}$
+(cf.\ \cref{eq:directAncestor} for $m = 1$).
+The order is chosen individually for each child point to be inserted
+as the lowest number $m$ such that $\gp{\*l',\*i'}$ does not yet exist
+in the grid.
+
+\paragraph{Criterion}
+
+The Novak--Ritter refinement criterion \cite{Novak96Global}
+refines the grid point $\gp{\*l,\*i}$ that minimizes the product%
+\footnote{%
+  Compared to \cite{Novak96Global},
+  we added one in the base of each factor to avoid ambiguities
+  for $0^0$.
+  In addition, we swapped $\gamma$ with $1-\gamma$
+  to make $\gamma$ more consistent with its name as adaptivity.%
+}
+\begin{equation}
+  (r_{\*l,\*i} + 1)^\gamma \cdot
+  (\normone{\*l} + d_{\*l,\*i} + 1)^{1 - \gamma}.
+\end{equation}
+Here, $r_{\*l,\*i} \ceq \setsize{
+  \{(\*l',\*i') \in \liset \mid
+  \objfun(\gp{\*l',\*i'}) \le \objfun(\gp{\*l,\*i})\}
+} \in \{1, \dotsc, \setsize{\liset}\}$ is the \term{rank} of $\gp{\*l,\*i}$
+(where $\liset$ is the current set of level-index pairs of the grid), i.e.,
+the place of the function value at $\gp{\*l,\*i}$
+in the ascending order of the function values at all points
+of the current grid.
+We denote the \term{degree} $d_{\*l,\*i} \in \natz$ of $\gp{\*l,\*i}$
+as the number of previous refinements of this point.
+Finally, $\gamma \in \clint{0, 1}$ is the \term{adaptivity parameter.}
+We have to choose a suitable compromise between exploration ($\gamma = 0$)
+and exploitation ($\gamma = 1$).
+The best choice of course depends on the objective function $\objfun$ at hand,
+but for our purposes, we choose a priori a value of $\gamma = 0.15$.
+However, it may be an option to adapt the value of $\gamma$ automatically
+during the grid generation phase.
+
+
+
+\subsection{Global Optimization of Sparse Grid Surrogates}
+\label{sec:522method}
+
+\paragraph{Global, local, and globalized optimization methods}
+
+In \cref{sec:51algorithms}, we presented various optimization methods
+for the unconstrained case,
+divided into global gradient-free methods such as differential evolution and
+local gradient-based methods, for example, gradient descent.
+A subset of these methods has been implemented in \sgpp{}
+\cite{Pflueger10Spatially}, see \cref{tbl:optimizationMethod}.
+The gradient-based methods need an initial point, and
+they may get stuck in local minima.
+Hence, we additionally implemented globalized versions
+of the gradient-based methods
+via a multi-start Monte Carlo approach with $m \ceq \min(10d, 100)$
+uniformly distributed pseudo-random initial points.%
+\footnote{%
+  We split the number of permitted function evaluations evenly
+  among the $m$ parallel calls.%
+}
+This means there are three types of methods:
+
+\begin{enumerate}[label=T\arabic*.,ref=T\arabic*,leftmargin=2.7em]
+  \item
+  \label{item:globalMethods}
+  Global gradient-free methods listed as implemented in
+  \cref{tbl:optimizationMethod}
+  
+  \item
+  \label{item:localMethods}
+  Local gradient-based methods listed as implemented in
+  \cref{tbl:optimizationMethod}%
+  \footnote{%
+     Excluding Levenberg--Marquardt, which is only applicable
+     to least-squares problems.%
+  }
+  
+  \item
+  \label{item:globalizedMethods}
+  Globalized versions of the methods of type \ref{item:localMethods}
+\end{enumerate}
+
+\paragraph{Unconstrained optimization of sparse grid surrogates}
+
+Given the objective function $\objfun\colon \clint{\*0, \*1} \to \real$,
+the maximal number $\ngpMax \in \nat$ of evaluations of $f$, and
+the adaptivity parameter $\gamma \in \clint{0, 1}$,
+we determine an approximation $\xoptappr \in \clint{\*0, \*1}$
+of the global minimum $\xopt$ of $\objfun$ as follows:
+
+\begin{enumerate}
+  \item
+  Generate a spatially adaptive sparse grid $\sgset$
+  with the Novak--Ritter refinement criterion
+  for $\objfun$, $\ngpMax$, and $\gamma$.
+  
+  \item
+  Determine the sparse grid interpolant $\sgintp$ of $\objfun$
+  by solving the linear system \eqref{eq:hierarchizationProblem}.
+  
+  \item
+  Optimize the interpolant:
+  First, find the best grid point
+  $\*x^{(0)} \ceq \vecargmin_{\gp{\*l,\*i} \in \sgset} \objfun(\*x_{\*l,\*i})$.
+  Second, apply the local methods of type \ref{item:localMethods}
+  to the interpolant $\sgintp$ with $\*x^{(0)}$ as initial point.
+  Let $\*x^{(1)}$ be the resulting point with minimal objective function value.
+  Third, we apply the global and globalized methods
+  of types \ref{item:globalMethods} and \ref{item:globalizedMethods}
+  to the interpolant $\sgintp$.
+  Again, let $\*x^{(2)}$ be the point with
+  minimal $\objfun$ value.
+  Finally, determine the point of $\{\*x^{(0)}, \*x^{(1)}, \*x^{(2)}\}$
+  with minimal $\objfun$ value and return it as $\xoptappr$.
+\end{enumerate}
+
+\noindent
+Note that the third step requires a fixed number of additional
+evaluations of the objective function,
+which can be neglected compared to $\ngpMax$.
+By default, we use the cubic modified hierarchical not-a-knot B-spline basis
+$\bspl[\nak,\modified]{\*l,\*i}{p}$ ($p = 3$)
+for the construction of the sparse grid surrogate.
+However, we could apply any of the hierarchical (B-)spline bases presented in
+\cref{chap:30BSplines,chap:40algorithms}.
+
+\paragraph{Comparison methods}
+
+We use two comparison methods.
+First, we apply the gradient-free methods
+(type \ref{item:globalMethods}) to the sparse grid interpolant
+using modified piecewise linear hierarchical basis functions
+(i.e., $p = 1$) on the same sparse grid as the cubic B-splines.
+We cannot employ gradient-based optimization as the objective function
+should be continuously differentiable and
+discontinuous derivatives are usually numerically problematic
+for gradient-based optimization methods
+(see, e.g., \cite{Huebner14Mehrdimensionale}).
+Second, we apply the gradient-free methods
+(type \ref{item:globalMethods}) directly to the objective function.
+We cannot use the gradient-based methods here as the gradient of the
+objective function is assumed to be unknown.
+For both of the comparison methods,
+we make sure that the objective function is evaluated at most $\ngpMax$ times
+by splitting the $\ngpMax$ evaluations
+evenly among all employed optimization methods.
+
+\paragraph{Constrained optimization}
+
+For optimization problems with constraints,
+we proceed exactly as for unconstrained optimization,
+except that for optimizing the interpolant, we use the
+constrained optimization algorithms implemented in \sgpp
+as listed in \cref{tbl:optimizationMethod}.
+We only replace the objective function $\objfun$ with a sparse grid
+surrogate $\sgintp$, and we assume that the constraint function
+$\ineqconfun$ can be evaluated fast.
+However, it would also be possible to replace $\ineqconfun$
+with a sparse grid surrogate.
+In this case, it cannot be guaranteed that the resulting optimal point
+$\xoptappr$ is feasible, i.e., we could have
+$\lnot(\ineqconfun(\xoptappr) \le \*0)$.

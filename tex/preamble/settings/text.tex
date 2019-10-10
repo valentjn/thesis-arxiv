@@ -1,0 +1,83 @@
+% ======================================================================
+% Text Body
+% ======================================================================
+
+% increase indentation of paragraphs (default: 1em = \quad)
+\setlength{\parindent}{2em}
+
+% prohibit inserting page breaks in footnotes
+\interfootnotelinepenalty=10000
+
+% only display underfull \hbox/\vbox warnings if really, really bad;
+% in a technical text riddled with long inline formulas and narrow
+% sub-captions or side-captions, it's just not possible to avoid all
+% badnesses over 1000
+\hbadness=9999
+\vbadness=9999
+
+% mathdesign's Charter font has some questionable kerning between some
+% capital letters such as F, P, and V and a period (the space between those
+% is far too small); one solution would be to use the charter package for
+% the main text, but that leads a number of other issues (the text size is
+% then larger, and doesn't match the math font size anymore...)
+\newcommand*{\punctfix}[1]{{\hspace{-0.05em}#1}}
+
+% enumerate and itemize spaces
+\setlist{
+  % space between left edge of text area and left edge of paragraphs
+  leftmargin=\parindent,
+  % space between item paragraphs (in addition to \parskip)
+  itemsep=0pt,
+  % space above and below lists
+  topsep=0.5em,
+}
+
+% math version of \settowidth, automatically choosing the right style
+% (textstyle, displaystyle, ...)
+\def\mathsettowidth#1#2{%
+  \setbox\@tempboxa\hbox{$\m@th\mathpalette{}{#2}$}%
+  #1=\wd\@tempboxa%
+  \setbox\@tempboxa\box\voidb@x%
+}
+
+% \halfhphantom works like \hphantom, except that it creates a box
+% that is only half as wide as that of \hphantom
+\newlength{\halfhphantomlength}
+\newcommand*{\halfhphantom}[1]{%
+  \ifmmode%
+    \mathsettowidth{\halfhphantomlength}{#1}%
+  \else%
+    \settowidth{\halfhphantomlength}{#1}%
+  \fi%
+  \setlength{\halfhphantomlength}{\halfhphantomlength/2}%
+  \hspace{\halfhphantomlength}%
+}
+
+% \lefthphantom{abc}{defghij} positions the text "abc" as follows:
+% |abc    |
+%  defghij
+\newcommand*{\lefthphantom}[2]{%
+  \ifmmode\mathrlap{#1}\else\rlap{#1}\fi%
+  \hphantom{#2}%
+}
+
+% \centerhphantom{abc}{defghij} positions the text "abc" as follows:
+% |  abc  |
+%  defghij
+\newcommand*{\centerhphantom}[2]{%
+  \halfhphantom{#2}%
+  \ifmmode\mathclap{#1}\else\clap{#1}\fi%
+  \halfhphantom{#2}%
+}
+
+% \righthphantom{abc}{defghij} positions the text "abc" as follows:
+% |    abc|
+%  defghij
+\newcommand*{\righthphantom}[2]{%
+  \hphantom{#2}%
+  \ifmmode\mathllap{#1}\else\llap{#1}\fi%
+}
+
+% use Oxford comma for multiple references in cleveref
+% (e.g, \cref{fig1,fig2,fig3} => Fig. 1, 2, and 3)
+\newcommand*{\creflastconjunction}{, and\nobreakspace}

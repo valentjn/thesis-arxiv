@@ -1,0 +1,1851 @@
+% convention for sort keys:
+% @ --> digits
+% zz --> Greek letters
+% zzzz --> superscripts
+% zzzzzz --> symbols that are not letters or digits
+% zzzzzzzz --> acronyms
+
+\newcommand*{\ifempty}[2]{\if\relax\detokenize{#1}\relax#2\fi}
+\newcommand*{\ifnotempty}[2]{\if\relax\detokenize{#1}\relax\else#2\fi}
+\newcommand*{\appendwithcomma}[1]{\ifnotempty{#1}{,#1}}
+
+% ======================================================================
+% Number Sets
+% ======================================================================
+
+\newnotationcommand{\nat}{\mathbb{N}}{N30}{$\nat$}{
+  Natural numbers without zero ($1, 2, 3, \dotsc$)
+}
+
+\newnotationcommand{\natz}{\mathbb{N}_0}{N40}{$\natz$}{
+  Natural numbers with zero ($\nat \cup \{0\}$)
+}
+
+\newnotationcommand{\integer}{\mathbb{Z}}{Z}{$\integer$}{
+  Integer numbers ($\dotsc, -2, -1, 0, 1, 2, \dotsc$)
+}
+
+\newnotationcommand{\real}{\mathbb{R}}{R}{$\real$}{
+  Real numbers
+}
+
+\newnotationcommand{\posreal}{\mathbb{R}_{{} > 0}}{R>0}{$\posreal$}{
+  Positive real numbers
+}
+
+\newnotationcommand{\nonnegreal}{\mathbb{R}_{{} \ge 0}}{R>=0}{$\nonnegreal$}{
+  Non-negative real numbers
+}
+
+% ======================================================================
+% Basic Single-Letter Symbols (Level, Index, ...)
+% ======================================================================
+
+\newnotation{l}{$\*l$}{
+  Hierarchical level $\*l \in \natz^d$
+}
+
+\newnotation{i}{$\*i$}{
+  Hierarchical index $\*i = \*0, \dotsc, \*2^\*l$
+}
+
+\newnotation{kT00}{$\*k$}{
+  Continuously enumerated index $\*k \in \natz^d$
+  of the level-index pairs $(\*l, \*i)$
+}
+
+\newnotation{d}{$d$}{
+  Dimensionality $d \in \nat$
+}
+
+\newnotation{n10}{$n$}{
+  Level $\in \natz$ of full or sparse grid
+}
+
+\newnotationcommand{\ngp}{N}{N20}{$\ngp$}{
+  Number of grid points
+  for a finite set $\sgset \subset \clint{\*0, \*1}$ of grid points
+}
+
+\newnotationcommandoptarg{1}{\vlinin}{%
+  \*u\ifnotempty{#1}{^{#1}}}{u}{$\vlinin$%
+}{
+  Input of the linear operator $\linop$
+}
+
+\newcommand*{\linin}[2][]{u_{#2}\ifnotempty{#1}{^{#1}}}
+
+\newnotationcommandoptarg{1}{\vlinout}{%
+  \*y\ifnotempty{#1}{^{#1}}}{y}{$\vlinout$%
+}{
+  Output of the linear operator $\linop$
+}
+
+\newcommand*{\linout}[2][]{y_{#2}\ifnotempty{#1}{^{#1}}}
+
+% ======================================================================
+% Vector Notation
+% ======================================================================
+
+\newnotation{@0}{$\*0$}{
+  $(0, \dotsc, 0) \in \natz^d$
+}
+
+\newnotation{@1}{$\*1$}{
+  $(1, \dotsc, 1) \in \nat^d$
+}
+
+\newnotation{kT10}{$\*k_{-t}$}{
+  Vector of all entries $k_{t'}$ except the $t$-th
+  %($\*k_{-t}
+  %\ceq (k_1, \dotsc, k_{t-1}, k_{t+1}, \dotsc, k_d)$)
+}
+
+\newnotation{kT20}{$\*k_T$}{
+  Vector of all dimensions that are contained in $T \in \{1, \dotsc, d\}^j$
+  %($\*k_T
+  %\ceq (k_{t_1}, \dotsc, k_{t_j}$ with $T = (t_1, \dotsc, t_j)$)
+}
+
+\newnotation{kT30}{$\*k_{-T}$}{
+  Vector of all dimensions that are not contained in $T \in \{1, \dotsc, d\}^j$
+  %($\*k_{-T} \ceq \*k_{T'}$ for $T = (t_1, \dotsc, t_j)$ and
+  %$T' = (t'_1, \dotsc, t'_{d-j})$ with
+  %$\{t_1, \dotsc, t_j\} \cup \{t'_1, \dotsc, t'_{d-j}\} = \{1, \dotsc, d\}$ and
+  %$t'_1 < \dotsb t'_{d-j}$)
+}
+
+\newnotationcommand[2]{\range}{{{#1}:{#2}}}{kT40}{$\*k_{\range{a}{b}}$}{
+  Vector of all dimensions that are contained in $a, a + 1, \dotsc, b$
+}
+
+\newnotationcommand[1]{\stdbasis}{\*e_{#1}}{et}{$\stdbasis{t}$}{
+  $t$-th standard basis vector
+  $\stdbasis{t} \ceq (0, \dotsc, 0, 1, 0, \dotsc, 0) \in \real^d$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg[\*k]{2}{\chain}{#1^{(#2)}}{kt}{$\chain{t_{j'}}$}{
+  Point on chain $(\chain{t_1}, \dotsc, \chain{t_j})$
+  between $\*k'$ and $\*k''$
+}
+
+\newcommand*{\chainuv}[1]{\chain[k]{#1}}
+
+% ======================================================================
+% Grid Points
+% ======================================================================
+
+\newnotationcommand[1]{\gp}{%
+  \containsvector{#1}{\*x}{x}_{#1}%
+}{xli}{$\gp{\*l,\*i}$}{
+  Grid point $\gp{\*l,\*i} \ceq \*i \cdot \ms{\*l}$
+}
+
+\newcommand*{\vgp}[1]{\*x_{#1}}
+
+\newnotationcommand[1]{\ccgp}{%
+  \containsvector{#1}{\*x}{x}_{#1}^\cc%
+}{xlicc}{$\ccgp{\*l,\*i}$}{
+  Clenshaw--Curtis grid point
+}
+
+% ======================================================================
+% Mesh Size
+% ======================================================================
+
+\newnotationcommand[1]{\ms}{%
+  \containsvector{#1}{\*h}{h}_{#1}%
+}{hl}{$\ms{\*l}$}{
+  Mesh size $\ms{\*l} \ceq \*2^{-\*l}$
+}
+
+% ======================================================================
+% Superscripts
+% ======================================================================
+
+\newcommand*{\cc}{\mathrm{cc}}
+\newcommand*{\modified}{\mathrm{mod}}
+\newcommand*{\ntrl}{\mathrm{nat}}
+\newcommand*{\nak}{\mathrm{nak}}
+\newcommand*{\sparse}{\mathrm{s}}
+\newcommand*{\ct}{\mathrm{ct}}
+\newcommand*{\hft}{\mathrm{hft}}
+\newcommand*{\tift}{\mathrm{tift}}
+\newcommand*{\ext}{\mathrm{ext}}
+\newcommand*{\fs}{\mathrm{fs}}
+\newcommand*{\wfs}{\mathrm{wfs}}
+\newcommand*{\chol}{\mathrm{chol}}
+\newcommand*{\reference}{\mathrm{ref}}
+\newcommand*{\opt}{\mathrm{opt}}
+
+\newnotation{zzzz1}{$(\cdot)^1$}{
+  Superscript for ``Piecewise linear''
+  %(basis function/function space/interpolant)''
+}
+
+\newnotation{zzzzp}{$(\cdot)^p$}{
+  Superscript for ``B-splines of degree $p$''
+  %(basis function/function space/interpolant)''
+}
+
+\newnotation{zzzzs}{$(\cdot)^\sparse$}{
+  Superscript for ``Sparse grid''
+  %(grid point set/function space/interpolant)''
+}
+
+\newnotation{zzzzsb}{$(\cdot)^{\sparse(b)}$}{
+  Superscript for ``Sparse grid with boundary parameter $b$''
+  %(grid point set/function space/interpolant)''
+}
+
+\newnotation{zzzzmod}{$(\cdot)^\modified$}{
+  Superscript for ``Modified''
+  %(basis function/function space/interpolant)
+  %for grids without boundary points''
+}
+
+\newnotation{zzzzcc}{$(\cdot)^\cc$}{
+  Superscript for ``Clenshaw--Curtis''
+  %(grid point/grid point set/basis
+  %function/function space/interpolant)''
+}
+
+\newnotation{zzzznak}{$(\cdot)^\nak$}{
+  Superscript for ``Not-a-knot''
+  %(knot sequence/basis function/function space/interpolant)''
+}
+
+%\newnotation{zzzznat}{$(\cdot)^\ntrl$}{
+%  Superscript for ``Natural''
+%  %(basis function/function space/interpolant)''
+%}
+
+%\newnotation{zzzzhft}{$(\cdot)^\hft$}{
+%  Superscript for ``Hierarchical fundamental transformation''
+%  %(basis function/function space/interpolant)''
+%}
+
+%\newnotation{zzzztift}{$(\cdot)^\tift$}{
+%  Superscript for ``Translation-invariant fundamental transformation''
+%  %(basis function/function space/interpolant)''
+%}
+
+\newnotation{zzzzfs}{$(\cdot)^\fs$}{
+  Superscript for ``Fundamental spline''
+  %(basis function/function space/interpolant)''
+}
+
+\newnotation{zzzzwfs}{$(\cdot)^\wfs$}{
+  Superscript for ``Weakly fundamental spline''
+  %(basis function/function space/interpolant)''
+}
+
+%\newnotation{zzzzchol}{$(\cdot)^\chol$}{
+%  Superscript for ``Cholesky''
+%}
+
+%\newnotation{zzzzref}{$(\cdot)^\reference$}{
+%  Superscript for ``Reference solution''
+%}
+
+\newnotation{zzzzopt}{$(\cdot)^\opt$}{
+  Superscript for ``Optimal''
+}
+
+% ======================================================================
+% Intervals
+% ======================================================================
+
+\newnotationcommand[1]{\clint}{[#1]}{zzzzzzab10}{$\clint{\*a, \*b}$}{
+  Closed hyper-rectangle $\{\*x \in \real^d \mid \*a \le \*x \le \*b\}$
+}
+
+\newnotationcommand[1]{\opint}{\mathopen]#1\mathclose[}{zzzzzzab20}{%
+  $\opint{\*a, \*b}$%
+}{
+  Open hyper-rectangle $\{\*x \in \real^d \mid \*a < \*x < \*b\}$
+}
+
+\newnotationcommand[1]{\hopint}{\mathopen[#1\mathclose[}{zzzzzzab30}{%
+  $\hopint{\*a, \*b}$%
+}{
+  Half-open hyper-rectangle $\{\*x \in \real^d \mid \*a \le \*x < \*b\}$
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\pohint}{\mathopen]#1\mathclose]}{zzzzzzab40}{%
+  $\pohint{\*a, \*b}$%
+}{
+  Half-open hyper-rectangle $\{\*x \in \real^d \mid \*a < \*x \le \*b\}$
+}
+
+\newcommand*{\clintscaled}[1]{\left[#1\right]}
+\newcommand*{\opintscaled}[1]{\left]#1\right[}
+\newcommand*{\hopintscaled}[1]{\left[#1\right[}
+\newcommand*{\pohintscaled}[1]{\left]#1\right]}
+
+% ======================================================================
+% Norms
+% ======================================================================
+
+\newnotationcommand[1]{\normone}{\norm[1]{#1}}{zzzzzznorm1}{$\normone{\cdot}$}{
+  $\ell_1$ norm $\normone{\*x} \ceq \sum_{t=1}^d \abs{x_t}$
+}
+
+\newcommand*{\Ltwo}{L^2}
+\newcommand*{\Linfty}{L^\infty}
+
+\newnotationcommand[1]{\normLtwo}{\norm[\Ltwo]{#1}}{zzzzzznormL2}{%
+  $\normLtwo{\cdot}$%
+}{
+  $\Ltwo$ norm
+  $\normLtwo{\objfun} \ceq \sqrt{\int_\Omega \objfun(\*x)^2 \diff{}\*x}$
+  of a function $\objfun\colon \Omega \to \real$
+}
+
+\newcommand*{\normLtwoscaled}[1]{\normscaled[\Ltwo]{#1}}
+
+\newnotationcommand[1]{\normLinfty}{\norm[\Linfty]{#1}}{zzzzzznormLinfty}{%
+  $\normLinfty{\cdot}$%
+}{
+  $\Linfty$ norm
+  $\normLinfty{\objfun} \ceq \max_{\*x \in \Omega} \abs{\objfun(\*x)}$
+  of a continuous function $\objfun\colon \Omega \to \real$
+}
+
+\newcommand*{\normLinftyscaled}[1]{\normscaled[\Linfty]{#1}}
+
+% ======================================================================
+% Relation Symbols
+% ======================================================================
+
+\let\equivorig\equiv
+\let\equiv\undefined
+\newnotationcommand{\equiv}{\equivorig}{zzzzzzequiv}{$\equivorig$}{
+  Equality of functions everywhere on their domain
+  (i.e., $\fa{\*x}{\objfun_1(\*x) = \objfun_2(\*x)}$)
+}
+
+% ======================================================================
+% Grid Sets
+% ======================================================================
+
+\newcommand*{\gridset}[3][]{%
+  \if\relax\detokenize{#1}\relax\Omega\else#1{\Omega}\fi_{#2}^{#3}%
+}
+
+\newcommand*{\interiorgrid}[1]{\mathring{#1}}
+\newcommand*{\bndrygrid}[1]{\mathop{}\!\partial#1}
+
+\newcommand*{\interiorsgset}{\gridset[\interiorgrid]{}{\sparse}}
+\newcommand*{\bndrysgset}{\gridset[\bndrygrid]{}{\sparse}}
+
+\makecommandnotation{\interiorgrid}{zzZs2}{$\interiorsgset$}{
+  Set $\ceq \sgset \cap \opint{\*0, \*1}$ of
+  interior grid points
+  for a finite set $\sgset \subset \clint{\*0, \*1}$ of grid points
+}
+
+%\let\bndrygridorig\bndrygrid
+%\newcommand*{\bndrysgsetorig}{\gridset[\bndrygridorig]{}{\sparse}}
+%\makecommandnotation{\bndrygrid}{zzZsd}{$\bndrysgsetorig$}{
+%  Set $\ceq \sgset \cap \bndrydomain{\clint{\*0, \*1}}
+%  = \sgset \setminus \interiorsgset$ of
+%  boundary sparse grid points
+%  for a finite set $\sgset \subset \clint{\*0, \*1}$ of grid points
+%}
+
+\newnotationcommandoptarg{2}{\fgset}{%
+  \Omega_{#2}\ifnotempty{#1}{^{#1}}%
+}{zzZl}{$\fgset{\*l}$}{
+  Set of full grid points of level $\*l$
+}
+
+\newnotationcommandoptarg{1}{\sgset}{%
+  \gridset{}{\sparse\appendwithcomma{#1}}%
+}{zzZs}{$\sgset$}{
+  Arbitrary sparse grid (possibly spatially adaptive)
+}
+
+\newnotationcommandoptarg{3}{\regsgset}{%
+  \gridset{#2,#3}{\sparse\appendwithcomma{#1}}%
+}{zzZsnd}{$\regsgset{n}{d}$}{
+  Set of regular sparse grid points of level $n$, dimensionality $d$
+}
+
+\newnotationcommandoptarg{4}{\coarseregsgset}{%
+  \gridset{#2,#3}{\sparse(#4)\appendwithcomma{#1}}%
+}{zzZsndb}{$\coarseregsgset{n}{d}{b}$}{
+  Set of regular sparse grid points of level $n$, dim. $d$,
+  boundary parameter $b$
+}
+
+\newcommand*{\interiorregsgset}[3][]{%
+  \gridset[\interiorgrid]{#2,#3}{\sparse\appendwithcomma{#1}}%
+}
+
+\newcommand*{\bndryregsgset}[3][]{%
+  \gridset[\bndrygrid]{#2,#3}{\sparse\appendwithcomma{#1}}%
+}
+
+% ======================================================================
+% Function Spaces
+% ======================================================================
+
+\newcommand*{\gridspace}[3][]{%
+  \if\relax\detokenize{#1}\relax V\else#1{V}\fi_{#2}^{#3}%
+}
+
+\newnotationcommandoptarg{2}{\ns}{%
+  V_{#2}\ifnotempty{#1}{^{#1}}%
+}{Vl}{$\ns{\*l}$}{
+  Nodal space of level $\*l$
+}
+
+\newcommand*{\nsbspl}[3][]{\ns[#3\appendwithcomma{#1}]{#2}}
+
+\newnotation{Vnd}{$\ns{n,d}$}{
+  Multivariate nodal space
+  $\ceq \ns{n \cdot \*1}$ of level $n$ with dimensionality $d$
+}
+
+\newnotationcommandoptarg{2}{\hs}{%
+  W_{#2}\ifnotempty{#1}{^{#1}}%
+}{Wl}{$\hs{\*l}$}{
+  Hierarchical subspace of level $\*l$
+}
+
+\newcommand*{\hsbspl}[3][]{\hs[#3\appendwithcomma{#1}]{#2}}
+
+\newnotationcommand{\sgspace}{\gridspace{}{\sparse}}{Vs}{$\sgspace$}{
+  Arbitrary sparse grid space (possibly spatially adaptive)
+}
+
+\newnotationcommandoptarg{3}{\regsgspace}{%
+  \gridspace{#2,#3}{\sparse\appendwithcomma{#1}}%
+}{Vnds}{$\regsgspace{n}{d}$}{
+  Regular sparse grid space of level $n$ with dimensionality $d$
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\nonunifsplspace}{S_{#1}^{#2}}{Slop}{%
+  $\nonunifsplspace{\knotseq}{p}$%
+}{
+  Spline space of degree $p$ with knots $\knotseq$
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\restrictedsplspace}{S_{#1}^{#2}}{Slp}{%
+  $\restrictedsplspace{l}{p}$%
+}{
+  Spline space $\ceq \nonunifsplspace{\nodalknotseq{l}{p}}{p}$
+  (spanned by the uniform nodal B-splines of level $l$, degree $p$)
+}
+
+\newnotationcommand[2]{\wholesplspace}{S_{#1}^{#2,\clint{0,1}}}{Slp01}{%
+  $\wholesplspace{l}{p}$%
+}{
+  Spline space of degree $p$ on the grid
+  $\{\gp{l,i} \mid i = 0, \dotsc, 2^l\}$ of level $l$
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\naksplspace}{S_{#1}^{#2,\nak}}{Slpnak}{%
+  $\naksplspace{l}{p}$%
+}{
+  Spline space $\ceq \nonunifsplspace{\nodalknotseq[\nak]{l}{p}}{p}$
+  (spanned by the nodal not-a-knot B-splines of level $l$, degree $p$)
+}
+
+\newnotationcommand[1]{\polyspace}{P^{#1}}{Pp}{$\polyspace{\*p}$}{
+  Space of all $d$-variate polynomials of
+  coordinate degree $\le \*p$ on $\clint{\*0, \*1}$
+}
+
+\newnotationcommand[2]{\restrictspace}{#1|_{#2}}{V|D}{%
+  $\restrictspace{V}{D}$%
+}{
+  Restriction $\ceq \{\restrictfcn{\objfun}{D} \mid \objfun \in V\}$
+  onto a sub-domain $D$ for a function space $V$
+}
+
+% ======================================================================
+% Landau Notation
+% ======================================================================
+
+\newnotationcommand[1]{\landauO}{\mathcal{O}(#1)}{O}{$\landauO{\objfun(x)}$}{
+  Big-$\mathcal{O}$ Landau notation
+}
+
+\newnotationcommand[1]{\landauOmega}{\Omega(#1)}{zzZ}{%
+  $\landauOmega{\objfun(x)}$%
+}{
+  Big-$\Omega$ Landau notation
+}
+
+\newnotationcommand[1]{\landauTheta}{\Theta(#1)}{zzH}{%
+  $\landauTheta{\objfun(x)}$%
+}{
+  Big-$\Theta$ Landau notation
+}
+
+% ======================================================================
+% Unary Operators and Matrices
+% ======================================================================
+
+\makecommandnotation{\dim}{dim}{$\dim$}{
+  Vector space dimension
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\abs}{|#1|}{zzzzzzabs}{$\abs{\cdot}$}{
+  Absolute value of a scalar
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\vabs}{%
+  \boldsymbol{|}#1\boldsymbol{|}%
+}{zzzzzzabs2}{$\vabs{\cdot}$}{
+  Absolute value of a vector (entry-wise)
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\setsize}{|#1|}{zzzzzzcount}{$\setsize{\cdot}$}{
+  Number of elements of a set
+}
+
+\newcommand*{\bndrydomain}[1]{\mathop{}\!\partial#1}
+\let\bndrydomainorig\bndrydomain
+\makecommandnotation{\bndrydomain}{zzZd}{$\bndrydomainorig{\Omega}$}{
+  Topological boundary of a set $\Omega \subset \real^d$
+}
+
+\newnotationcommand{\linop}{\mathfrak{L}}{L2}{$\linop$}{
+  Linear operator $\linop\colon \real^{\ngp} \to \real^{\ngp}$
+  on grid point data
+}
+
+\newnotationcommand{\intpmat}{\mat{A}}{A}{$\intpmat$}{
+  Interpolation matrix with entries $\basis{\*l',\*i'}(\gp{\*l,\*i})$
+}
+
+\newcommand*{\intpmatuv}[1]{\mat{A}^{(#1)}}
+
+\hidenextnotation
+\newnotationcommand[1]{\upop}{\linop^{(#1)}}{Lt1}{%
+  $\upop{t_1, \dotsc, t_j}$%
+}{
+  Operator $\upop{t_1, \dotsc, t_j}\colon \real^{\ngp} \to \real^{\ngp}$
+  corresponding to the application of the unidirectional principle in the
+  dimensions $t_1, \dotsc, t_j$ on the $d$-dimensional sparse grid
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\upopuv}{\linop^{(#1),#2}}{LtKpole}{%
+  $\upopuv{t}{\lisetpole}$%
+}{
+  One-dimensional operator $\upopuv{t}{\lisetpole}\colon
+  \real^{\setsize{\lisetpole}} \to \real^{\setsize{\lisetpole}}$
+  corresponding to the application of the unidirectional principle in the
+  $t$-th dimension on a pole $\lisetpole$ of the sparse grid
+}
+
+\newcommand*{\linopinv}{\linop^{-1}}
+\newcommand*{\intpmatinv}{\intpmat^{-1}}
+\newcommand*{\intpmatuvinv}[1]{(\intpmatuv{#1})^{-1}}
+\newcommand*{\upopinv}[1]{(\upop{#1})^{-1}}
+\newcommand*{\upopuvinv}[2]{(\linop^{(#1),#2})^{-1}}
+
+\newnotationcommand{\idop}{\mathrm{id}}{id}{$\idop$}{
+  Identity operator $\idop\colon \real^{\ngp} \to \real^{\ngp}$
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\intpmatentry}{A_{#1,#2}}{Akk'}{$\intpmatentry{k}{k'}$}{
+  $(k, k')$-th entry of $\intpmat$
+}
+
+\DeclareMathOperator{\supp}{supp}
+\let\supporig\supp
+\makecommandnotation{\supp}{supp}{$\supporig \objfun$}{
+  Support of a function (i.e., the closure of $\interiorsupporig \objfun$)
+}
+
+\DeclareMathOperator{\interiorsupp}{\mathring{\supporig}}
+\let\interiorsupporig\interiorsupp
+\makecommandnotation{\interiorsupp}{suppo}{$\interiorsupporig \objfun$}{
+  Interior of the support of a continuous function
+  (i.e., $\{\*x \mid \objfun(\*x) \not= 0\}$)
+}
+
+\DeclareMathOperator{\spn}{span}
+\let\spnorig\spn
+\makecommandnotation{\spn}{span}{$\spnorig$}{
+  Linear span (set of all linear combinations)
+}
+
+\hidenextnotation
+\makecommandnotation{\deg}{deg}{$\deg \objfun$}{
+  Degree of the polynomial $\objfun$
+}
+
+\DeclareMathOperator*{\vecmin}{\mathbf{min}}
+\DeclareMathOperator*{\vecmax}{\mathbf{max}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\vecargmin}{\mathbf{arg\,min}}
+\let\vecargminorig\vecargmin
+\hidenextnotation
+\makecommandnotation{\vecargmin}{argmin}{$\vecargminorig$}{
+  Point where the minimum is attained
+}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\vecargmax}{\mathbf{arg\,max}}
+\let\vecargmaxorig\vecargmax
+\hidenextnotation
+\makecommandnotation{\vecargmax}{argmax}{$\vecargmaxorig$}{
+  Point where the maximum is attained
+}
+
+\newcommand*{\floor}[1]{\lfloor#1\rfloor}
+
+\newnotationcommand[1]{\ceil}{\lceil#1\rceil}{zzzzzzceil}{%
+  $\floor{\cdot}$, $\ceil{\cdot}$%
+}{
+  Floor/ceiling function
+  (greatest/smallest integer $\le$/$\ge$ than $\cdot$)
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\deriv}{%
+  \frac{\diff\ifnotempty{#1}{^{#1}}}{\diff{}#2\ifnotempty{#1}{^{#1}}} #3%
+}{zzzzzzderivative}{$\deriv[q]{x}{\objfun}$}{
+  $q$-th derivative of $\objfun$ with respect to $x$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\tderiv}{%
+  \tfrac{\diff\ifnotempty{#1}{^{#1}}}{\diff{}#2\ifnotempty{#1}{^{#1}}} #3%
+}{zzzzzzderivativesmall}{$\tderiv[q]{x}{\objfun}$}{
+  $q$-th derivative of $\objfun$ with respect to $x$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\partialderiv}{%
+  \frac{\partialdiff\ifnotempty{#1}{^{#1}}}{#2} #3%
+}{zzzzzzpartialderivative}{$\partialderiv{\partialdiff{}x}{\objfun}$}{
+  Partial derivative of $\objfun$ with respect to $x$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\tpartialderiv}{%
+  \tfrac{\partialdiff\ifnotempty{#1}{^{#1}}}{#2} #3%
+}{zzzzzzpartialderivativesmall}{$\tpartialderiv{\partialdiff{}x}{\objfun}$}{
+  Partial derivative of $\objfun$ with respect to $x$
+}
+
+\newnotationcommand[2]{\gradient}{%
+  \mathop{\*\nabla_{\hspace*{-0.1em}#1}} #2%
+}{zzzzzzgradient}{$\gradient{\*x}{\objfun}$}{
+  Gradient of a function $\objfun$ with respect to $\*x$
+  (transposed Jacobian)
+}
+
+\newnotationcommand[2]{\hessian}{%
+  \mathop{\*\nabla_{\hspace*{-0.1em}#1}^2} #2%
+}{zzzzzzhessian}{$\hessian{\*x}{\objfun}$}{
+  Hessian of a function $\objfun$ with respect to $\*x$
+}
+
+\newnotationcommand[1]{\tr}{#1^\mathrm{T}}{zzzzT}{$\tr{(\cdot)}$}{
+  Transpose of a vector or matrix
+}
+
+\newnotationcommand{\eye}{\mat{I}}{I}{$\eye$}{
+  Identity matrix
+}
+
+\newnotationcommand[1]{\nonnegpart}{(#1)_+}{zzzzzz.+}{$\nonnegpart{\cdot}$}{
+  Non-negative part $\max({\cdot}, 0)$
+}
+
+\newcommand*{\expectationsign}[1][]{\mathbb{E}\ifnotempty{#1}{_{#1}}}
+
+\newnotationcommandoptarg{2}{\expectation}{%
+  \mathbb{E}\ifnotempty{#1}{_{#1}}\bracket*{#2}%
+}{EX}{$\expectation{X}$}{
+  Expectation of the random variable $X$
+}
+
+% ======================================================================
+% Binary Operators
+% ======================================================================
+
+\let\oplusorig\oplus
+\let\oplus\undefined
+\newnotationcommand{\oplus}{\oplusorig}{zzzzzzoplus}{$\oplus$}{%
+  Internal direct sum of vector spaces
+}
+
+\hidenextnotation
+\newnotationcommand{\convolution}{\ast}{zzzzzzconvolution}{$\convolution$}{
+  Convolution $f \ast g$ of two functions $f$ and $g$
+}
+
+\newnotationcommand[2]{\kronecker}{\delta_{#1,#2}}{zzdAB}{$\kronecker{A}{B}$}{
+  Kronecker delta $\ceq 1$ if $A = B$ and $\ceq 0$ otherwise
+  ($A, B$ arbitrary objects)
+}
+
+\DeclareMathOperator{\xor}{xor}
+\let\xororig\xor
+\hidenextnotation
+\makecommandnotation{\xor}{xor}{$\xororig$}{
+  Bitwise ``exclusive or''
+}
+
+\newnotationcommand[2]{\restrictfcn}{#1|_{#2}}{fD}{$\restrictfcn{\objfun}{D}$}{
+  Restriction $\restrictfcn{\objfun}{D}\colon D \to \real$,
+  $\restrictfcn{\objfun}{D}(x) \ceq \objfun(x)$,
+  onto a sub-domain $D$
+}
+
+\newnotationcommand{\dotcup}{\mathbin{\dot{\cup}}}{zzzzzzunion}{$\dotcup$}{
+  Disjoint union of sets
+}
+
+\DeclareMathOperator*{\bigdotcup}{\dot{\bigcup}}
+
+\hidenextnotation
+\newnotationcommand{\eq}{\sim}{zzzzzzeq}{$\eq$}{
+  Equivalence relation where
+  $a \eq b$ denotes that two elements $a, b$ are equivalent
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\samepole}{\eq_{#1}}{zzzzzzsimt}{$\samepole{t}$}{
+  Pole equivalence relation with respect to dimension $t = 1, \dotsc, d$
+  ($\*k \samepole{t} \*k'$ if $\*k$ and $\*k'$ are on the same pole
+  $\lisetpole \in \eqclasses{\liset}{\samepole{t}}$ in dimension $t$)
+}
+
+\newnotationcommand[2]{\eqclasses}{{#1}/{#2}}{zzzzzzeqclasses}{%
+  $\eqclasses{\cdot}{\eq}$%
+}{
+  Set of equivalence classes for an equivalence relation $\eq$ on
+  a set $\cdot$
+}
+
+\newnotationcommand[2]{\eqclass}{[#1]_{#2}}{zzzzzzeqclass}{%
+  $\eqclass{\cdot}{\eq}$%
+}{
+  Equivalence class of $\cdot$ (set of all elements equivalent to $\cdot$)
+  with respect to $\eq$
+}
+
+% ======================================================================
+% Level/Index Sets
+% ======================================================================
+
+\newnotationcommand[1]{\hiset}{I_{#1}}{Il}{$\hiset{\*l}$}{
+  Set of odd hierarchical indices of level $\*l$
+}
+
+\newnotationcommand{\liset}{K}{K}{$\liset$}{
+  Finite set of hierarchical level-index pairs $(\*l, \*i)$
+  or continuous indices $\*k \in \natz^d$
+}
+
+\newnotationcommandoptarg{1}{\lisetpole}{%
+  \liset_\mathrm{pole}\ifnotempty{#1}{^{#1}}%
+}{Kpole}{$\lisetpole$}{
+  Pole $\lisetpole \in \eqclasses{\liset}{\samepole{t}}$
+  in some dimension $t$ ($\lisetpole$ is a subset of $\liset$)
+}
+
+\newnotationcommand{\levelset}{L}{L1}{$\levelset$}{
+  Finite subset $\levelset \subset \natz^d$ of levels
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{4}{\coarselevelset}{%
+  \levelset_{#2,#3}^{\sparse(#4)\appendwithcomma{#1}}%
+}{Lndbs}{$\coarselevelset{n}{d}{b}$}{
+  Finite subset $\coarselevelset{n}{d}{b} \subset \natz^d$ of levels
+  for the grid $\coarseregsgset{n}{d}{b}$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\relindexset}{%
+  J_{#2}\ifnotempty{#1}{^{#1}}%
+}{Jl}{$\relindexset{l}$}{
+  Set of relevant indices for the translation-invariant
+  fundamental transformation
+}
+
+% ======================================================================
+% Interpolation Values and Coefficients
+% ======================================================================
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\fcnval}{%
+  f\ifnotempty{#1}{^{#1}}(\gp{#2})%
+}{fli}{$\fcnval{\*l,\*i}$}{
+  Value of the objective function $\objfun$ at the grid point $\gp{\*l,\*i}$
+}
+
+\newnotationcommandoptarg{2}{\surplus}{%
+  \alpha_{#2}\ifnotempty{#1}{^{#1}}%
+}{zzali}{$\surplus{\*l,\*i}$}{
+  Hierarchical surpluses
+}
+
+\newcommand*{\vsurplus}{\*\alpha}
+\newcommand*{\surplustilde}[2][]{\tilde{\alpha}_{#2}\ifnotempty{#1}{^{#1}}}
+
+\newnotationcommandoptarg{2}{\interpcoeff}{%
+  c_{#2}\ifnotempty{#1}{^{#1}}%
+}{cli}{$\interpcoeff{\*l,\*i}$}{
+  Full grid interpolation coefficients
+  %(coefficients of a linear combination of nodal basis functions)
+}
+
+\newcommand*{\interpcoefftilde}[2][]{\tilde{c}_{#2}\ifnotempty{#1}{^{#1}}}
+
+\newcommand*{\fundsplcoeff}[3][]{c_{#2,#3}\ifnotempty{#1}{^{#1}}}
+\newcommand*{\fundsplcutoff}[1]{n_{#1}}
+
+\newcommand*{\wfundsplcoeff}[3][]{c_{#2,#3}\ifnotempty{#1}{^{#1}}}
+
+% ======================================================================
+% Special Numbers
+% ======================================================================
+
+\newnotationcommand{\econst}{\mathrm{e}}{e}{$\econst$}{
+  Euler constant $\exp(1)$
+}
+
+\hidenextnotation
+\newnotationcommand{\ngpMax}{\ngp_\mathrm{max}}{Nmax}{$\ngpMax$}{
+  Maximum number of grid points when generating spatially adaptive sparse grids
+}
+
+\hidenextnotation
+\newnotationcommand{\refinetol}{\kappa}{zzk}{$\refinetol$}{
+  Refinement tolerance
+}
+
+\hidenextnotation
+\newnotationcommand{\error}{\varepsilon}{zze}{$\error$}{
+  Error measure
+}
+
+% ======================================================================
+% Special Points
+% ======================================================================
+
+\newnotationcommand{\xopt}{\*x^\opt}{xopt}{$\xopt$}{
+  Solution of an optimization problem of the form
+  $\xopt = \vecargmin \objfun(\*x)$
+}
+
+\newnotationcommand{\xoptappr}{\*x^{\opt,\ast}}{xopt*}{$\xoptappr$}{
+  Approximation for $\xopt = \vecargmin \objfun(\*x)$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\xoptscaled}{%
+  \bar{\*x}^\opt%
+}{xoptbar}{$\xoptscaled$}{
+  Scaled solution of an optimization problem
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\xscaled}{%
+  \bar{\*x}%
+}{xbar}{$\xscaled$}{
+  Scaled $\xscaled \in \clint{\*a, \*b}$
+  for the definition of test functions
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\xoptscaledentry}{%
+  \bar{x}^\opt_{#1}%
+}{xoptbart}{$\xoptscaledentry{t}$}{
+  Scaled solution entry of an optimization problem
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\xscaledentry}{%
+  \bar{x}_{#1}%
+}{xbart}{$\xscaledentry{t}$}{
+  Scaled $\xscaledentry{t} \in \clint{a, b}$
+  for the definition of test functions
+}
+
+% ======================================================================
+% Special Functions
+% ======================================================================
+
+\newnotationcommandoptarg{2}{\basis}{%
+  \varphi_{#2}\ifnotempty{#1}{^{#1}}%
+}{zzvli}{$\basis{\*l,\*i}$}{
+  Hierarchical basis function of level $\*l$, index $\*i$
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\fundbasis}{%
+  \varphi_{#1}^\mathrm{f}%
+}{zzvlif}{$\fundbasis{\*l,\*i}$}{
+  Fundamental hierarchical basis function of level $\*l$, index $\*i$
+  (satisfying the fundamental property)
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\wfundbasis}{%
+  \varphi_{#1}^\mathrm{wf}%
+}{zzvliwf}{$\wfundbasis{\*l,\*i}$}{
+  Weakly fundamental hierarchical basis function of level $\*l$, index $\*i$
+  (satisfying the weakly fundamental property)
+}
+
+\newnotationcommandoptarg{1}{\parentfcn}{%
+  \varphi\ifnotempty{#1}{^{#1}}%
+}{zzv}{$\parentfcn$}{
+  Parent function $\parentfcn\colon \clint{0, 1} \to \real$
+  ($\basis{l,i}$ is scaled translate of $\parentfcn$)
+}
+
+\newnotationcommandoptarg{3}{\bspl}{%
+  \varphi_{#2}^{#3\appendwithcomma{#1}}%
+}{zzvlip}{$\bspl{\*l,\*i}{\*p}$}{
+  Hierarchical standard B-spline basis function of
+  level $\*l$, index $\*i$, degree $\*p$
+}
+
+\newnotationcommand[1]{\cardbspl}{b^{#1}}{bp}{$\cardbspl{p}$}{
+  Cardinal B-spline of degree $p$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\parentbspl}{%
+  \parentfcn[#2\appendwithcomma{#1}]%
+}{zzvp}{$\parentbspl{p}$}{
+  Centralized cardinal B-spline
+  $\parentbspl{p} \ceq \cardbspl{p}({\cdot} + \tfrac{p+1}{2})$
+  of degree $p$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\parentfundspl}{%
+  \parentfcn[#2,\fs\appendwithcomma{#1}]%
+}{zzvpfs}{$\parentfundspl{p}$}{
+  Fundamental spline of degree $p$ (parent function)
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\parentwfundspl}{%
+  \parentfcn[#2,\wfs\appendwithcomma{#1}]%
+}{zzvpwfs}{$\parentwfundspl{p}$}{
+  Weakly fundamental spline of degree $p$ (parent function)
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\nonunifbspl}{b_{#1}^{#2}}{bkop}{%
+  $\nonunifbspl{k,\knotseq}{p}$%
+}{
+  Non-uniform B-spline of degree $p$ with knots $\knotseq$ and index $k$
+}
+
+\hidenextnotation
+\newnotationcommand{\spl}{s}{s}{$s$}{
+  Spline (piecewise polynomial)
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\charfun}{\chi_{#1}}{zzxA}{$\charfun{A}$}{
+  Characteristic function of the set $A \subset \real$
+}
+
+\newnotationcommand{\objfun}{f}{f}{$\objfun$}{
+  Objective function $\objfun\colon \clint{\*0, \*1} \to \real$
+}
+
+\newnotationcommandoptarg{1}{\ineqconfun}{%
+  \ifempty{#1}{\*g}\ifnotempty{#1}{g_{#1}}%
+}{g}{$\ineqconfun$}{
+  Inequality constraint function
+  $\ineqconfun\colon \clint{\*0, \*1} \to \real^{m_{\ineqconfun}}$
+  (constraint $\ineqconfun(\*x) \le \*0$)
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\eqconfun}{
+  \ifempty{#1}{\*h}\ifnotempty{#1}{h_{#1}}%
+}{h}{$\eqconfun$}{
+  Equality constraint function
+  $\eqconfun\colon \clint{\*0, \*1} \to \real^{m_{\eqconfun}}$
+  (optimal solutions $\*x$ must satisfy $\eqconfun(\*x) = \*0$)
+}
+
+\hidenextnotation
+\newnotationcommand{\objfunscaled}{\bar{\objfun}}{fbar}{$\objfunscaled$}{
+  Scaled objective function $\objfunscaled\colon \clint{\*a, \*b} \to \real$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\ineqconfunscaled}{%
+  \ifempty{#1}{\bar{\*g}}\ifnotempty{#1}{\bar{g}_{#1}}%
+}{gbar}{$\ineqconfunscaled$}{
+  Scaled inequality constraint function
+  $\ineqconfunscaled\colon \clint{\*a, \*b} \to \real^{m_{\ineqconfun}}$
+}
+
+%\hidenextnotation
+%\newnotationcommandoptarg{1}{\eqconfunscaled}{
+%  \ifempty{#1}{\bar{\*h}}\ifnotempty{#1}{\bar{h}_{#1}}%
+%}{hbar}{$\eqconfunscaled$}{
+%  Scaled equality constraint function
+%  $\eqconfunscaled\colon \clint{\*a, \*b} \to \real^{m_{\eqconfun}}$
+%}
+
+\hidenextnotation
+\newnotationcommand[1]{\testobjfunscaled}{%
+  \bar{\objfun}_{\mathrm{#1}}%
+}{fbarTest}{$\testobjfunscaled{Test}$}{
+  Scaled test objective function
+  $\testobjfunscaled{Test}\colon \clint{\*a, \*b} \to \real$
+  with name ``Test''
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\testineqconfunscaled}{%
+  \ifempty{#1}{\bar{\*g}_{\mathrm{#2}}}%
+  \ifnotempty{#1}{\bar{g}_{\mathrm{#2},#1}}%
+}{gbarTest}{$\testineqconfunscaled{Test}$}{
+  Scaled test inequality constraint function
+  $\testineqconfunscaled{Test}\colon
+  \clint{\*a, \*b} \to \real^{m_{\ineqconfun}}$
+  with name ``Test''
+}
+
+%\hidenextnotation
+%\newnotationcommandoptarg{2}{\testeqconfunscaled}{
+%  \ifempty{#1}{\bar{\*h}_{\mathrm{#2}}}%
+%  \ifnotempty{#1}{\bar{h}_{\mathrm{#2},#1}}%
+%}{hbarTest}{$\testeqconfunscaled{Test}$}{
+%  Scaled test equality constraint function
+%  $\testeqconfunscaled{Test}\colon
+%  \clint{\*a, \*b} \to \real^{m_{\eqconfun}}$
+%  with name ``Test''
+%}
+
+\newnotationcommand[1]{\fgintp}{f_{#1}}{fl}{$\fgintp{\*l}$}{
+  Full grid interpolant of $\objfun$ in $\ns{\*l}$
+}
+
+\newnotationcommandoptarg{1}{\sgintp}{%
+  f^{\sparse\appendwithcomma{#1}}%
+}{fs}{$\sgintp$}{
+  Sparse grid interpolant of $\objfun$ in $\sgspace$
+  (on some grid $\sgset$)
+}
+
+\newcommand*{\vsgintp}[1][]{\*f^{\sparse\appendwithcomma{#1}}}
+
+\newnotationcommandoptarg{3}{\regsgintp}{%
+  f_{#2,#3}^{\sparse\appendwithcomma{#1}}%
+}{fsnd}{$\regsgintp{n}{d}$}{
+  Regular sparse grid interpolant of $\objfun$ in $\regsgspace{n}{d}$
+}
+
+\newnotationcommandoptarg{2}{\lagrangepoly}{%
+  L_{#2}\ifnotempty{#1}{^{#1}}%
+}{Lli}{$\lagrangepoly{l,i}$}{
+  Lagrange polynomial of level $l$, index $i$
+}
+
+% ======================================================================
+% Spline Knots
+% ======================================================================
+
+\hidenextnotation
+\newnotationcommand[1]{\knot}{\xi_{#1}}{zzo10}{$\knot{k}$}{
+  Knot $\in \real$ of a spline space
+  (point where the splines are not smooth)
+}
+
+\hidenextnotation
+\newnotationcommand{\knotseq}{\*\xi}{zzo20}{$\knotseq$}{
+  Knot sequence $\ceq (\knot{0}, \dotsc, \knot{m+p})$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\nodalknot}{%
+  \xi_{#2}^{#3\appendwithcomma{#1}}%
+}{zzolkp}{$\nodalknot{l,k}{p}$}{
+  Knot for uniform nodal B-splines of level $l$, degree $p$
+  ($k$-th entry of $\nodalknotseq{l}{p}$)
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\nodalknotseq}{%
+  \*\xi_{#2}^{#3\appendwithcomma{#1}}%
+}{zzolp}{$\nodalknotseq{l}{p}$}{
+  Knot sequence for uniform nodal B-splines of level $l$, degree $p$
+}
+
+% ======================================================================
+% Domains
+% ======================================================================
+
+\hidenextnotation
+\newnotationcommand[2]{\spldomain}{D_{#1}^{#2}}{D10}{%
+  $\spldomain{\knotseq}{p}$%
+}{
+  Spline interpolation domain of $\nonunifsplspace{\knotseq}{p}$
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\rspldomain}{D_{#1}^{#2}}{D20}{%
+  $\rspldomain{l}{p}$%
+}{
+  Spline interpolation domain of $\restrictedsplspace{l}{p}$
+  (uniform nodal B-splines of level $l$, degree $p$)
+}
+
+% ======================================================================
+% Application 0: Fuzzy Extension Principle
+% ======================================================================
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\fuzzy}{%
+  \tilde{#2}\ifnotempty{#1}{^{#1}}%
+}{xtilde}{$\fuzzy{x}$}{
+  Fuzzy set
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\memfun}{%
+  \mu_{\fuzzy[#1]{#2}}%
+}{zzmtilde}{$\memfun{x}$}{
+  Membership function $\memfun{x}\colon X \to \clint{0, 1}$ of the
+  fuzzy set $\fuzzy{x}$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\acut}{%
+  (\tilde{#2}\ifnotempty{#1}{_{#1}})_{#3}%
+}{xtildea}{$\acut{x}{\alpha}$}{
+  $\alpha$-cut of $\fuzzy{x}$ for $\alpha \in \clint{0, 1}$
+}
+
+% ======================================================================
+% Application 1: Topology Optimization
+% ======================================================================
+
+\hidenextnotation
+\newnotationcommand{\dimobjdomain}{\tilde{d}}{dtilde}{$\dimobjdomain$}{
+  \#dimensions of $\objdomain$
+}
+
+\hidenextnotation
+\newnotationcommand{\objdomain}{\tilde{\Omega}}{zzZtilde}{$\objdomain$}{
+  Object domain
+}
+
+\hidenextnotation
+\newnotationcommand{\densglobal}{\tilde{\varrho}}{zzr2}{$\densglobal$}{
+  Global density fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\denscell}{%
+  \varrho\ifnotempty{#1}{^{#1}}%
+}{zzr}{$\denscell$}{
+  Micro-cell density fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\compliance}{%
+  J\ifnotempty{#1}{^{#1}}%
+}{Jr}{$\compliance(\densglobal)$}{
+  Compliance fcn.
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\vol}{\mathrm{vol}(#1)}{volZ}{$\vol{\objdomain}$}{
+  Total volume
+}
+
+\hidenextnotation
+\newnotationcommand[2]{\voldens}{\mathrm{vol}_{#1}(#2)}{volrZ}{
+  $\voldens{\densglobal}{\objdomain}$
+}{%
+  Volume w.r.t.\ $\densglobal$
+}
+
+\hidenextnotation
+\newnotationcommand{\densub}{\varrho^\ast}{r*}{$\densub$}{
+  Density bound
+}
+
+\hidenextnotation
+\newnotationcommand{\densmean}{\bar{\varrho}}{rbar}{$\densmean$}{
+  Mean density
+}
+
+\hidenextnotation
+\newnotationcommand{\force}{\*F}{F}{$\force$}{
+  External force
+}
+
+\hidenextnotation
+\newnotationcommand{\displacement}{\*u}{u2}{$\displacement$}{
+  Displacement fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\etensor}{%
+  \mat{E}\ifnotempty{#1}{^{#1}}%
+}{E}{$\etensor$}{
+  Elasticity tensor
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\etensorentry}{%
+  E_{#2}\ifnotempty{#1}{^{#1}}%
+}{Ej}{$\etensorentry{j}$}{
+  $j$-th entry of the elasticity tensor
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\cholfactor}{%
+  \mat{R}\ifnotempty{#1}{^{#1}}%
+}{R2}{$\cholfactor$}{
+  Cholesky factor
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\etensorchol}{%
+  \mat{E}^{\chol\appendwithcomma{#1}}%
+}{Echol}{$\etensor$}{
+  Elasticity tensor retrieved by Cholesky factorization
+}
+
+\newcommand*{\complianceintp}[1][]{%
+  \compliance[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\denscellintp}[1][]{%
+  \denscell[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\etensorintp}[1][]{%
+  \etensor[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\etensorentryintp}[2][]{%
+  \etensorentry[\sparse\appendwithcomma{#1}]{#2}%
+}
+\newcommand*{\cholfactorintp}[1][]{%
+  \cholfactor[\sparse\appendwithcomma{#1}]%
+}
+\newcommand*{\etensorcholintp}[1][]{%
+  \etensorchol[\sparse\appendwithcomma{#1}]%
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\mcp}{%
+  \*x^{\ifnotempty{#1}{#1,}(#2)}%
+}{xq}{$\mcp{q}$}{
+  Micro-cell param.
+}
+
+\newcommand*{\mcpopt}[1]{\mcp[\opt]{#1}}
+\newcommand*{\mcpoptappr}[1]{\mcp[\opt,\ast]{#1}}
+
+\hidenextnotation
+\newnotationcommandoptarg{3}{\mcpentry}{%
+  x^{\ifnotempty{#1}{#1,}(#2)}_{#3}%
+}{xqt}{$\mcpentry{q}{t}$}{
+  Micro-cell param. entry
+}
+
+% ======================================================================
+% Application 2: Musculoskeletal Models
+% ======================================================================
+
+\hidenextnotation
+\newnotationcommand{\elbang}{\theta}{zzh}{$\elbang$}{
+  Elbow angle
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\equielbang}{%
+  \elbang_{#1}%
+}{zzhFL}{$\equielbang{\forceL}$}{
+  Equil. elbow angle
+}
+
+\hidenextnotation
+\newnotationcommand{\tarelbang}{\elbang^\ast}{zzh*}{$\tarelbang$}{
+  Target elbow angle
+}
+
+\hidenextnotation
+\newnotationcommand{\forceX}{F_X}{FX}{$\forceX$}{
+  Force
+}
+
+\hidenextnotation
+\newnotationcommand{\forceT}{F_\mathrm{T}}{FT}{$\forceT$}{
+  Triceps force
+}
+
+\hidenextnotation
+\newnotationcommand{\forceB}{F_\mathrm{B}}{FB}{$\forceB$}{
+  Biceps force
+}
+
+\hidenextnotation
+\newnotationcommand{\forceL}{F_\mathrm{L}}{FL}{$\forceL$}{
+  Load force
+}
+
+\hidenextnotation
+\newnotationcommand{\arm}{r}{r}{$\arm$}{
+  Lever arm
+}
+
+\hidenextnotation
+\newnotationcommand{\armX}{\arm_X}{rX}{$\armX$}{
+  Lever arm
+}
+
+\hidenextnotation
+\newnotationcommand{\armT}{\arm_\mathrm{T}}{rT}{$\armT$}{
+  Triceps lever arm
+}
+
+\hidenextnotation
+\newnotationcommand{\armB}{\arm_\mathrm{B}}{rB}{$\armB$}{
+  Biceps lever arm
+}
+
+\hidenextnotation
+\newnotationcommand{\armL}{\arm_\mathrm{L}}{rL}{$\armL$}{
+  Load lever arm
+}
+
+\hidenextnotation
+\newnotationcommand{\act}{\beta}{zzb}{$\act$}{
+  Muscle activation
+}
+
+\hidenextnotation
+\newnotationcommand{\actX}{\act_X}{zzbX}{$\actX$}{
+  Muscle activation
+}
+
+\hidenextnotation
+\newnotationcommand{\actT}{\act_\mathrm{T}}{zzbT}{$\actT$}{
+  Triceps activation
+}
+
+\hidenextnotation
+\newnotationcommand{\actB}{\act_\mathrm{B}}{zzbB}{$\actB$}{
+  Biceps activation
+}
+
+\hidenextnotation
+\newnotationcommand{\moment}{M}{M}{$\moment$}{
+  Moment
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\actdomain}{%
+  D_{\equielbang{#1}}%
+}{$DhL$}{$\actdomain{\forceL}$}{
+  Domain of $\equielbang{\forceL}$
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\forceXintp}{%
+  F_X^{\sparse\ifnotempty{#1}{,#1}}%
+}{FXs}{$\forceXintp$}{
+  Muscle force interpolated with sparse grids
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\forceTintp}{%
+  \forceT^{\sparse\ifnotempty{#1}{,#1}}%
+}{FTs}{$\forceTintp$}{
+  Triceps force interpolated with sparse grids
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\forceBintp}{%
+  \forceB^{\sparse\ifnotempty{#1}{,#1}}%
+}{FBs}{$\forceTBntp$}{
+  Biceps force interpolated with sparse grids
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\momentintp}{%
+  \moment^{\sparse\ifnotempty{#1}{,#1}}%
+}{Ms}{$\momentintp$}{
+  Moment obtained through sparse grid interpolation
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\equielbangintp}{%
+  \elbang_{#2}^{\sparse\ifnotempty{#1}{,#1}}%
+}{zzhFLs}{$\equielbangintp{\forceL}$}{
+  Equil. elbow angle obtained through sparse grid interpolation
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{2}{\actdomainintp}{%
+  D_{\equielbangintp{#2}}\ifnotempty{#1}{^{#1}}%
+}{$DhLs$}{$\actdomainintp{\forceL}$}{
+  Domain of $\equielbangintp{\forceL}$
+}
+
+\hidenextnotation
+\newnotationcommand{\forceXref}{\forceX^{\reference}}{FXref}{$\forceXref$}{
+  Reference force
+}
+
+\hidenextnotation
+\newnotationcommand{\forceTref}{\forceT^{\reference}}{FTref}{$\forceTref$}{
+  Reference triceps force
+}
+
+\hidenextnotation
+\newnotationcommand{\forceBref}{\forceB^{\reference}}{FBref}{$\forceTref$}{
+  Reference biceps force
+}
+
+\hidenextnotation
+\newnotationcommand{\momentref}{M^{\reference}}{Mref}{$\momentref$}{
+  Reference moment
+}
+
+\hidenextnotation
+\newnotationcommand[1]{\equielbangref}{%
+  \elbang_{#1}^{\mathrm{ref}}%
+}{zzhFLref}{$\equielbangref{\forceL}$}{
+  Reference equil. elbow angle
+}
+
+% ======================================================================
+% Application 3: Dynamic Portfolio Choice Models
+% ======================================================================
+
+\newnotation{t}{$t$}{
+  Time
+}
+
+\hidenextnotation
+\newnotationcommand{\state}{\*x}{xt}{$\state_t$}{
+  State variables
+}
+
+\hidenextnotation
+\newnotationcommand{\stateentry}{x}{xtj}{$\stateentry_{t,j}$}{
+  $j$-th state variable ($j = 1, \dotsc, d$)
+}
+
+\hidenextnotation
+\newnotationcommand{\policy}{\*y}{yt}{$\policy_t$}{
+  Policy variables
+}
+
+\hidenextnotation
+\newnotationcommand{\policyentry}{y}{ytj}{$\policyentry_{t,j}$}{
+  $j$-th policy variable ($j = 1, \dotsc, m_{\policy}$)
+}
+
+\hidenextnotation
+\newnotationcommand{\stochastic}{\*\omega}{zzzt}{$\stochastic_t$}{
+  Stochastic variables
+}
+
+\hidenextnotation
+\newnotationcommand{\stochdomain}{\Omega}{zzZ2}{$\stochdomain$}{
+  Domain of the stochastic variables $\stochastic_t$
+}
+
+\hidenextnotation
+\newnotationcommand{\discrstate}{\*\theta}{zzht}{$\discrstate_t$}{
+  Discrete state variables
+}
+
+\hidenextnotation
+\newnotationcommand{\discrstdomain}{\Theta}{zzH2}{$\discrstdomain$}{
+  Domain of the discrete state variables $\discrstate_t$
+}
+
+\hidenextnotation
+\newnotationcommand{\wealth}{w}{wt}{$\wealth_t$}{
+  Wealth
+}
+
+\hidenextnotation
+\newnotationcommand{\consume}{c}{ct}{$\consume_t$}{
+  Consumption
+}
+
+\hidenextnotation
+\newnotationcommand{\bond}{b}{bt}{$\bond_t$}{
+  Bond investment
+}
+
+\hidenextnotation
+\newnotationcommand{\stock}{s}{st}{$\stock_{t,j}$}{
+  Stock holding
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\buy}{%
+  \delta^{+\appendwithcomma{#1}}%
+}{zzdtj+}{$\buy_{t,j}$}{
+  Stock buy
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\sell}{%
+  \delta^{-\appendwithcomma{#1}}%
+}{zzdtj-}{$\sell_{t,j}$}{
+  Stock sell
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\buysell}{%
+  \delta^{\pm\appendwithcomma{#1}}%
+}{zzdtj+-}{$\buysell_{t,j}$}{
+  Stock buy/sell
+}
+
+\hidenextnotation
+\newnotationcommand{\normstate}{\hat{\*x}}{xt2}{$\normstate_t$}{
+  Normalized state variables
+}
+
+\hidenextnotation
+\newnotationcommand{\normpolicy}{\hat{\*y}}{yt2}{$\normpolicy_t$}{
+  Normalized policy variables
+}
+
+\hidenextnotation
+\newnotationcommand{\normconsume}{\hat{c}}{c^t}{$\consume_t$}{
+  Normalized consumption
+}
+
+\hidenextnotation
+\newnotationcommand{\normbond}{\hat{b}}{b^t}{$\bond_t$}{
+  Normalized bond investment
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\normbuy}{%
+  \hat{\delta}^{+\appendwithcomma{#1}}%
+}{zzd^tj+}{$\buy_{t,j}$}{
+  Normalized stock buy
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\normsell}{%
+  \hat{\delta}^{-\appendwithcomma{#1}}%
+}{zzd^tj-}{$\sell_{t,j}$}{
+  Normalized stock sell
+}
+
+%\hidenextnotation
+%\newnotationcommandoptarg{1}{\normbuysell}{%
+%  \hat{\delta}^{\pm\appendwithcomma{#1}}%
+%}{zzd^tj+-}{$\buysell_{t,j}$}{
+%  Normalized stock buy/sell
+%}
+
+\newcommand*{\vstock}{\*s}
+\newcommand*{\vbuy}[1][]{\*\delta^{+\appendwithcomma{#1}}}
+\newcommand*{\vsell}[1][]{\*\delta^{-\appendwithcomma{#1}}}
+\newcommand*{\vbuysell}[1][]{\*\delta^{\pm\appendwithcomma{#1}}}
+\newcommand*{\vnormbuy}[1][]{\hat{\*\delta}^{+\appendwithcomma{#1}}}
+\newcommand*{\vnormsell}[1][]{\hat{\*\delta}^{-\appendwithcomma{#1}}}
+\newcommand*{\vnormbuysell}[1][]{\hat{\*\delta}^{\pm\appendwithcomma{#1}}}
+
+\hidenextnotation
+\newnotationcommand{\wealthratio}{\eta}{zzft}{$\wealthratio_t$}{
+  Wealth ratio
+}
+
+\hidenextnotation
+\newnotationcommand{\tac}{\tau}{zzt}{$\tac$}{
+  Transaction cost rate
+}
+
+\hidenextnotation
+\newnotationcommand{\bondreturn}{r}{rt}{$\bondreturn_t$}{
+  Bond return rate
+}
+
+\hidenextnotation
+\newnotationcommand{\stockreturn}{\lambda}{zzltj}{$\stockreturn_{t,j}$}{
+  Stock return rate
+}
+
+\newcommand*{\vstockreturn}{\*\lambda}
+
+\hidenextnotation
+\newnotationcommand{\valuefcn}{J}{Jt}{$\valuefcn_t$}{
+  Value fcn.
+}
+
+\hidenextnotation
+\newnotationcommand{\optpolicyfcn}{\policy^\opt}{poptt}{$\optpolicyfcn_t$}{
+  Optimal policy fcn.
+}
+
+\hidenextnotation
+\newnotationcommand{\optnormpolicyfcn}{%
+  \hat{\policy}^\opt%
+}{p^optt}{$\optnormpolicyfcn_t$}{
+  Normalized optimal policy fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\valueintp}{%
+  J^{\sparse\ifnotempty{#1}{,#1}}%
+}{Jts}{$\valueintp_t$}{
+  Interpolated value fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\optpolicyintp}{%
+  \policy^{\opt,\sparse\ifnotempty{#1}{,#1}}%
+}{poptts}{$\optpolicyintp_t$}{
+  Interpolated optimal policy fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\optnormpolicyintp}{%
+  \hat{\policy}^{\opt,\sparse\ifnotempty{#1}{,#1}}%
+}{p^optts}{$\optnormpolicyintp_t$}{
+  Interpolated normalized optimal policy fcn.
+}
+
+\newcommand*{\optnormpolicyentryintp}[1][]{%
+  \hat{\policyentry}^{\opt,\sparse\ifnotempty{#1}{,#1}}%
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\cetvalueintp}{%
+  \tilde{J}^{\sparse\ifnotempty{#1}{,#1}}%
+}{Jts2}{$\cetvalueintp_t$}{
+  Interpolated certainty-equivalent-transf.\ value fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\normcetvaluefcn}{%
+  \hat{\tilde{J}}^{\ifnotempty{#1}{,#1}}%
+}{Jt3}{$\normcetvaluefcn_t$}{
+  Normalized certainty-equivalent-transf.\ value fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\normcetvalueintp}{%
+  \hat{\tilde{J}}^{\sparse\ifnotempty{#1}{,#1}}%
+}{Jts3}{$\normcetvalueintp_t$}{
+  Interpolated normalized certainty-equivalent-transf.\ value fcn.
+}
+
+\hidenextnotation
+\newnotationcommand{\optpolicymean}{\bar{\policy}^\opt}{popttbar}{%
+  $\optpolicymean_t$%
+}{
+  Optimal policy mean
+}
+
+\hidenextnotation
+\newnotationcommand{\statefcn}{\*\psi}{zzyt}{$\statefcn_t$}{
+  State transition fcn.
+}
+
+\hidenextnotation
+\newnotationcommandoptarg{1}{\normstatefcn}{%
+  \hat{\*\psi}\ifnotempty{#1}{^{\raisebox{-0.5em}{\scriptsize$#1$}}}%
+}{zzyt2}{$\normstatefcn_t$}{
+  Normalized state transition fcn.
+}
+
+%\hidenextnotation
+%\newnotationcommand{\statetrafofcn}{\*\nu}{zzν}{$\statetrafofcn_t$}{
+%  State space transformation fcn.
+%}
+
+\hidenextnotation
+\newnotationcommand{\utilityfcn}{u}{u3}{$\utilityfcn$}{
+  Utility fcn.
+}
+
+\hidenextnotation
+\newnotationcommand{\riskav}{\gamma}{zzc}{$\riskav$}{
+  Risk aversion
+}
+
+\hidenextnotation
+\newnotationcommand{\patience}{\varrho}{zzr3}{$\patience$}{
+  Patience factor
+}
+
+\hidenextnotation
+\newnotationcommand{\norefine}{q}{qt}{$\norefine_t$}{
+  Number of grid refines
+}
+
+\hidenextnotation
+\newnotationcommand{\quadweight}{\zeta}{zzezztj}{$\quadweight_t^{(j)}$}{
+  $j$-th quadrature weight
+}
+
+\hidenextnotation
+\newnotationcommand{\sumfcn}{\mathop{\Sigma}}{zzS}{$\sumfcn$}{
+  Sum function $\sumfcn(\*x) \ceq \tr{\*1} \*x$
+}
+
+\hidenextnotation
+\newnotationcommand{\compmult}{\odot}{zzzzzz.}{$\*a \compmult \*b$}{
+  Component-wise product of vectors $\*a$ and $\*b$
+}
+
+\hidenextnotation
+\newnotationcommand{\normcropfactor}{\hat{\beta}}{zzb2}{$\normcropfactor$}{
+  State cropping factor
+}
+
+\hidenextnotation
+\newnotationcommand{\lagrangian}{\mathcal{L}}{Lt}{$\lagrangian$}{
+  Lagrangian
+}
+
+\hidenextnotation
+\newnotationcommand{\multiplier}{\mu}{zzm}{$\multiplier$}{
+  Lagrangian multiplier
+}
+
+\hidenextnotation
+\newnotationcommand{\eulererror}{%
+  \error^{\mathrm{Eu}}%
+}{zzetwEu}{$\eulererror_t$}{
+  Euler equation error
+}
+
+\hidenextnotation
+\newnotationcommand{\weightedeulererror}{%
+  \error^{\mathrm{w},\mathrm{Eu}}%
+}{zzetEu}{$\weightedeulererror_t$}{
+  Weighted Euler equation error
+}
+
+\hidenextnotation
+\newnotationcommand{\weightedeulererrorLtwo}{%
+  \error^{\mathrm{w},\mathrm{Eu},\Ltwo}%
+}{zzetEuL2}{$\weightedeulererrorLtwo_t$}{
+  Normalized $\Ltwo$ norm of weighted Euler equation error
+}
+
+% ======================================================================
+% Miscellaneous
+% ======================================================================
+
+% defined terms
+\newcommand*{\term}[1]{\emph{#1}}
+
+% check if argument contains \* (vector)
+\newcommand*{\containsvector}[3]{%
+  \protect\IfSubStr{\detokenize{#1}}{\detokenize{\*}}{#2}{#3}%
+}
+
+% subsets/supersets
+\renewcommand*{\subset}{\subseteq}
+\renewcommand*{\supset}{\supseteq}
+
+% assignment equality
+\newcommand*{\ceq}{\coloneqq}
+
+% differential for integral/derivatives
+\newcommand*{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand*{\dx}{\diff{}x}
+\newcommand*{\partialdiff}{\mathop{}\!\partial}
+
+% vectors
+\renewcommand*{\vec}[1]{{\boldsymbol{#1}}}
+\def\*#1{\vec{#1}}
+\newcommand*{\veclog}{\mathop{\vec{\log}}}
+
+% matrices
+\newcommand*{\mat}[1]{{\boldsymbol{#1}}}
+
+% quantors
+\newcommand*{\fa}[2]{\forall_{#1}\;#2}
+\newcommand*{\ex}[2]{\exists_{#1}\;#2}
+\newcommand*{\fafa}[3]{\forall_{#1} \forall_{#2}\;#3}
+\newcommand*{\faex}[3]{\forall_{#1} \exists_{#2}\;#3}
+\newcommand*{\exfa}[3]{\exists_{#1} \forall_{#2}\;#3}
+\newcommand*{\exex}[3]{\exists_{#1} \exists_{#2}\;#3}
+\newcommand*{\falarge}[2]{\forall_{#1}\;\;#2}
+\newcommand*{\exlarge}[2]{\exists_{#1}\;\;#2}
+\newcommand*{\fafalarge}[3]{\forall_{#1} \forall_{#2}\;\;#3}
+\newcommand*{\faexlarge}[3]{\forall_{#1} \exists_{#2}\;\;#3}
+\newcommand*{\exfalarge}[3]{\exists_{#1} \forall_{#2}\;\;#3}
+\newcommand*{\exexlarge}[3]{\exists_{#1} \exists_{#2}\;\;#3}
+
+% delimiters
+\DeclarePairedDelimiter{\braced}{\{}{\}}
+\DeclarePairedDelimiter{\bracket}{[}{]}
+\DeclarePairedDelimiter{\paren}{(}{)}
+
+% inner product
+\newcommand*{\innerprod}[3][]{%
+  \langle{#2,#3}\rangle\ifnotempty{#1}{_{#1}}
+}
+\newcommand*{\innerprodscaled}[3][]{%
+  \left\langle{#2,#3}\right\rangle\ifnotempty{#1}{_{#1}}
+}
+
+% norm
+\newcommand*{\norm}[2][]{%
+  \lVert{#2}\rVert\ifnotempty{#1}{_{#1}}%
+}
+\newcommand*{\normscaled}[2][]{%
+  \left\lVert{#2}\right\rVert\ifnotempty{#1}{_{#1}}%
+}
+
+% sum with large summation index
+\newcommand*{\largesum}[2][]{%
+  \;\;\sum_{\mathclap{#2}}\ifnotempty{#1}{^{\mathclap{#1}}}\;\;%
+}
+
+% equivalent of \notin for \ni
+\newcommand*{\notni}{\not\ni}
+
+% for the BFS algorithm
+\newcommand*{\pop}{\texttt{pop}}
+\newcommand*{\push}{\texttt{push}}
+
+% ticks/crosses for tables
+\newcommand*{\yes}{%
+  \tikz[x=0.7em,y=0.7em]{
+    \draw[C4,line width=1.4pt] (0,0.3) -- (0.3,0) -- (1,1);
+  }%
+}
+\newcommand*{\no}{%
+  \tikz[x=0.7em,y=0.7em]{
+    \draw[C1,line width=1.4pt] (0,0) -- (1,1) (0,1) -- (1,0);
+  }%
+}
+
+% SG++
+\newcommand*{\sgpp}{SG\textsuperscript{++}\xspace}

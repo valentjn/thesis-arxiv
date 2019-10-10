@@ -1,0 +1,6 @@
+/tex/thesis.*
+/tex/**/*.aux
+
+!/tex/thesis.bbl
+!/tex/thesis.gls
+!/tex/thesis.tex

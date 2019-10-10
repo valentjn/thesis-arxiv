@@ -1,0 +1,98 @@
+\setdictum{%
+  Money. A social life. A shave.\\
+  A Ph.D.\ student needs not such things.%
+}{%
+  Mike Slackenerny
+  (PHD Comics\footnotemark)%
+}
+
+\longchapter{%
+  Application 1: Topology Optimization%
+}{%
+  Application 1:\texorpdfstring{\\}{ }Topology Optimization%
+}{%
+  Application 1 -- Topology Optimization%
+}
+\footnotetext{\url{http://phdcomics.com/comics/archive.php?comicid=40}}
+\label{chap:60topoOpt}
+
+\initial{0em}{N}{ow, we want to investigate}
+the first real-world application,
+which is the field of topology optimization.
+The classical and widely-used method in engineering is shape optimization,
+where the shape of a component
+(parameterized by $\*x \in \real^d$) has to be
+determined such that some objective function value $\objfun(\*x)$ is optimal,
+i.e., minimal or maximal.
+For example, a bridge over a valley can be built in the shape of a
+parabolic arc.
+The task of shape optimization is then to choose the coefficients of the
+parabola such that the bridge's stability is maximized,
+possibly with the constraint that the volume occupied by the bridge
+does not exceed a certain value (to save construction costs) or
+that the size of the resulting passage meets some size requirements
+(e.g., at least \SI{20}{\meter} wide and \SI{6}{\meter} tall).
+
+However, the framework of shape optimization unnecessarily prescribes the
+topology of the shapes in the search space \cite{Allaire16Towards}.
+In the bridge example, it may well be that a viaduct-type bridge with
+three arcs instead of one is more stable while occupying less volume.
+We are not able to find such a bridge with shape optimization
+in the previous example,
+as we have restricted the search space to single-arc bridges.
+This issue is resolved by the more sophisticated
+framework of topology optimization, where the topology%
+\footnote{%
+  Two objects are considered ``topologically different''
+  if their numbers of ``holes'' differ.
+  This stems from the fact that in the field of mathematical topology,
+  the \term{genus} (i.e., the number of holes)
+  of a topological space is a \term{topological invariant,} i.e.,
+  the genus is invariant under homeomorphism.
+  If the genera of two topological spaces differ, then they cannot be
+  homeomorphic and are thus considered topologically different.%
+}
+is not given by the user,
+but chosen by the optimization algorithm (in a hopefully optimal way),
+rendering topology optimization a key area of simulation technology.
+
+Recently, B-splines have been used for
+shape optimization \cite{Martin16Formoptimierung} and
+topology optimization \multicite{Qian13Topology,Zhang17Topology}.
+Sparse grids have been employed for
+topology optimization \cite{Huebner14Mehrdimensionale} as well.
+In this chapter, we want to combine these two numerical tools,
+which have been used in isolation until now,
+to perform topology optimization using B-splines on sparse grids.
+The two most common approaches for topology optimization are
+the \term{level-set method} and
+the \term{homogenization method} \cite{Allaire16Towards}.
+The level-set method describes the boundary of the object
+as the zero level set $\psi^{-1}(0)$ of a function
+$\psi\colon \objdomain \to \real$ \term{(level-set function)}
+and uses a \pde to iteratively transport this function and,
+consequently, the object's boundary \cite{Allaire04Topology}.
+However, we want to focus on the second method:
+the method of homogenization.
+
+This chapter is structured as follows:
+\Cref{sec:61homogenization} explains the homogenization method.
+In \cref{sec:62tensors}, we discuss the details of applying B-splines on
+sparse grids to this method.
+We set up different micro-cell models and scenarios in \cref{sec:63models},
+before reviewing numerical results in \cref{sec:64results}.
+The results in this chapter have been obtained in collaboration with
+Prof.\ Dr.\ Michael Stingl and Daniel Hübner
+(both FAU Erlangen-Nürnberg, Germany).
+The author of this thesis contributed the parts related to
+interpolation and sparse grids, while the collaborators at FAU
+studied the engineering and application parts of the joint project
+(for example, they provided optimization scenarios and
+assessed the quality of the results).
+
+\input{document/61homogenization}
+\input{document/62tensors}
+\input{document/63models}
+\input{document/64results}
+
+\cleardoublepage

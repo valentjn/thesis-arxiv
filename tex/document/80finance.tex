@@ -1,0 +1,97 @@
+\setdictum{%
+  The goal is to buy as many iPads as possible during your lifetime.%
+}{%
+  In a talk at the 5th Workshop on\\Sparse Grids and Applications%
+}
+
+\longchapter{%
+  Application 3: Dynamic Portfolio Choice Models%
+}{%
+  Application 3:\texorpdfstring{\\}{ }Dynamic Portfolio Choice Models%
+}{%
+  Application 3 -- Dynamic Portfolio Choice Models%
+}
+\label{chap:80finance}
+
+\initial[lhang=0.06]{0.1em}{S}{urrogates based on B-splines on sparse grids}
+can also be used for our third application,
+which stems from finance.
+In this application, we optimize financial decisions of an individual
+over their lifetime in discrete time steps or iterations $t = 0, \dotsc, T$
+(for example, years $t = 0, \dotsc, 80$, where $20+t$ is the age
+of the individual), depending on internal and external factors.
+There are three types of variables:
+
+\begin{itemize}
+  \item
+  \term{State variables} $\state_t$
+  such as the individual's wealth $\wealth_t$ and their income
+  cannot be controlled directly by the individual.
+  Instead, the individual's decisions may influence the value of
+  state variables of future iterations.%
+  \footnote{%
+    The time $t$ can also be regarded as a state variable.%
+  }
+  
+  \item
+  \term{Policy variables} $\policy_t$
+  such as consumption $\consume_t$ and the amount of stocks to buy or sell
+  represent the investment decisions the individual can make in
+  each iteration.
+  They are subject to specific constraints
+  (for instance, you cannot spend more money than you have,
+  if you do not allow debts).
+  
+  \item
+  \term{Stochastic variables} $\stochastic_t$
+  such as return rates of stocks and inflation
+  cannot be controlled by the individual at all.
+  Therefore, statements about optimal investment conditions
+  are usually made for expected values instead of exact values.
+\end{itemize}
+
+\noindent
+We discretize the state space with a spatially adaptive sparse grid.
+For each state grid point, an optimization problem over the policy
+variables has to be solved, where the objective function depends
+on the expected value over the stochastic variables.
+By using B-splines as hierarchical basis functions,
+the accuracy of the interpolants is increased and
+the explicitly known gradients enable the usage of
+gradient-based optimization methods, thus accelerating convergence.
+The process is repeated for each time step,
+which is possible due to the Bellman principle,
+which implies that the objective functions
+occurring at time $t$ depend on the interpolant of the next iteration $t+1$.
+Hence, the problem has to be solved backward in time
+via a scheme that closely resembles dynamic programming.
+
+The outline of this chapter is as follows:
+In \cref{sec:81models}, we formalize the framework of
+dynamic portfolio choice models and describe our approach.
+Afterwards, we explain in \cref{sec:82algorithms} the necessary algorithms
+for implementing the solution of these models.
+\Cref{sec:83problem} introduces the transaction costs problem
+as an example application of the general framework presented
+in \cref{sec:81models}.
+Finally, in \cref{sec:84results}, we study numerical results.
+
+This chapter is based on a collaboration with Prof.\ Dr.\ Raimond Maurer
+and Peter Schober (both Goethe University Frankfurt, Germany).
+In previous work, Peter Schober treated the solution of
+dynamic portfolio choice models with piecewise linear basis functions
+on spatially adaptive sparse grids \cite{Schober18Solving}.
+The original contribution of this thesis is the introduction
+of higher-order B-splines for the solution of these problems.
+The author of this thesis contributed the methodology of
+hierarchical B-splines and large parts of the implementation.
+The contributions of the collaborators at Goethe University Frankfurt
+are the financial models, the literature review of related work,
+and the assessment of the quality of results.
+
+\input{document/81models}
+\input{document/82algorithms}
+\input{document/83problem}
+\input{document/84results}
+
+\cleardoublepage

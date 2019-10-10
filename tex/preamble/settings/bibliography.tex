@@ -1,0 +1,131 @@
+% ======================================================================
+% Bibliography
+% ======================================================================
+
+% location of *.bib file
+\addbibresource{../bib/bibliography.bib}
+
+% include brackets in \cite hyperlink
+\DeclareCiteCommand{\cite}{\usebibmacro{prenote}}{%
+  \usebibmacro{citeindex}%
+  \printtext[bibhyperref]{\mkbibbrackets{\usebibmacro{cite}}}%
+}{\multicitedelim}{\usebibmacro{postnote}}
+
+% declare special \multicite command which produces [Abc01; Def02]
+% (instead of [Abc01]; [Def02])
+\DeclareCiteCommand{\multicite}[\mkbibbrackets]{\usebibmacro{prenote}}{%
+  \usebibmacro{citeindex}\usebibmacro{cite}%
+}{\multicitedelim}{\usebibmacro{postnote}}
+
+% don't append "+" sign to BibLaTeX citations in alphabetic style
+\renewcommand*{\labelalphaothers}{}
+
+% define custom heading to add bibliography to table of contents
+\defbibheading{myheading}[\bibname]{\addchap{#1}}
+
+% add custom bibliography post note (reset font size)
+\defbibnote{mypostnote}{%
+  \renewcommand*{\texttt}[1]{\oldtexttt{##1}}%
+}
+
+% order entries by last names
+\DeclareNameAlias{sortname}{last-first}
+\DeclareNameAlias{default}{last-first}
+
+% change font size of bibliography
+\renewcommand*{\bibfont}{\small}
+
+% set single line spacing for bibliography
+\renewcommand*{\bibsetup}{\singlespacing}
+
+% separate authors with semicolon, suppress "and" in author names
+\renewcommand*{\multinamedelim}{\addsemicolon\space}
+\renewcommand*{\finalnamedelim}{\addsemicolon\space}
+
+% make names bold
+\renewcommand*{\mkbibnamefamily}[1]{\textbf{#1}}
+
+% insert colon after author names in bibliography
+\renewcommand*{\labelnamepunct}{\addcolon\space}
+
+% separate BibLaTeX units with commas instead of periods
+\renewcommand*{\newunitpunct}{\addcomma\space}
+
+% make paper titles italic, remove quotation marks
+\DeclareFieldFormat[article]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[article]{journaltitle}{#1}
+\DeclareFieldFormat[article]{issuetitle}{#1}
+\DeclareFieldFormat[article]{issuesubtitle}{#1}
+\DeclareFieldFormat[inbook]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[inbook]{booktitle}{#1}
+\DeclareFieldFormat[inbook]{maintitle}{#1}
+\DeclareFieldFormat[incollection]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[incollection]{booktitle}{#1}
+\DeclareFieldFormat[incollection]{maintitle}{#1}
+\DeclareFieldFormat[inproceedings]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[inproceedings]{booktitle}{#1}
+\DeclareFieldFormat[inproceedings]{maintitle}{#1}
+\DeclareFieldFormat[inreference]{booktitle}{#1}
+\DeclareFieldFormat[inreference]{maintitle}{#1}
+\DeclareFieldFormat[thesis]{title}{\mkbibemph{#1}}
+\DeclareFieldFormat[unpublished]{title}{\mkbibemph{#1}}
+
+% fix title capitalization to sentence case (all lowercase)
+\DeclareFieldFormat{titlecase}{\MakeTitleCase{#1}}
+
+% .. but don't change journal titles, book titles, and so on
+\newrobustcmd{\MakeTitleCase}[1]{%
+  \ifthenelse{%
+    \ifcurrentfield{booktitle}\OR\ifcurrentfield{booksubtitle}%
+    \OR\ifcurrentfield{maintitle}\OR\ifcurrentfield{mainsubtitle}%
+    \OR\ifcurrentfield{journaltitle}\OR\ifcurrentfield{journalsubtitle}%
+    \OR\ifcurrentfield{issuetitle}\OR\ifcurrentfield{issuesubtitle}%
+    \OR\ifentrytype{book}\OR\ifentrytype{mvbook}\OR\ifentrytype{bookinbook}%
+    \OR\ifentrytype{booklet}\OR\ifentrytype{suppbook}%
+    \OR\ifentrytype{collection}\OR\ifentrytype{mvcollection}%
+    \OR\ifentrytype{suppcollection}\OR\ifentrytype{manual}%
+    \OR\ifentrytype{periodical}\OR\ifentrytype{suppperiodical}%
+    \OR\ifentrytype{proceedings}\OR\ifentrytype{mvproceedings}%
+    \OR\ifentrytype{reference}\OR\ifentrytype{mvreference}%
+    \OR\ifentrytype{thesis}\OR\ifentrytype{online}%
+  }{%
+    #1%
+  }{%
+    \MakeSentenceCase*{#1}%
+  }%
+}
+
+% suppress "In:" before journal names
+\renewbibmacro*{in:}{}
+
+% don't put parentheses around year for journals
+\renewbibmacro*{issue+date}{%
+  \setunit{\addcomma\space}%
+  \iffieldundef{issue}{%
+    \usebibmacro{date}%
+  }{%
+    \printfield{issue}\setunit*{\addspace}\usebibmacro{date}%
+  }%
+  \newunit%
+}
+
+% reformat and link URLs, DOIs, and ISBNs
+\DeclareFieldFormat{url}{\scriptsize\url{#1}}
+\DeclareFieldFormat{doi}{%
+  \scriptsize%
+  \ifhyperref{%
+    \href{https://doi.org/#1}{\nolinkurl{doi:#1}}%
+  }{\nolinkurl{doi:#1}}%
+}
+\DeclareFieldFormat{isbn}{%
+  \scriptsize%
+  \ifhyperref{%
+    \href{https://www.amazon.com/s/?field-keywords=#1}{\nolinkurl{isbn:#1}}%
+  }{\nolinkurl{isbn:#1}}%
+}
+
+% hide urldate field
+\AtEveryBibitem{\clearfield{urlyear}}
+
+% remove period at end of entries
+\renewcommand*{\finentrypunct}{}

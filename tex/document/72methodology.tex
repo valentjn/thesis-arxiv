@@ -1,0 +1,370 @@
+\section{Momentum Equilibrium and Elbow Angle Optimization}
+\label{sec:72methodology}
+
+\minitoc[-7mm]{70mm}{4}
+
+\noindent
+In this section, we give an overview of the methodology of our approach.
+We continue following the presentation of \cite{Valentin18Gradient}.
+
+
+
+\subsection{From Muscle Forces to Equilibrium Angles}
+\label{sec:721equilibrium}
+
+\paragraph{Model inputs and outputs}
+
+In the following, we regard simulations of the
+human upper limb model described in \cref{sec:71model} as a black box,
+which receives as its input
+the elbow angle $\elbang \in \clint{\ang{10}, \ang{150}}$
+and the activation parameters
+$(\actT, \actB) \in \clint{\*0, \*1} = \clint{0, 1}^2$
+of triceps and biceps.%
+\footnote{%
+  Here and in the following, the subscripts T, B, and L stand for
+  triceps, biceps, and load, respectively.%
+}
+The outputs of the black box simulation are the forces
+$\forceT(\elbang, \actT)$ and $\forceB(\elbang, \actB)$
+that triceps and biceps exert.
+These forces depend on the elbow angle as well as on the respective
+activation parameter.
+Gravitational forces due to the masses of bones or muscles
+are neglected in this context.
+However, we allow the specification of an external load $\forceL$,
+which is applied to the end of the forearm.
+This load may be the weight force of some object
+that the arm is supposed to keep in position.
+
+\paragraph{Moments and lever arms}
+
+Each force exerts a \term{moment} (or \term{torque}) on the elbow joint.
+The moments are the products of the forces $\forceX$
+with the respective lever arms $\armX$
+($X \in \{\mathrm{T}, \mathrm{B}, \mathrm{L}\}$).
+The lever arms are approximated as in
+\multicite{Roehrle16Two,Valentin18Gradient} by using
+the tendon-displacement method of \cite{An84Determination}:
+\begin{subequations}
+  \begin{align}
+    \armT(\elbang)
+    &\ceq (-0.0009399 \{\elbang\}^2 + 0.1126 \{\elbang\} + 22.21)\;
+    \si{\milli\meter},\\
+    \armB(\elbang)
+    &\ceq (-0.001482 \{\elbang\}^2 + 0.1776 \{\elbang\} + 35.02)\;
+    \si{\milli\meter},\\
+    \armL(\elbang)
+    &\ceq \sin(\elbang) \cdot \SI{282.5}{\milli\meter},
+  \end{align}
+\end{subequations}
+where $\{\elbang\}$ denotes the dimensionless value of $\elbang$
+in degrees.
+The lever arms are non-negative and the forces are signed, i.e.,
+positive forces pull the forearm downwards and
+negative forces pull it upwards.
+In general, $\forceT, \forceL \ge \SI{0}{\newton}$ and
+$\forceB \le \SI{0}{\newton}$.
+
+\paragraph{Total moment and equilibrium elbow angle}
+
+The \term{total moment} of the system is given by the function
+\begin{subequations}
+  \label{eq:totalMoment}
+  \begin{gather}
+    \moment_{\forceL,\actT,\actB}\colon
+    \clint{\ang{10}, \ang{150}} \to \real,\\
+    \moment_{\forceL,\actT,\actB}(\elbang)
+    \ceq \forceT(\elbang, \actT) \armT(\elbang) +
+    \forceB(\elbang, \actB) \armB(\elbang) +
+    \forceL \armL(\elbang),
+  \end{gather}
+\end{subequations}
+cf.\ \cite{Valentin18Gradient}.
+The system is in \term{equilibrium}
+if the total moment vanishes, i.e.,
+$\moment_{\forceL,\actT,\actB}(\elbang) = \SI{0}{\newton\meter}$.
+We call the corresponding angle $\elbang$ the
+\term{equilibrium elbow angle}
+for the load $\forceL$ and the activation parameters $\actT, \actB$.
+To find this angle for a given load $\forceL$ and activation parameters
+$\actT$ and $\actB$, we first note that
+$\moment_{\forceL,\actT,\actB}$ may have zero, exactly one,
+or multiple zeros in $\clint{\ang{10}, \ang{150}}$.
+Hence, the inverse function evaluated at $\SI{0}{\newton\meter}$
+is partially defined depending on the load and the activation parameters:
+\begin{equation}
+  \label{eq:equilibriumAngle}
+  \equielbang{\forceL}\colon \actdomain{\forceL} \!\to
+  \clint{\ang{10}, \ang{150}},\quad
+  \actdomain{\forceL} \subset \clint{\*0, \*1},\quad
+  \equielbang{\forceL}(\actT,\actB)
+  \ceq (\moment_{\forceL,\actT,\actB})^{-1}(\SI{0}{\newton\meter}),
+\end{equation}
+which is well-defined whenever $\moment_{\forceL,\actT,\actB}$
+has a unique root.
+We approximate $\equielbang{\forceL}(\actT,\actB)$ with the Newton method
+\multicite{Roehrle16Two,Valentin18Gradient}:
+\begin{equation}
+  \label{eq:newtonAngle}
+  \elbang^{(j+1)}
+  \ceq \elbang^{(j)} -
+  \frac{
+    \moment_{\forceL,\actT,\actB}(\elbang^{(j)})
+  }{
+    \partialderiv{\partialdiff{} \elbang}{\moment_{\forceL,\actT,\actB}}
+    (\elbang^{(j)})
+  },\quad
+  j \in \nat,
+\end{equation}
+with an initial value
+$\elbang^{(0)} \in \clint{\ang{10}, \ang{150}}$
+and the stopping criterion of
+$\abs{\moment_{\forceL,\actT,\actB}(\elbang^{(j)})} <
+\SI{e-9}{\newton\meter}$.
+We repeat the Newton method for the initial values
+$\elbang^{(0)} = \ang{80}, \ang{40}, \ang{120}$
+and use the first converged result
+(i.e., we check if $\elbang^{(0)} = \ang{80}$ converges;
+if not, we proceed with $\elbang^{(0)} = \ang{40}$, and so on).
+If all three initial values do not converge,
+we conclude that $(\actT, \actB) \notin \actdomain{\forceL}$.
+
+
+
+\subsection{Optimization Problems}
+\label{sec:722optimization}
+
+\paragraph{General problem}
+
+The general problem in our setting is as follows:
+For a given external load $\forceL$ and a target elbow angle $\tarelbang$,
+find activation parameters $(\actT, \actB) \in \clint{\*0, \*1}$
+such that the target elbow angle is attained in the equilibrium,
+i.e., $\equielbang{\forceL}(\actT,\actB) = \tarelbang$.
+Example applications of such a scenario are medicine and robotics,
+when a specific movement should be carried out.
+
+\paragraph{List of optimization problems}
+
+As discussed in \cref{sec:711models},
+musculoskeletal systems with an antagonistic muscle pair
+such as our human upper limb model are usually overdetermined.
+This means that there are multiple solutions to this general problem.
+As a remedy, one may solve one of the following two
+optimization problems \cite{Valentin18Gradient}:
+
+\begin{enumerate}[label=O\arabic*.,ref=O\arabic*,leftmargin=2.7em]
+  \item
+  \label{item:biomech2MinSum}
+  For a given external load $\forceL$ and a target angle
+  $\tarelbang \in \clint{\ang{10}, \ang{150}}$,
+  find the activation parameters $(\actT, \actB) \in \clint{\*0, \*1}$
+  such that $\actT + \actB$ is minimized under the constraint
+  $\equielbang{\forceL}(\actT, \actB) = \tarelbang$.
+  
+  \item
+  \label{item:biomech2MinDist}
+  For a given external load $\forceL(t_2)$ for a time $t_2 > t_1$,
+  a target angle $\tarelbang(t_2) \in \clint{\ang{10}, \ang{150}}$,
+  and initial activation parameters
+  $(\actT(t_1), \actB(t_1)) \in \clint{\*0, \*1}$,
+  find new activation parameters
+  $(\actT(t_2), \actB(t_2)) \in \clint{\*0, \*1}$ such that
+  $(\actT(t_2) - \actT(t_1))^2 + (\actB(t_2) - \actB(t_1))^2$
+  is minimized under the constraint
+  $\equielbang{\forceL(t_2)}(\actT(t_2), \actB(t_2)) = \tarelbang(t_2)$.
+\end{enumerate}
+
+\noindent
+The motivation of both problems is that the human body tries to
+achieve a given movement with minimal energy effort.
+
+\paragraph{Motivation of problem \ref{item:biomech2MinSum}}
+
+For the first problem \ref{item:biomech2MinSum},
+this effort is quantified by $\actT + \actB$,
+i.e., the energy effort for each muscle is assumed to be proportional
+to its activation parameter.
+
+\paragraph{Motivation of problem \ref{item:biomech2MinDist}}
+
+The second problem \ref{item:biomech2MinDist} is motivated as follows:
+Before time $t = t_1$, the musculoskeletal system is in equilibrium for
+the external load $\forceL(t_1)$,
+activation parameters $\actT(t_1), \actB(t_1)$, and elbow angle
+$\tarelbang(t_1) \ceq \equielbang{\forceL(t_1)}(\actT(t_1), \actB(t_1))$, i.e.,
+$\moment_{\forceL(t_1),\actT(t_1),\actB(t_1)}(\tarelbang(t_1))
+= \SI{0}{\newton\meter}$.
+Directly after $t = t_1$,
+the external force and/or the target angle is suddenly changed
+to $\forceL(t_2)$ and $\tarelbang(t_2)$, respectively.
+Consequently, triceps and biceps adapt their activation parameters
+such that the musculoskeletal system returns to equilibrium
+at some time $t = t_2 > t_1$.
+Hence, we have to determine the new activation parameters
+$\actT(t_2), \actB(t_2)$ such that
+$\moment_{\forceL(t_2),\actT(t_2),\actB(t_2)}(\tarelbang(t_2))
+= \SI{0}{\newton\meter}$.
+Again, these parameters
+$\actT(t_2)$ and $\actB(t_2)$ are not uniquely determined.
+Therefore, we want to find the pair of activation parameters
+that is closest (in terms of the Euclidean norm) to the initial
+activation parameters $\actT(t_1), \actB(t_1)$.
+
+\paragraph{Optimization method}
+
+Problems \ref{item:biomech2MinSum} and \ref{item:biomech2MinDist}
+are both constrained optimization problems.
+For their solution, we employ the augmented Lagrangian method as
+described in \cref{sec:513gradientBasedConstrained}
+using an adaptive gradient descent algorithm
+for the gradient-based optimization of the penalized objective function
+(see \cref{sec:512gradientBasedUnconstrained}).
+
+
+
+\subsection{B-Spline Surrogates on Sparse Grids}
+\label{sec:723surrogates}
+
+\paragraph{Complexity}
+
+To solve optimization problems
+\ref{item:biomech2MinSum} and \ref{item:biomech2MinDist},
+the optimization method needs to evaluate the objective
+and constraint functions multiple times during the algorithm.
+This requires the evaluation of $\equielbang{\forceL}$,
+which in turn has to be approximated with the Newton method.
+As we see in \cref{eq:newtonAngle},
+each iteration of the Newton method needs not only the values of the
+muscle forces $\forceT$ and $\forceB$, but also their
+partial derivatives with respect to $\elbang$.
+These partial derivatives have to be approximated with finite differences.
+
+Unfortunately, simulations of continuum-mechanical models are
+computationally expensive.
+One evaluation of the muscle force pair $\forceT, \forceB$
+requires the solution of a solid mechanics model
+with a complex constitutive law, pre-stretch, and contact between
+bone and muscles \cite{Valentin18Gradient}.
+On average, a single evaluation of $\forceT$ and $\forceB$ takes
+about half an hour on current desktop computers.
+%
+If we assume that we need four Newton iterations on average,
+then a single iteration of the optimization algorithm to solve
+problems \ref{item:biomech2MinSum} and \ref{item:biomech2MinDist}
+will take four hours to complete
+(assuming one evaluation of objective and constraint functions
+per optimizer iteration and
+two evaluations of the muscle force pair
+per Newton iteration to approximate the missing derivative).
+Consequently, the whole optimization process takes
+two weeks to complete, if the optimizer converges after 100 iterations.
+
+\paragraph{Sparse grid surrogates}
+
+A popular way to reduce complexity is to employ surrogates.
+In this case, the idea is to replace the muscle force functions
+$\forceT, \forceB$ with surrogates $\forceTintp, \forceBintp$
+\cite{Valentin18Gradient}, e.g., by interpolation.
+We then automatically obtain a surrogate
+\begin{subequations}
+  \label{eq:totalMomentSurrogate}
+  \begin{gather}
+    \momentintp_{\forceL,\actT,\actB}\colon
+    \clint{\ang{10}, \ang{150}} \to \real,\\
+    \momentintp_{\forceL,\actT,\actB}(\elbang)
+    \ceq \forceTintp(\elbang, \actT) \armT(\elbang) +
+    \forceBintp(\elbang, \actB) \armB(\elbang) +
+    \forceL \armL(\elbang),
+  \end{gather}
+\end{subequations}
+for the total moment (cf.\ \cref{eq:totalMoment}) and,
+consequently, a surrogate
+\begin{equation}
+  \label{eq:equilibriumAngleSurrogate}
+  \equielbangintp{\forceL}\colon \actdomainintp{\forceL} \!\to
+  \clint{\ang{10}, \ang{150}},\quad
+  \actdomainintp{\forceL} \subset \clint{\*0, \*1},\quad
+  \equielbangintp{\forceL}(\actT,\actB)
+  \ceq (\momentintp_{\forceL,\actT,\actB})^{-1}(\SI{0}{\newton\meter}),
+\end{equation}
+for the equilibrium elbow angle function (cf.\ \cref{eq:equilibriumAngle}).
+Since the surrogates are much cheaper to evaluate,
+the computation time is decreased by up to seven orders of magnitude,
+as experiments show.
+
+The approach in \cite{Valentin18Gradient} and in this thesis is
+to determine surrogates
+$\forceXintp\colon \clint{\*0, \*1} \to \real$
+($X \in \{\mathrm{T}, \mathrm{B}\}$) by sparse grid interpolation.
+Compared to surrogate construction techniques based on full grids,
+sparse grids help to reduce the number of samples that
+are necessary to build ``reasonably'' accurate surrogates,
+especially if the number of dimensions is moderately large
+($d \ge 4$, \term{curse of dimensionality}).
+
+The present model only has $d = 2$ dimensions ($\actT$ and $\actB$),
+since the model contains only two muscles.
+However, as we will see,
+already for this low-dimensional problem,
+sparse grids outperform conventional full grid interpolation.
+The results have to be seen as a proof of concept.
+One will be able to handle higher dimensionalities
+(i.e., models with a larger number of muscles) similarly with little
+or even no adjustments at all.
+The low dimensionality of the model in this thesis
+enables us to compute and compare against reference solutions,
+which would not be possible in a higher-dimensional setting.
+
+
+
+\paragraph{Benefiting from B-splines}
+
+As in \cite{Valentin18Gradient},
+we use higher-order hierarchical B-splines as basis functions
+for the sparse grid surrogates.
+This has three advantages when compared with conventional
+sparse grid bases such as piecewise linear functions:
+%
+First, the partial derivative
+$\partialderiv{\partialdiff{} \elbang}{\momentintp}$ needed
+for the Newton method in \cref{eq:newtonAngle} is continuous and
+explicitly known.
+There is no need to approximate the derivative with
+finite differences, reducing both error and computation time.
+%
+Second, we can use gradient-based optimization methods
+for the solution of the optimization problems \ref{item:biomech2MinSum} and
+\ref{item:biomech2MinDist},
+which involve the equilibrium elbow angle function
+$\equielbangintp{\forceL}\colon \clint{\*0, \*1} \to \real$.
+With the implicit function theorem \cite{Kudryavtsev95Implicit},
+we obtain for the derivative of $\equielbangintp{\forceL}$
+\begin{equation}
+  \gradient{\actT,\actB}{\equielbangintp{\forceL}}
+  = -\,(\gradient{\actT,\actB}{\momentintp}) \cdot
+  (\gradient{\elbang}{\momentintp})^{-1}
+  = -\,\frac{
+    \gradient{\actT,\actB}{\momentintp}
+  }{
+    \partialderiv{\partialdiff{} \elbang}{\momentintp}
+  },
+\end{equation}
+where $\gradient{\actT,\actB}{}$ is the transposed Jacobian
+with respect to $\actT$ and $\actB$.%
+\footnote{%
+  For example, the first column is the gradient with respect to $\actT$
+  and the second column is the gradient with respect to $\actB$.%
+}
+For B-splines,
+both the transposed Jacobian $\gradient{\actT,\actB}{\momentintp}$ and
+the partial derivative $\partialderiv{\partialdiff{} \elbang}{\momentintp}$
+are continuous, explicitly known, and can be evaluated fast.
+%
+Third and finally,
+the usage of higher-order B-splines as basis functions
+increases the order of convergence of interpolation errors
+as shown for test functions in \cref{sec:541interpolation}.
+Thus, fewer interpolation points are necessary to construct a surrogate
+with the same error as for piecewise linear functions.

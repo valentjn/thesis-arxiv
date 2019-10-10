@@ -1,0 +1,374 @@
+\section{Continuum-Mechanical Model of the Upper Limb}
+\label{sec:71model}
+
+\minitoc{71mm}{6}
+
+\noindent
+In the following, we first discuss the state of the art
+in biomechanical modeling.
+Then, we address details of the model of the human upper limb.
+For convenience, the most relevant symbols are listed in
+\cref{tbl:glossaryMusculoskeletal}.
+
+\begin{table}
+  \setnumberoftableheaderrows{0}%
+  \newcommand*{\pnst}[1]{%
+    \printnotationsymbol{#1}%
+    \vphantom{\printnotationsymbol{\equielbang}$(\cdot)^{\reference}$}&%
+    \printnotationtext{#1}%
+  }%
+  \begin{tabular}{%
+      >{\kern\tabcolsep}=l+l<{\kern5mm}+l+l<{\kern5mm}+l+l<{\kern\tabcolsep}%
+    }
+    \toprulec
+    \pnst{\forceT}& \pnst{\armT}&       \pnst{\actT}\\
+    \pnst{\forceB}& \pnst{\armB}&       \pnst{\actB}\\
+    \pnst{\forceL}& \pnst{\armL}&       \pnst{\moment}\\
+    \pnst{\elbang}& \pnst{\tarelbang}&  \pnst{\equielbang}\\
+    \pnst{t}&
+    $(\cdot)^{\sparse}$&Sparse grid solution&
+    $(\cdot)^{\reference}$&Reference solution\\
+    \bottomrulec
+  \end{tabular}%
+  \caption[Glossary for musculoskeletal models]{%
+    Glossary of the notation for musculoskeletal models.%
+  }%
+  \label{tbl:glossaryMusculoskeletal}%
+\end{table}
+
+
+
+\subsection{Continuum-Mechanical Musculoskeletal Models}
+\label{sec:711models}
+
+\paragraph{%
+  Limitations of classical models and
+  benefits of continuum-mechanical models%
+}
+
+Due to the simplicity of classical lumped-parameter models,
+their degree of realism is limited.
+Without any modifications,
+lumped-parameter models are not able to represent
+detailed heterogeneous material characteristics or non-trivial
+muscle force paths \cite{Roehrle16Two}.
+
+The exploitation of continuum-mechani\-cal constitutive laws
+for musculoskeletal models is a more recent development \cite{Roehrle16Two}.
+The resulting models are capable to model spatial quantities
+such as complex muscle fiber field architectures,
+local activation principles, complex muscle geometries, or contact mechanics
+\multicite{Roehrle16Two,Valentin18Gradient}.
+Most of the existing work only treats single skeletal muscles in isolation
+\multicite{Lemos05Modeling,Sharafi11Strains,Heidlauf14Multiscale}.
+The model used in this thesis
+(which is the same model as in
+\multicite{Sprenger15Continuum,Roehrle16Two,Valentin18Gradient})
+aims at studying the interplay of multiple muscles and bones.
+
+\paragraph{Overdetermined antagonistic systems}
+
+Musculoskeletal systems are typically overdetermined \cite{Roehrle16Two}.
+This means that the number of muscles that act on a specific joint
+is usually larger than the number of the joint's degrees of freedom.
+For instance, in a simple model of the human upper limb,
+there are two antagonistic muscles
+(i.e., muscles that work against each other), namely triceps and biceps,
+but only one joint angle at the elbow.
+Mathematically speaking, a single muscle suffices to attain
+a large range of elbow angles
+that are possible with an antagonistic muscle pair.
+However, the usage of two muscles enables faster movements and
+allows for abrupt changes of direction.
+
+The overdetermination of most musculoskeletal models
+implies that additional conditions have to be imposed in order
+to obtain unique solutions.
+There exist various types of such conditions,
+for instance, minimal control effort, minimal control change, and
+minimal kinematic energy \cite{Valentin18Gradient}.
+The idea behind these conditions is that the human body
+tries to minimize the energy effort that is associated with
+all types of motion.
+
+\paragraph{Forward and inverse dynamics}
+
+Musculoskeletal simulations are usually based on
+either forward dynamics or inverse dynamics \cite{Valentin18Gradient}.
+\term{Forward-dynamic approaches} use activation parameters
+for the muscles as the input and simulate the corresponding motion
+as the output.
+This requires that we know the muscle forces
+(depending on the activation levels) beforehand.
+For example, one can prescribe activation levels of facial muscles
+to achieve specific facial expressions \cite{Wu13Modelling}.
+In contrast, \term{inverse-dynamic approaches}
+use experimental motion data as the input
+to estimate the muscle forces as the output \cite{Roehrle16Two}.
+With inverse-dynamic simulations,
+one can investigate the wrapping of muscles
+around the knee joint \cite{Fernandez05Anatomically} or
+visualize the motion of skin \cite{Lee09Comprehensive}, for instance.
+
+
+
+\subsection{Details of the Human Upper Limb Model}
+\label{sec:712details}
+
+As shown in \cref{fig:raisingArm},
+our model of the human upper limb consists
+of the three bones humerus, ulna, and radius,
+the elbow joint with one degree of freedom, and
+the antagonistic muscle pair of triceps brachii and biceps brachii
+\cite{Valentin18Gradient}.
+The bones are rigid bodies and the muscle-tendon complex
+is simulated with a continuum-mechanical approach.
+This implies that the muscles deform when they contract.
+
+\begin{figure}
+  \begin{tikzpicture}[
+    dashed/.style={dash pattern=on 2pt off 2pt},
+    contour/.style={line width=3pt,draw=mittelblau!10},
+  ]
+    \newcommand*{\myhspace}{30.34mm}
+    \newcommand*{\myscale}{0.14}
+    \newcommand*{\mytricepsarmstart}{0.1}
+    \newcommand*{\mybicepsstart}{0.2}
+    \newcommand*{\myradius}{9mm}
+    \newcommand*{\mysmallradius}{2mm}
+    
+    \foreach \myi in {1,...,5} {
+      \node[anchor=north west] at ({(\myi-1)*\myhspace},0mm) {%
+        \includegraphics[scale=\myscale]{upperLimb_\myi}%
+      };
+      \node[anchor=north west] at ({(\myi-1)*\myhspace+11mm},0mm) {%
+        \pgfmathparse{10+35*(\myi-1)}%
+        $\theta = \ang[
+          round-mode=places,round-precision=0,
+        ]{\pgfmathresult}$%
+      };
+    }
+    
+    \begin{scope}[shift={({(3-1)*\myhspace},0mm)}]
+      \coordinate (joint)               at (8mm,-30mm);
+      \coordinate (loadForceStart)      at (30.6mm,-35mm);
+      \coordinate (loadForceEnd)        at (30.6mm,-45mm);
+      \coordinate (tricepsForceStart)   at (5.7mm,-31.9mm);
+      \coordinate (tricepsForceEnd)     at (4mm,-15mm);
+      \coordinate (tricepsArmStart)     at (
+        ${(1-\mytricepsarmstart)}*(joint) +
+        \mytricepsarmstart*(loadForceStart)$
+      );
+      \coordinate (bicepsForceStart)    at (
+        ${(1-\mybicepsstart)}*(joint) + \mybicepsstart*(loadForceStart)$
+      );
+      \coordinate (bicepsForceEnd)      at (11.5mm,-10mm);
+      \coordinate (horizontalDashedEnd) at ($(loadForceEnd) + (0mm,3mm)$);
+      \coordinate (verticalDashedEnd)   at ($(joint) - (0mm,15mm)$);
+      \pgfmathanglebetweenpoints{
+        \pgfpointanchor{joint}{center}
+      }{
+        \pgfpointanchor{loadForceStart}{center}
+      }
+      \let\myelbowangle\pgfmathresult
+      \coordinate (arcStart) at ($(joint) - (0mm,\myradius)$);
+      \coordinate (arcEnd) at (
+        $(joint) + (
+          {\myradius*cos(\myelbowangle)},
+          {\myradius*sin(\myelbowangle)}
+        )$
+      );
+      
+      \makeatletter
+      \newcommand*{\drawleverarm}[5][\@nil]{
+        \def\myoptarg{#1}
+        \ifx\myoptarg\@nnil
+          \def\mypointsize{1pt}
+          \def\myfill{C1}
+          \def\myoptarg{}
+        \else
+          \def\mypointsize{2pt}
+          \def\myfill{mittelblau!10}
+        \fi
+        \coordinate (leverArmBase) at ($(#3)!(#2)!(#4)$);
+        \draw[dashed,draw=C1,\myoptarg] (#2) -- (leverArmBase);
+        \pgfmathanglebetweenpoints{
+          \pgfpointanchor{#2}{center}
+        }{
+          \pgfpointanchor{leverArmBase}{center}
+        }
+        \let\myangle\pgfmathresult
+        \pgfmathparse{\myangle #5 180}
+        \let\mystartangle\pgfmathresult
+        \pgfmathparse{\myangle #5 90}
+        \let\myendangle\pgfmathresult
+        \centerarc[draw=C1,\myoptarg](leverArmBase)(
+          \mystartangle:\myendangle:\mysmallradius
+        );
+        \fill[draw=none,fill=\myfill] (
+          $(leverArmBase) + (
+            {0.62*\mysmallradius*cos((\mystartangle+\myendangle)/2)},
+            {0.62*\mysmallradius*sin((\mystartangle+\myendangle)/2)}
+          )$
+        ) circle (\mypointsize);
+      }
+      \makeatother
+      
+      \draw[contour] (joint) -- (loadForceStart);
+      \draw[contour] (tricepsArmStart) -- (tricepsForceStart);
+      
+      \draw[dashed,contour] (joint) -- (verticalDashedEnd);
+      \draw[dashed,contour] (
+        $(joint)!(horizontalDashedEnd)!(verticalDashedEnd)$
+      ) -- (horizontalDashedEnd);
+      \draw[dashed,contour] (joint) -- (
+        $(tricepsForceStart)!(joint)!(tricepsForceEnd)$
+      );
+      \draw[dashed,contour] (joint) -- (
+        $(bicepsForceStart)!(joint)!(bicepsForceEnd)$
+      );
+      \centerarc[dashed,contour](joint)(270:\myelbowangle:\myradius);
+      
+      \drawleverarm[contour]{horizontalDashedEnd}{joint}{verticalDashedEnd}{-}
+      \drawleverarm[contour]{joint}{tricepsForceStart}{tricepsForceEnd}{-}
+      \drawleverarm[contour]{joint}{bicepsForceStart}{bicepsForceEnd}{+}
+      
+      \draw[
+        ->,contour,>={Stealth[width=9pt,length=9pt]},
+      ] (tricepsForceStart) -- (
+        $(tricepsForceEnd)!-1.5pt!(tricepsForceStart)$
+      );
+      \draw[
+        ->,contour,>={Stealth[width=9pt,length=9pt]},
+      ] (bicepsForceStart) -- (
+        $(bicepsForceEnd)!-1.5pt!(bicepsForceStart)$
+      );
+      \draw[
+        ->,contour,>={Stealth[width=9pt,length=9pt]},
+      ] (loadForceStart) -- (
+        $(loadForceEnd)!-1.5pt!(loadForceStart)$
+      );
+      
+      \draw (joint) -- (loadForceStart);
+      \draw (tricepsArmStart) -- (tricepsForceStart);
+      
+      \draw[dashed] (joint) -- (verticalDashedEnd);
+      \centerarc[dashed](joint)(270:\myelbowangle:\myradius);
+      
+      \drawleverarm{horizontalDashedEnd}{joint}{verticalDashedEnd}{-}
+      \drawleverarm{joint}{tricepsForceStart}{tricepsForceEnd}{-}
+      \drawleverarm{joint}{bicepsForceStart}{bicepsForceEnd}{+}
+      
+      \draw[->,draw=C0] (tricepsForceStart) -- (tricepsForceEnd);
+      \draw[->,draw=C0] (bicepsForceStart) -- (bicepsForceEnd);
+      \draw[->,draw=C0] (loadForceStart) -- (loadForceEnd);
+      
+      \fill[draw=none,fill=black] (joint) circle (2pt);
+      
+      \node at (
+        $(joint) + (
+          {0.62*\myradius*cos((270+\myelbowangle)/2)},
+          {0.62*\myradius*sin((270+\myelbowangle)/2)}
+        )$
+      ) {\contour{mittelblau!10}{$\elbang$}};
+      
+      \node[anchor=south] at (
+        $0.5*(joint) +
+        0.5*(tricepsForceStart)!(joint)!(tricepsForceEnd) +
+        (-1mm,1mm)$
+      ) {\contour{mittelblau!10}{\textcolor{C1}{$\armT$}}};
+      \node[anchor=south] at (
+        $0.5*(joint) +
+        0.5*(bicepsForceStart)!(joint)!(bicepsForceEnd) +
+        (1mm,1mm)$
+      ) {\contour{mittelblau!10}{\textcolor{C1}{$\armB$}}};
+      \node[anchor=north] at (
+        $0.5*(horizontalDashedEnd) +
+        0.5*(joint)!(horizontalDashedEnd)!(verticalDashedEnd) +
+        (0mm,-1mm)$
+      ) {\contour{mittelblau!10}{\textcolor{C1}{$\armL$}}};
+      
+      \node[anchor=east] at (
+        $0.2*(tricepsForceStart) + 0.8*(tricepsForceEnd) + (-1mm,0mm)$
+      ) {\contour{mittelblau!10}{\textcolor{C0}{$\forceT$}}};
+      \node[anchor=west] at (
+        $0.2*(bicepsForceStart) + 0.8*(bicepsForceEnd) + (1mm,0mm)$
+      ) {\contour{mittelblau!10}{\textcolor{C0}{$\forceB$}}};
+      \node[anchor=west] at (
+        $0.2*(loadForceStart) + 0.8*(loadForceEnd) + (1mm,0mm)$
+      ) {\contour{mittelblau!10}{\textcolor{C0}{$\forceL$}}};
+    \end{scope}
+  \end{tikzpicture}%
+  \caption[Human upper limb model geometry as a raising arm movement]{%
+    Human upper limb model geometry shown as a raising arm movement
+    for the elbow angles
+    $\theta = \ang{10}$, \ang{45}, \ang{80},
+    \ang{115}, and \ang{150} \emph{(from left to right).}
+    For $\theta = \ang{80}$,
+    the contributing forces \emph{\textcolor{C0}{(blue)}} and
+    lever arms \emph{\textcolor{C1}{(red)}} are shown.
+    Taken and adapted from
+    \multicite{Sprenger15Continuum,Valentin18Gradient}.%
+  }%
+  \label{fig:raisingArm}%
+\end{figure}
+
+\paragraph{Overall stress components}
+
+The continuum-mechanical part of the model
+is based on the theory of finite elasticity.
+When muscles deform, forces act on each infinitesimally small element
+of the muscles, which is known as \term{stress.}
+Usually, especially in linear elasticity,
+stress is measured with the \term{Cauchy stress tensor}
+(also called the \term{true stress}) \cite{Soennerlind13Why}.
+For non-linear stress-strain relations,
+one may use other measures such as the
+\term{second Piola--Kirchhoff stress}.
+The second Piola--Kirchhoff stress has the additional advantage
+that it is defined along the material directions,
+in contrast to the Cauchy stress tensor,
+which measures the stress in coordinate directions \cite{Soennerlind13Why}.
+
+In \multicite{Sprenger15Continuum,Roehrle16Two,Valentin18Gradient},
+the strain energy function is defined such that the
+resulting overall second Piola--Kirchhoff stress $\mat{S}_\mathrm{MTC}$ of
+the muscle-tendon complex satisfies
+\begin{equation}
+  \mat{S}_\mathrm{MTC}
+  = \mat{S}_\mathrm{iso} + \mat{S}_\mathrm{aniso} - p \mat{C}^{-1},
+\end{equation}
+where $\mat{S}_\mathrm{iso}$ and $\mat{S}_\mathrm{aniso}$
+are the \term{isotropic and anisotropic parts} of the stress, respectively,
+$p$ is the \term{hydrostatic pressure} to ensure incompressibility,
+and $\mat{C}$ is the \term{right Cauchy--Green deformation tensor.}
+The anisotropic part $\mat{S}_\mathrm{aniso}$ is defined as
+\begin{equation}
+  \mat{S}_\mathrm{aniso}
+  \ceq (
+    \mat{S}_\mathrm{passive} +
+    \act \gamma_\mathrm{M} \mat{S}_\mathrm{active}
+  ) (1 - \gamma_\mathrm{ST}),
+\end{equation}
+cf.\ \cite{Valentin18Gradient}.
+Here, $\mat{S}_\mathrm{passive}$ and $\mat{S}_\mathrm{active}$
+are the \term{passive and active contributions}
+due to the skeletal muscle fibers,
+$\act \in \clint{0, 1}$ is the \term{activation parameter} of the
+respective muscle-tendon complex, and
+$\gamma_\mathrm{M}, \gamma_\mathrm{ST}$ are two \term{material parameters}
+with which we can differentiate between the different types of soft tissues
+of the muscle-tendon complex: fat, tendon, and muscle
+\cite{Valentin18Gradient}.
+Isotropic fat tissue can be obtained
+by setting $\gamma_\mathrm{ST} \ceq 1$,
+passive anisotropic tendon tissue
+by setting $\gamma_\mathrm{ST} \ceq 0$ and $\gamma_\mathrm{M} \ceq 0$, and
+skeletal muscle tissue
+by setting $\gamma_\mathrm{ST} \ceq 0$ and $\gamma_\mathrm{M} \ceq 1$.
+A mixture of these pure materials is
+achieved by linear interpolation when setting
+$\gamma_\mathrm{M}$ and $\gamma_\mathrm{ST}$ to values between zero and one
+\cite{Valentin18Gradient}.
+More details about the theory part of the model are given in
+\multicite{Sprenger15Continuum,Roehrle16Two,Valentin18Gradient}.

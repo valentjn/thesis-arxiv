@@ -1,0 +1,244 @@
+\setdictum[0.57\textwidth]{%
+  There is a fine line between wrong and visionary.
+  Unfortunately, you have to be a visionary to see it\dots%
+}{%
+  Sheldon Cooper (The Big Bang Theory)%
+}
+
+\chapter{Introduction}
+\label{chap:10introduction}
+
+\initial{0.1em}{B}{efore simulation became available}
+as a widespread tool,
+knowledge in science and engineering could only advance through
+theoretical or experimental considerations.
+Nowadays, processes can be simulated
+that would be too complicated or even impossible
+to be studied theoretically or experimentally,
+justifying that simulation is widely viewed as the
+``third pillar in knowledge acquisition''
+besides theory and experiments \cite{Bungartz14Modeling}.
+
+However, simulations cannot be performed without constructing
+a suitable model beforehand (e.g., based on first principles).
+Such a model often depends on a number of uncertain or unknown parameters.
+Simulations can only represent the real-world circumstances well
+if the parameters are well-chosen.
+The problem of determining appropriate values for these parameters,
+given experimental data, is known as the \term{inverse problem.}
+Unfortunately, the solution process of such an inverse problem is non-trivial:
+Inverse problems are equivalent to optimization problems of the form
+\begin{equation}
+  \label{eq:generalOptimizationProblem}
+  \min \objfun(\*x),\quad
+  \*x \in \real^d\;\;\text{s.t.}\;\;
+  \ineqconfun(\*x) \le \*0,
+\end{equation}
+where $\objfun(\*x)$ gives, for instance,
+a measure for the error between the simulation for the model with
+the parameter $\*x$ and experimental real-world data and
+$\ineqconfun$ constrains the set of feasible parameters.
+Since simulations are often time-consuming,
+exhaustive search fails
+if the dimensionality $d$ is already moderately large ($d > 4$):
+Full grid approaches sample each dimension of the domain
+independently and construct the Cartesian product of the univariate
+samples.
+The number of resulting full grid points
+grows exponentially in the dimensionality $d$,
+which is known as the \term{curse of dimensionality} \cite{Bellman61Adaptive}.
+
+Inverse problems are a motivating example for optimization problems
+of the form \eqref{eq:generalOptimizationProblem}, which we will consider in
+this thesis as our main application.
+The curse affects not only optimization,
+but also various tasks such as interpolation, quadrature, and regression,
+which play a vital role in computational science.
+
+\paragraph{Sparse grid surrogates}
+
+The surrogate-based approach we pursue in this thesis is simple and
+yet powerful:
+Instead of directly optimizing the expensive objective function $\objfun$,
+we replace it with a surrogate $\sgintp$ that can be evaluated cheaply.
+We choose interpolation as our method to construct the surrogates,
+although other methods such as quasi-interpolation
+\cite{Hoellig13Approximation} or regression \cite{Pflueger10Spatially} exist.
+Again, conventional full grid interpolation schemes are afflicted by the
+curse of dimensionality, which rules them out for our purposes.
+
+This is where \term{sparse grids} come into play.
+In their simplest form, sparse grids give an \term{a priori} selection of
+full grid points and corresponding basis functions such that
+the exponential dependency of the grid size on the dimensionality
+is removed, while not deteriorating the $\Ltwo$ interpolation error too much
+\cite{Bungartz04Sparse}.
+However, sparse grids can also be employed spatially adaptively,
+where grid points are refined \term{a posteriori} according to suitable
+refinement criteria.
+This is of particular interest for the scope of this thesis,
+as spatial adaptivity enables us to increase the
+accuracy in regions of interest,
+simultaneously keeping the number of grid points at an acceptable level.
+
+\paragraph{B-splines}
+
+Conventional basis functions for sparse grids
+(most common are piecewise linear functions)
+are not continuously differentiable.
+This poses problems for gradient-based optimization algorithms,
+which use the gradient $\gradient{\*x}{f}$ of the
+objective function $\objfun$ to update the search direction.
+Employing finite differences as a remedy
+is time-consuming and introduces new error sources.
+
+Previous studies
+\multicite{Pflueger10Spatially,Sickel11Spline,Valentin14Hierarchische}
+suggest that \term{hierarchical B-splines}
+as sparse grid basis functions may significantly improve results.
+B-splines of degree~$p$ are $(p-1)$ times continuously differentiable
+piecewise polynomials of degree $p$ that form a basis of the space of splines.
+As the derivatives of B-splines can be evaluated fast and explicitly,
+the convergence of gradient-based optimization techniques is
+greatly accelerated.
+Additionally, the higher order of B-splines increases the accuracy
+of surrogates obtained by interpolation
+when compared to piecewise linear bases.
+
+\paragraph{Main goals}
+
+So far, there is no work that brings sparse grids and B-splines together,
+thoroughly examining the theoretical implications on algorithms and
+assessing the practical performance in real-world applications.
+This thesis addresses this very intersection of theory and practice of
+\term{B-splines for sparse grids.}
+The main goals of the thesis are
+\begin{itemize}
+  \item
+  to establish a consistent notational and theoretical
+  framework for sparse grids with general basis functions,
+  
+  \item
+  to construct new algorithmically efficient
+  B-spline-based basis function types for sparse grids,
+  
+  \item
+  to study the algorithmic properties of the new bases and
+  to formulate suitable new algorithms,
+  while proving their formal correctness, and
+  
+  \item
+  to apply the new bases and algorithms to different real-world
+  optimization scenarios.
+\end{itemize}
+These goals set the agenda for the outline of the rest of the thesis,
+which is described in the following.
+
+\paragraph{Outline}
+
+We start in \cref{chap:20sparseGrids} by defining sparse grids
+for arbitrary tensor product basis functions.
+The advantage of introducing the notation independently
+of the type of basis functions is that
+different hierarchical B-spline bases can be substituted easily
+for the following chapters.
+We first define sparse grids with points on the boundary of the domain
+and then study options for the boundary treatment
+(as opposed to some literature
+\multicite{Bungartz04Sparse,Pflueger10Spatially}).
+
+In \cref{chap:30BSplines}, we define
+the standard hierarchical B-spline basis for sparse grids.
+In addition, we construct various new hierarchical
+B-spline basis types, such as
+non-uniform B-splines (e.g., Clenshaw--Curtis B-splines) and
+modified B-splines.
+A mismatch of dimensions between the uniform spline space and the
+hierarchical B-spline space implies that, surprisingly,
+polynomials cannot be replicated by the
+standard hierarchical B-spline basis.
+Hence, we have to incorporate specific boundary conditions
+\term{(not-a-knot conditions)} into the hierarchical B-splines,
+which we explain in the second half of \cref{chap:30BSplines}.
+
+The new hierarchical B-spline bases call for novel algorithmic approaches
+to solve numerical tasks such as
+hierarchization (interpolation) on sparse grids.
+In \cref{chap:40algorithms}, we show new algorithms for
+spatially adaptive sparse grids with the example problem of hierarchization
+based on existing algorithms,
+which work for B-splines only in specific special cases.
+In the course of \cref{chap:40algorithms}, we construct several new
+hierarchical B-spline basis types to enable the
+applicability of the new algorithms.
+As mentioned above, we prove the formal correctness of every algorithm
+that we repeat from the literature or develop from scratch.
+
+\Cref{chap:50optimization} shows how to apply B-splines on sparse grids
+to gradient-based optimization problems.
+We briefly discuss different optimization scenarios and how to solve them
+with various gradient-free and gradient-based optimization techniques.
+Numerical results are given for a number of test scenarios as well
+as for an example application from fuzzy arithmetic.
+
+Three real-world applications follow in
+\cref{chap:60topoOpt,chap:70muscle,chap:80finance}.
+In these chapters,
+the theoretical knowledge gained in the first half of the thesis
+is applied to the solution of the three real-world optimization problems:
+
+First, in \cref{chap:60topoOpt},
+we study topology optimization via a homogenized two-scale approach.
+For this application, the key ingredient is an interpolation scheme
+that preserves both the positive definiteness of the interpolated tensors and
+their explicit differentiability.
+
+Second, in \cref{chap:70muscle},
+we consider a biomechanical application in which the interpolated data values
+are the result of very expensive continuum-mechanical calculations.
+The optimization problems posed in this chapter ask for
+muscle activation levels such that a specific joint angle is attained,
+which is a recurring problem in medicine and robotics.
+B-spline surrogates on sparse grids
+decrease the necessary computing time significantly.
+
+Third, in \cref{chap:80finance},
+we examine dynamic portfolio choice models.
+This financial application features some peculiarities that have
+to be considered when solving the corresponding optimization problems.
+For instance, it is necessary to evaluate interpolants outside their domain
+and calculate integrals due to random factors such as stock returns.
+
+\Cref{chap:90conclusion} concludes the thesis by
+summarizing its results and giving an overview of possible future work.
+In the appendix, one can find supplementary information such as
+technical proofs that are too verbose to be included in the main text.
+
+\paragraph{Original contribution}
+
+This thesis is written to be largely self-contained.
+Therefore, it is necessary that some introductory definitions and
+results are repeated from the literature,
+which is properly attributed in the respective chapters.
+In addition, some new results have already been published.
+Whenever a publication is co-authored by collaborators,
+the original contribution of the author of this thesis is highlighted
+at the beginning of the respective chapters or sections.
+
+\paragraph{Notation}
+
+The notation of this thesis should be intuitive and suggestive.
+It is designed to be as natural as possible (i.e., not distracting)
+and as unambiguous as necessary.
+One example is that vectors are written in bold face, which leads to
+very similar formulas for the univariate and the multivariate cases.
+For instance, $\clint{0, 1}$ and $\sum_{l=0}^n$
+become
+$\clint{\*0, \*1} = \clint{0, 1}^d$ and
+$\sum_{\*l=\*0}^{\*n} = \sum_{l_1=0}^{n_1} \dotsb \sum_{l_d=0}^{n_d}$,
+respectively.
+This and other necessary notation is introduced in the text when needed.
+If a symbol or an abbreviation is unclear,
+it is likely explained in the glossary at the beginning of the thesis.
+
+\cleardoublepage

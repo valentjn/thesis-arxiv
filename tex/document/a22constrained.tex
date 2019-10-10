@@ -1,0 +1,105 @@
+\section{Constrained Problems}
+\label{sec:a22constrained}
+
+\paragraph{G08}
+
+This problem originates from \cite{Schoenauer93Constrained}.
+We changed the domain from $\clint{0, 10}^2$
+to $\clint{0.5, 2.5} \times \clint{3, 6}$
+to increase the size of feasible region.
+In addition, we use different frequencies for the sine terms
+as in \cite{Gavana13Global}.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+    \centertestfunline{
+      \testobjfunscaled{G08}(\xscaled)
+      \ceq -\frac{
+        \sin^3(2\pi\xse{1}) \sin(2\pi\xse{2})
+      }{
+        \xse{1}^3 (\xse{1} + \xse{2})
+      },\quad
+      \testineqconfunscaled{G08}(\xscaled)
+      \ceq \begin{pmatrix}
+        \xse{1}^2 - \xse{2} + 1\\
+        1 - \xse{1} + (\xse{2} - 4)^2
+      \end{pmatrix},
+    }\\
+    \centertestfunline{
+      \xscaled \in \clint{0.5, 2.5} \times \clint{3, 6},\quad
+      \xoptscaled = (1.227971358337, 4.245373366474),
+    }\\
+    \centertestfunline{
+      \testobjfunscaled{G08}(\xoptscaled) = -0.09582504141804
+    }
+  \end{gather}
+\end{subequations}
+
+
+\paragraph{G04Squared}
+
+This problem is based on a problem from
+\cite{Colville68Comparative} with the objective function
+$\testobjfunscaled{G04}(\xscaled)
+\ceq 5.3578547 \xse{3}^2 + 0.8356891 \xse{1} \xse{5} +
+37.293239 \xse{1} - 40792.141$ and the same constraints
+$\testineqconfunscaled{G04}(\xscaled) \ceq
+\testineqconfunscaled{G04Sq}(\xscaled)$.
+However, hierarchical cubic not-a-knot B-splines are able to exactly
+represent the polynomial $\testobjfunscaled{G04}$ of coordinate degree two
+on the whole domain $\clint{\*0, \*1}$,
+if the level of the sparse grids is high enough,
+see \thmref{cor:sparseGridRegularNAKPolynomials}.
+Therefore, we modified the original G04 problem by squaring the
+objective function.
+To ensure that this does not change the location of the global minimum,
+we added a constant before squaring such that the shifted function
+is non-negative on $\clint{\*0, \*1}$.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \allowdisplaybreaks
+  \begin{gather}
+  \centertestfunline{
+    \testobjfunscaled{G04Sq}(\xscaled)
+    \ceq (5.3578547 \xse{3}^2 + 0.8356891 \xse{1} \xse{5} +
+    37.293239 \xse{1} - 10120)^2,
+  }\\
+  \centertestfunline{
+    \testineqconfunscaled{G04Sq}(\xscaled)
+    \ceq 10^{-3} \scalebox{0.92}{$
+      \begin{pmatrix}
+        85334.407 + 5.6858 \xse{2} \xse{5} +
+        0.6262 \xse{1} \xse{4} -
+        2.2053 \xse{3} \xse{5} - 92000\\
+        -85334.407 - 5.6858 \xse{2} \xse{5} -
+        0.6262 \xse{1} \xse{4} +
+        2.2053 \xse{3} \xse{5}\\
+        80512.49 + 7.1317 \xse{2} \xse{5} +
+        2.9955 \xse{1} \xse{2} +
+        2.1813 \xse{3}^2 - 110000\\
+        -80512.49 - 7.1317 \xse{2} \xse{5} -
+        2.9955 \xse{1} \xse{2} -
+        2.1813 \xse{3}^2 + 90000\\
+        9300.961 + 4.7026 \xse{3} \xse{5} +
+        1.2547 \xse{1} \xse{3} +
+        1.9085 \xse{3} \xse{4} - 25000\\
+        -9300.961 - 4.7026 \xse{3} \xse{5} -
+        1.2547 \xse{1} \xse{3} -
+        1.9085 \xse{3} \xse{4} + 20000
+      \end{pmatrix},
+    $}
+  }\\
+  \centertestfunline{
+    \xscaled \in \clint{78, 102} \times \clint{33, 45} \times
+    \clint{27, 45}^3,
+  }\\
+  \centertestfunline{
+    \xoptscaled = (78, 33, 29.995256025682, 45, 36.775812905788),
+  }\\
+  \centertestfunline{
+    \testobjfunscaled{G04Sq}(\xoptscaled) = 43.590737882363
+  }
+  \end{gather}
+\end{subequations}

@@ -1,0 +1,755 @@
+\breakpagebeforenextheadingtrue
+\section{Algorithms}
+\label{sec:82algorithms}
+
+\minitoc{83mm}{7}
+
+\noindent
+This section gives an overview of the algorithms that
+we use to implement the solution process after discretization of
+the Bellman equation \eqref{eq:gridBellman}.
+In the following, we assume that the probability density functions of the
+stochastic variables are known.
+
+
+
+\subsection{General Structure}
+\label{sec:821generalStructure}
+
+The general approach to solve dynamic portfolio choice models is as follows:
+\begin{enumerate}
+  \item
+  Generation of value function interpolants $\valueintp_t$
+  
+  \item
+  Generation of optimal policy interpolants $\optpolicyintp_t$
+  
+  \item
+  Post-processing, e.g., Monte Carlo simulation
+\end{enumerate}
+The separation of the solution processes for
+the value function interpolants $\valueintp_t$
+and the optimal policy interpolants $\optpolicyintp_t$
+enables the generation of different spatially adaptive sparse grids
+for the value function and the optimal policies.
+This is useful if the shapes of value function and optimal policies
+have different characteristics.
+
+In the following \cref{%
+  sec:822solveValueFunction,%
+  sec:823optimization,%
+  sec:824quadrature,%
+  sec:825interpolation,%
+  sec:826gridGeneration%
+}, we describe the algorithmic details of
+\texttt{solveValueFunction} (step 1).
+The treatment of the other steps \texttt{solvePolicy} (step 2) and
+post-processing (step 3) follows with
+\cref{sec:827solvePolicies} and \cref{sec:828postProecessing},
+respectively.
+
+We track two interpolants $\valueintp[1]_t$ and $\valueintp[p]_t$
+for each $t = 0, \dotsc, T$.
+The former interpolates value function data at the grid points
+with the hierarchical piecewise linear basis
+(used for the surplus-based grid generation),
+while the latter interpolates the same data with hierarchical B-splines
+of degree $p > 1$.
+Each $\valueintp[\ast]_t$ ($\ast \in \{1, p\}$)
+additionally stores the grid points $\state_t^{(k)}$
+and the optimal policies $\optpolicyintp_t(\state_t^{(k)})$
+at the grid points ($k = 1, \dotsc, \ngp_t$).
+For simplicity, we do not pass them as separate data
+to the algorithms.
+
+
+
+\subsection{Solution for the Value Function}
+\label{sec:822solveValueFunction}
+
+\paragraph{\texttt{solveValueFunction} algorithm}
+
+\Cref{alg:financeSolveValueFunction} shows \texttt{solveValueFunction},
+which generates the value function interpolants
+$\valueintp[1]_t$ and $\valueintp[p]_t$ ($t = 0, \dotsc, T$).
+The algorithm follows a simple optimize--refine--interpolate scheme,
+which is visualized in \cref{fig:structureSolveValueFunction}:
+First, the Bellman equation \eqref{eq:gridBellman} is solved
+on an initial sparse grid (\texttt{optimize}).
+Then, we \texttt{refine} the grid spatially adaptively.
+Finally, the resulting grid point data are \texttt{interpolate}d
+with hierarchical higher-order B-splines.
+
+\begin{algorithm}
+  \begin{algorithmic}[1]
+    \Function{%
+      $\text{%
+        $(\valueintp[p]_t)_{t=0,\dotsc,T}$%
+      } = \texttt{solveValueFunction}$%
+    }{%
+      \hspace*{0mm}%
+    }
+      \State{$\valueintp[p]_{T+1} \gets \emptyset$}
+      \Comment{dummy variable (is not used)}%
+      \For{$t = T,\, T - 1,\, \dotsc,\, 0$}
+        \State{%
+          $\valueintp[1]_t \gets \text{%
+            Initial regular sparse grid with no values%
+          }$%
+        }
+        \State{%
+          $\valueintp[1]_t \gets
+          \texttt{optimize($t$, $\valueintp[1]_t$, $\valueintp[p]_{t+1}$)}$%
+        }
+        \State{%
+          $\valueintp[1]_t \gets
+          \texttt{refine($t$, $\valueintp[1]_t$, $\valueintp[p]_{t+1}$)}$%
+        }
+        \State{%
+          $\valueintp[p]_t \gets
+          \texttt{interpolate($\valueintp[1]_t$)}$%
+        }
+      \EndFor{}
+    \EndFunction{}
+  \end{algorithmic}
+  \caption[%
+    Generation of value function interpolants (\texttt{solveValueFunction})%
+  ]{%
+    Generation of value function interpolants.
+    The output is the higher-order B-spline interpolant $\valueintp[p]_t$
+    for all $t = 0, \dotsc, T$.%
+  }%
+  \label{alg:financeSolveValueFunction}%
+\end{algorithm}
+
+\begin{figure}
+  \newcommand*{\getscale}{
+    \pgfgettransformentries{%
+      \myxscaletmp%
+    }{\@tempa}{\@tempa}{\myyscaletmp}{\@tempa}{\@tempa}
+    \gdef\myxscale{\myxscaletmp}
+  }%
+  \newcommand*{\drawcircle}[2][]{
+    \node[
+      circle,minimum size=60mm,fill=mittelblau!#2,draw=mittelblau,
+    ] at (0mm,0mm) (myCircle#2) {};
+    \IfStrEq{#1}{noArrow}{}{
+      \getscale
+      \pgfmathparse{150+20/\myxscale^0.8}
+      \let\myin\pgfmathresult
+      \draw[->] (myCircle#2) to[
+        out=150,in=\myin,looseness=2.3,
+      ] node[below,scale=1/\myxscale] {\mytext} (myCircle#2);
+    }
+  }%
+  \newcommand*{\drawtext}[1]{
+    \getscale
+    \centerarc[
+      draw=none,postaction={decorate},decoration={
+        text along path,
+        text={#1},
+        text align=center
+      },
+    ](0mm,0mm)(180:0:30mm-1em/\myxscale);
+  }%
+  \newenvironment*{circlescope}{
+    \getscale
+    \begin{scope}[
+      scale=1-0.15/\myxscale,
+      shift={(3mm/\myxscale,-3mm/\myxscale)},
+      transform shape,
+    ]
+  }{
+    \end{scope}
+  }%
+  \begin{tikzpicture}
+    \draw[dashed] (0mm,9mm) -- (84mm,9mm);
+    \draw[dashed] (-4.3mm,-8mm) -- (71.2mm,-48.2mm);
+    \begin{scope}[rotate=-130]
+      \node[
+        circle,
+        minimum size=18mm,
+        fill=mittelblau!30,
+        draw=mittelblau,
+        inner sep=0mm,
+      ] at (0mm,0mm) (optimize) {\texttt{optimize}};
+      \begin{scope}[
+        shift={(40mm/2,40mm*sin(60))},
+        transform shape,
+      ]
+        \begin{scope}[
+          rotate=130,
+          scale=18mm/60mm+0.15,
+          transform shape,
+        ]
+          \getscale
+          \drawcircle[noArrow]{30}
+          \drawtext{|\ttfamily|refine}
+          \begin{scope}[
+            scale=1-0.15/\myxscale,
+            shift={(3mm/\myxscale,-3mm/\myxscale)},
+            transform shape,
+          ]
+            \def\mytext{}
+            \drawcircle{50}
+            \getscale
+            \node[scale=1/\myxscale] at (0mm,0mm) {\texttt{optimize}};
+          \end{scope}
+        \end{scope}
+      \end{scope}
+      \node[
+        circle,
+        minimum size=18mm,
+        fill=mittelblau!30,
+        draw=mittelblau,
+        inner sep=0mm,
+        text width=15mm,
+        align=center,
+      ] at (40mm,0mm) (interpolate) {\ttfamily{}inter-\\polate};
+      \draw[->] (optimize) to[
+        bend left=30,
+      ] (myCircle30);
+      \draw[->] (myCircle30) to[
+        bend left=30,
+      ] (interpolate);
+      \draw[->] (interpolate) to[
+        bend left=30,
+      ] node[above,rotate=50] {$t \gets (t - 1)$} (optimize);
+    \end{scope}
+    \begin{scope}[shift={(84mm,-21mm)}]
+      \drawcircle[noArrow]{20}
+      \drawtext{|\ttfamily|optimize}
+      \begin{circlescope}
+        \def\mytext{\hspace*{5mm}$\state_t$}
+        \drawcircle{30}
+        \drawtext{|\ttfamily|optimizeSinglePoint}
+        \begin{circlescope}
+          \def\mytext{\hspace*{5mm}$\policy_t$}
+          \drawcircle{40}
+          \drawtext{|\ttfamily|evalObjFcnGrad}
+          \begin{circlescope}
+          \def\mytext{\hspace*{5mm}$\stochastic_t$}
+            \drawcircle{50}
+            \drawtext{|\ttfamily|evalQuadPoint}
+            \begin{circlescope}
+              \def\mytext{\hspace*{4mm}$o$}
+              \drawcircle{60}
+              \getscale
+              \node[
+                text width=30mm,align=center,scale=1/\myxscale,
+              ] at (0mm,0mm) {%
+                \ttfamily{}evalInterp-\\PartDeriv%
+              };
+            \end{circlescope}
+          \end{circlescope}
+        \end{circlescope}
+      \end{circlescope}
+    \end{scope}
+  \end{tikzpicture}%
+  \caption[Scheme of the generation of value function interpolants]{%
+    Scheme of the generation of value function interpolants
+    with \texttt{solveValueFunction}
+    (\cref{alg:financeSolveValueFunction}, \emph{left}),
+    which repeatedly calls the \texttt{optimize} routine
+    (\cref{alg:financeOptimize}, \emph{right}),
+    which in turn consists of various sub-functions.
+    The function \texttt{optimize} iterates over all state grid points
+    $\state_t = \state_t^{(k)}$ ($k = 1, \dotsc, \ngp_t$)
+    and calls \texttt{optimizeSinglePoint} for each point.
+    The optimization method evaluates the objective function and
+    its gradient at a sequence of different policy points $\policy_t$
+    to find $\optpolicyintp_t(\state_t^{(k)})$.
+    This evaluation (denoted by \texttt{evalObjFcnGrad})
+    has to compute the expectation in \cref{eq:gridBellman},
+    which is done using a quadrature rule.
+    For every quadrature point $\stochastic_t = \stochastic_t^{(j)}$
+    ($j = 1, \dotsc, m_{\quadweight}$),
+    \texttt{evalQuadPoint} computes the corresponding value of
+    the expression in the expectation.
+    Finally, \texttt{evalInterpPartDeriv} evaluates the interpolant
+    $\valueintp[p]_{t+1}$ and its partial derivatives,
+    for which we have to loop over the state dimensions $o = 1, \dotsc, d$.%
+  }%
+  \label{fig:structureSolveValueFunction}%
+\end{figure}
+
+At the beginning of every iteration $t$,
+the grid of the piecewise linear interpolant is reset
+to an initial, possibly regular sparse grid.
+It would also be possible to reuse the grid from the
+previous iteration $t + 1$.
+Nevertheless, the results we then obtain become worse,
+likely due to the different characteristics of $\valueintp[1]_t$
+for different $t$ (e.g., kinks).
+
+The higher-order B-spline interpolant
+$\valueintp[p]_{t+1}$ of the previous iteration $t+1$ is used
+for the \rhs of the Bellman equation \eqref{eq:gridBellman},
+if $t < T$.
+In the first iteration $t = T$,
+there is no such interpolant.
+However,
+the terminal solution $\valuefcn_T$ is usually a known function.
+
+
+
+\subsection{Optimization}
+\label{sec:823optimization}
+
+\paragraph{\texttt{optimize} algorithm}
+
+The \texttt{optimize} step is given as \cref{alg:financeOptimize}.
+The grid of the argument $\valueintp[1]_t$
+is some spatially adaptive sparse grid
+$\gridset{t}{\sparse}
+= \{\state_t^{(k)} \mid k = 1, \dotsc, \ngp_t\}$,
+where the function values $\valueintp[1]_t(\state_t^{(k)})$
+may already be known for some grid points $\state_t^{(k)}$,
+if \texttt{optimize} is called from within \texttt{refine}.
+The function \texttt{optimize} computes the missing value function values.
+For $t = T$, we assume that the terminal solution
+$\valuefcn_T$ can be computed by some function
+\texttt{computeKnownTerminalSolution}.%
+\footnote{%
+  In any case, the terminal solution may be computed as the
+  solution of the corresponding single-time optimization problem,
+  e.g., $\valuefcn_T(\state_T^{(k)})
+  = \max_{\policy_T} \utilityfcn(\consume_T(\state_T^{(k)}, \policy_T))$.%
+}
+Otherwise, for $t < T$, we solve the Bellman equation
+\eqref{eq:gridBellman} by using the higher-order B-spline interpolant
+$\valueintp[p]_{t+1}$ of the previous iteration $t + 1$
+(\texttt{optimizeSinglePoint}).
+The computations for the different $\state_t^{(k)}$ are
+independent of each other,
+which means that they can be computed in parallel \cite{Horneff16Efficient}.%
+\footnote{%
+  Such a problem is usually referred to as \term{embarrassingly parallel.}%
+}
+After generating all missing data,
+we update the hierarchical surpluses of the
+piecewise linear interpolant $\valueintp[1]_t$
+to interpolate the new data at all grid points of $\gridset{t}{\sparse}$.
+
+\begin{algorithm}
+  \begin{algorithmic}[1]
+    \Function{$\valueintp[1]_t = \texttt{optimize}$}{%
+      $t$, $\valueintp[1]_t$, $\valueintp[p]_{t+1}$%
+    }
+      \State{%
+        $(\state_t^{(k)})_{k=1,\dotsc,\ngp_t}
+        \gets \text{grid of $\valueintp[1]_t$}$%
+      }
+      \For{$k = 1, \dotsc, \ngp_t$}
+        \If{$\valueintp[1]_t(\state_t^{(k)})$ not previously computed}
+          \IfOneLine{$t = T$}{%
+            $\valueintp[1]_T(\state_T^{(k)})
+            \gets \texttt{computeKnownTerminalSolution($\state_T^{(k)}$)}$%
+          }
+          \ElseOneLine{%
+            $\valueintp[1]_t(\state_t^{(k)})
+            \gets \texttt{%
+              optimizeSinglePoint(%
+                $t$, $\state_t^{(k)}$, $\valueintp[p]_{t+1}$%
+              )%
+            }$%
+          }
+        \EndIf{}
+      \EndFor{}
+      \State{%
+        Re-interpolate
+        $(\valueintp[1]_t(\state_t^{(k)}))_{k=1,\dotsc,\ngp_t}$
+        with piecewise linear functions%
+      }
+    \EndFunction{}
+  \end{algorithmic}
+  \caption[Evaluation of the value function (\texttt{optimize})]{%
+    Evaluation of the value function at all
+    grid points $\state_t^{(k)}$ of $\valueintp[1]_t$
+    at which the value function has not been evaluated yet.
+    Inputs are
+    the time $t$,
+    the piecewise linear interpolant $\valueintp[1]_t$
+    of the current iteration $t$ (with the underlying sparse grid and
+    corresponding function values, possibly unset), and
+    the higher-order B-spline interpolant $\valueintp[p]_{t+1}$
+    of the previous iteration $t + 1$
+    (not used if $t = T$).
+    The output is the updated piecewise linear interpolant $\valueintp[1]_t$,
+    where all missing function values at grid points have been computed.%
+  }%
+  \label{alg:financeOptimize}%
+\end{algorithm}
+
+\paragraph{Certainty-equivalent transformation}
+
+For utility functions of \crra-type, i.e., of the form
+$\utilityfcn(\consume_t) = \consume_t^{1-\riskav}/(1-\riskav)$,
+the curvature of the objective function in the Bellman equation
+\eqref{eq:gridBellman} can be very high
+(depending on the risk aversion parameter $\riskav$),
+which may impede convergence of the optimizer.
+As a remedy, we transform the value function $\valueintp_t$ with the
+\term{certainty-equivalent transformation}
+$\valueintp_t \mapsto \cetvalueintp_t
+\ceq ((1 - \riskav) \valueintp_t)^{1/(1-\riskav)}$ if $\riskav > 1$.
+\Cref{eq:gridBellman} then becomes
+$\cetvalueintp_T(\state_T^{(k)}) = \max_{\policy_T}
+\consume_T(\state_T^{(k)}, \policy_T)$ for $t = T$ and
+\begin{equation}
+  \label{eq:gridBellmanCET}
+  \cetvalueintp_t(\state_t^{(k)})
+  = \max_{\policy_t} \left(
+    \left(
+      \consume_t(\state_t^{(k)}, \policy_t)^{1-\riskav} +
+      \patience \expectation[t]{
+        \bigl(
+          \cetvalueintp_{t+1}(
+            \statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t)
+          )
+        \bigr)^{1-\riskav}
+      }
+    \right)^{1/(1-\riskav)}
+  \right)
+\end{equation}
+for $t < T$, since for $\riskav > 1$,
+$(\cdot)^{1/(1-\riskav)}$ is strictly monotonously decreasing and
+$(1-\riskav) < 0$.
+The notation in the remainder of this section
+does not distinguish between $\valueintp[\ast]_t$ and $\cetvalueintp[\ast]_t$
+and uses $\valueintp[\ast]_t$ for both if it is not relevant
+whether the value function is transformed.
+
+
+
+\subsection{Quadrature}
+\label{sec:824quadrature}
+
+We need to approximate the expectation in \cref{eq:gridBellmanCET}
+by quadrature,
+\begin{equation}
+  \label{eq:bellmanQuadrature}
+  \expectation[t]{
+    \bigl(
+      \cetvalueintp[p]_{t+1}(
+        \statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t)
+      )
+    \bigr)^{1-\riskav}
+  }
+  \approx \sum_{j=1}^{m_{\quadweight}} \quadweight_t^{(j)}
+  \bigl(
+    \cetvalueintp[p]_{t+1}(
+      \statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t^{(j)})
+    )
+  \bigr)^{1-\riskav},
+\end{equation}
+for some weights $\quadweight_t^{(j)} \in \real$ and
+nodes $\stochastic_t^{(j)} \in \stochdomain$
+($j = 1, \dotsc, m_{\quadweight}$).
+Since the stochastic domain $\stochdomain \subset \real^{m_{\stochastic}}$
+might be high-dimensional as well,
+full grid quadrature rules suffer from the curse of dimensionality.
+Therefore, we use sparse grid quadrature rules based
+on Gauss--Hermite quadrature
+\multicite{Gerstner98Numerical,Horneff16Efficient}.
+Note that this sparse grid in the stochastic space $\stochdomain$
+is independent of the sparse grid in the state space $\clint{\*0, \*1}$.
+However, it would also be feasible to employ Monte Carlo quadrature,
+albeit usually far more expensive.
+
+
+
+\subsection{Interpolation and Extrapolation}
+\label{sec:825interpolation}
+
+\paragraph{Sparse grid interpolation}
+
+As already mentioned,
+$\valueintp[1]_t$ is constructed as the sparse grid interpolant
+of the grid data $\state_t^{(k)}$ ($k = 1, \dotsc, \ngp_t$)
+using the hierarchical piecewise linear basis.
+For $\valueintp[p]_t$,
+we use cubic hierarchical weakly fundamental not-a-knot splines
+(see \cref{sec:454wfs}).
+The not-a-knot boundary conditions help to decrease the
+interpolation error (see \cref{sec:541interpolation}),
+while the weakly fundamental property eases the hierarchization
+complexity by enabling us to use the unidirectional principle
+(see \cref{sec:45spatAdaptiveUP,sec:543complexity}).
+
+\paragraph{Extrapolation}
+
+Unfortunately, for many dynamic portfolio choice models,
+the state transition is not a function
+$\statefcn_t\colon \clint{\*0, \*1} \times \real^{m_{\policy}} \times
+\stochdomain \to \clint{\*0, \*1}$,
+especially if the state space is actually unbounded.
+It may then happen that
+$\statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t^{(j)})
+\notin \clint{\*0, \*1}$
+for some quadrature nodes
+$\stochastic_t^{(j)} \in \stochdomain$ in \cref{eq:bellmanQuadrature}.
+Hence, we might not be able to evaluate the value function interpolant
+$\valueintp[p]_{t+1}(
+  \statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t^{(j)})
+)$, as it is only defined on $\clint{\*0, \*1}$.
+Scaling of the domain is not an option due to the dynamic nature of
+the problem.
+
+Instead, we extend the interpolant $\valueintp[p]_{t+1}$
+to $\real^d$ by an extrapolation method based on Taylor approximation.
+First, we crop the evaluation point
+$\state_{t+1} \in \real^d \setminus \clint{\*0, \*1}$ to a point
+$
+  \state_{t+1}^\mathrm{in}
+  = \statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t^{(j)})
+  \in \clint{\*0, \*1}
+$
+with $\state_{t+1}^\mathrm{in} \ceq \vecmin(\vecmax(\state_{t+1}, \*0), \*1)$
+(component-wise minimum/maximum).
+The extrapolation type,
+which may be \texttt{constant}, \texttt{linear}, and \texttt{quadratic},
+determines the degree of the Taylor approximation:
+\begin{equation}
+  \begin{split}
+    \valueintp[p]_{t+1}(\state_{t+1})
+    &\approx \valueintp[p]_{t+1}(\state_{t+1}^\mathrm{in}) +
+    \tr{(\gradient{\state_{t+1}}{\valueintp[p]_{t+1}}(\state_{t+1}^\mathrm{in}))}
+    (\state_{t+1} - \state_{t+1}^\mathrm{in})\\
+    &\qquad + \tr{(\state_{t+1} - \state_{t+1}^\mathrm{in})}
+    (\hessian{\state_{t+1}}{\valueintp[p]_{t+1}}(\state_{t+1}^\mathrm{in}))
+    (\state_{t+1} - \state_{t+1}^\mathrm{in}),
+  \end{split}
+\end{equation}
+where \texttt{constant} and \texttt{linear}
+only use the first summand and first two summands, respectively.
+Since hierarchical B-splines enable us to
+exactly and efficiently compute
+the gradient $\gradient{\state_{t+1}}{\valueintp[p]_{t+1}}$ and
+the Hessian $\hessian{\state_{t+1}}{\valueintp[p]_{t+1}}$,
+we do not have to approximate the derivatives with finite differences.
+
+
+
+\subsection{Grid Generation}
+\label{sec:826gridGeneration}
+
+\paragraph{\texttt{refine} algorithm}
+
+\Cref{alg:financeRefine} shows how to generate the spatially adaptive
+sparse grid in \texttt{solveValueFunction}
+(\cref{alg:financeSolveValueFunction}).
+The underlying criterion is the common surplus-based refinement criterion
+\cite{Pflueger13Spatially}.
+As for the application in topology optimization (see \cref{chap:60topoOpt}),
+we use the piecewise linear interpolant for the surplus-based
+grid generation,
+since the surpluses are easier to compute in the piecewise linear case,
+and they are more meaningful
+due to the integral representation formula \eqref{eq:surplusIntegral}.
+Parameters for \cref{alg:financeRefine} are
+the tolerance $\refinetol_t \in \nonnegreal$,
+by which the set of grid points to be refined is determined, and
+the number $\norefine_t \in \natz$ of refinement iterations.
+These parameters may depend on the time $t$,
+since it might be beneficial to change the adaptivity of the
+grid over time.
+
+\begin{algorithm}
+  \begin{algorithmic}[1]
+    \Function{$\valueintp[1]_t = \texttt{refine}$}{%
+      $t$, $\valueintp[1]_t$, $\valueintp[p]_{t+1}$%
+    }
+      \For{$j = 1, \dotsc, \norefine_t$}
+        \State{%
+          $\ngp_t
+          \gets \text{number of grid points of $\valueintp[1]_t$}$%
+        }
+        \ForOneLine{$k = 1, \dotsc, \ngp_t$}{%
+          $\surplus[(k)]{t}
+          \gets \text{%
+            surplus of $\state_t^{(k)}$ in $\valueintp[1]_t$%
+          }$%
+        }
+        \State{%
+          $K_\mathrm{refine}
+          \gets \{k = 1, \dotsc, \ngp_t \mid
+          \abs{\surplus[(k)]{t}} \ge \refinetol_t\}$%
+        }
+        \IfOneLine{$K_\mathrm{refine} = \emptyset$}{\Break}
+        \State{%
+          Refine all grid points in
+          $\{\state_t^{(k)} \mid k \in K_\mathrm{refine}\}$%
+        }
+        \State{%
+          $\valueintp[1]_t \gets
+          \texttt{optimize($t$, $\valueintp[1]_t$, $\valueintp[p]_{t+1}$)}$%
+        }
+      \EndFor{}
+    \EndFunction{}
+  \end{algorithmic}
+  \caption[Refinement of the value function (\texttt{refine})]{%
+    In-place refinement of the value function $\valueintp[1]_t$.
+    Inputs are
+    the time $t$,
+    the piecewise linear interpolant $\valueintp[1]_t$
+    of the current iteration $t$, and
+    the higher-order B-spline interpolant $\valueintp[p]_{t+1}$
+    of the previous iteration $t + 1$
+    (not used if $t = T$).
+    The output is the updated piecewise linear interpolant $\valueintp[1]_t$
+    with the refined sparse grid.%
+  }%
+  \label{alg:financeRefine}%
+\end{algorithm}
+
+\paragraph{Gradient grids}
+
+The classical surplus-refinement criterion focuses on
+regions where the mixed second derivative
+$\partialderiv[2d]{
+  \partialdiff \stateentry_{t,1}^2 \dotsm \partialdiff \stateentry_{t,d}^2
+}{
+  \valueintp[1]_t
+}$
+of $\valueintp[1]_t$ has large absolute values, i.e.,
+where $\valueintp[1]_t$ has large high-frequency oscillations.
+In gradient-based optimization,
+it might be advisable to apply this criterion also
+to the partial derivatives
+$\partialderiv{\partialdiff \stateentry_{t,o}}{\valueintp[1]_t}$
+of $\valueintp[1]_t$ ($o = 1, \dotsc, d$),
+since the optimizer depends on the accuracy of the gradient.
+In this case, we have to track in \cref{alg:financeSolveValueFunction}
+additional sparse grid interpolants for every partial derivative
+$\partialderiv{\partialdiff \stateentry_{t,o}}{\valueintp[1]_t}$
+that is affected by a policy variable.
+This possibility is omitted from the algorithms in this section,
+as it would unnecessarily complicate their presentation.
+
+
+
+\subsection{Solution for Optimal Policies}
+\label{sec:827solvePolicies}
+
+\paragraph{\texttt{solvePolicies} algorithm}
+
+After explaining the generation of the value function interpolants
+$\valueintp[p]_t$ ($t = 0, \dotsc, T$),
+we move on to step 2 of the general structure of our method
+(see \cref{sec:821generalStructure}),
+which is the generation of optimal policy interpolants.
+The corresponding \cref{alg:financeSolvePolicies} is similar to
+\texttt{solveValueFunction} (\cref{alg:financeSolveValueFunction}),
+except that it operates on the policy instead of
+the value function interpolants.
+The functions \texttt{optimize}, \texttt{refine}, and \texttt{interpolate}
+have been replaced by corresponding policy versions
+\texttt{optimizePolicy}, \texttt{refinePolicy}, and \texttt{interpolatePolicy}
+that work very much like their value function counterparts.
+\texttt{optimizePolicy} only has to generate new values
+if the initial regular sparse grid for the policies
+is not contained in the grid of $\valueintp[p]_t$.
+The policy grid is then refined and interpolated independently
+of the value function grid.
+The iterations over time are independent of each other,
+which means that they can be parallelized.
+
+\begin{algorithm}
+  \begin{algorithmic}[1]
+    \Function{%
+      $\text{%
+        $(\optpolicyintp[p]_t)_{t=0,\dotsc,T}$%
+      } = \texttt{solvePolicies}$%
+    }{%
+      $(\valueintp[p]_t)_{t=0,\dotsc,T}$%
+    }
+      \State{$\valueintp[p]_{T+1} \gets \emptyset$}
+      \Comment{dummy variable (is not used)}%
+      \For{$t = 0, \dotsc, T$}
+        \State{%
+          $\optpolicyintp[1]_t \gets \text{%
+            Initial regular sparse grid,
+            retrieve values from $\valueintp[p]_t$%
+          }$%
+        }
+        \State{%
+          $\optpolicyintp[1]_t \gets
+          \texttt{%
+            optimizePolicy($t$, $\optpolicyintp[1]_t$, $\valueintp[p]_{t+1}$)%
+          }$%
+        }
+        \State{%
+          $\optpolicyintp[1]_t \gets
+          \texttt{%
+            refinePolicy($t$, $\optpolicyintp[1]_t$, $\valueintp[p]_{t+1}$)%
+          }$%
+        }
+        \State{%
+          $\optpolicyintp[p]_t \gets
+          \texttt{interpolatePolicy($\optpolicyintp[1]_t$)}$%
+        }
+      \EndFor{}
+    \EndFunction{}
+  \end{algorithmic}
+  \caption[%
+    Generation of interpolants for optimal policies (\texttt{solvePolicies})%
+  ]{%
+    Generation of interpolants for optimal policies.
+    The input is the higher-order B-spline interpolant $\valueintp[p]_t$
+    of the value function for all $t = 0, \dotsc, T$.
+    The output is the higher-order B-spline interpolant $\optpolicyintp[p]_t$
+    of the optimal policies for all $t = 0, \dotsc, T$.%
+  }%
+  \label{alg:financeSolvePolicies}%
+\end{algorithm}
+
+
+
+\vspace{-0.5em}
+\subsection{Post-Processing}
+\label{sec:828postProecessing}
+\vspace{-0.5em}
+
+\paragraph{Monte Carlo simulation}
+
+There are various ways to assess
+whether the resulting optimal policy B-spline interpolants
+$(\optpolicyintp[p]_t)_{t=0,\dotsc,T}$
+are reasonable.
+One possibility is a Monte Carlo simulation,
+where we calculate the mean optimal policy
+{%
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  \begin{equation}
+    \optpolicymean_t
+    \ceq \frac{1}{m_\mathrm{MC}} \sum_{j=1}^{m_\mathrm{MC}} \optpolicyfcn_{t,(j)}
+  \end{equation}%
+}%
+for $m_\mathrm{MC} \in \nat$ individuals.
+The optimal policies $\optpolicyfcn_{t,(j)}$ of the individuals
+($t = 0, \dotsc, T$ and $j = 1, \dotsc, m_\mathrm{MC}$)
+are determined by
+\begin{subequations}
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  \begin{align}
+    \optpolicyfcn_{t,(j)}
+    &\ceq \optpolicyintp[p]_t(\state_{t,(j)}),\\
+    \state_{t,(j)}
+    &\ceq \statefcn_{t-1}(
+      \state_{t-1,(j)}, \optpolicyfcn_{t-1,(j)}, \stochastic_{t-1,(j)}
+    ),\quad
+    t > 0,\qquad
+    \state_{0,(j)}
+    \sim P_{0,\state},\\
+    \stochastic_{t,(j)}
+    &\centerhphantom{\sim}{\hspace*{1.6em}} P_{t,\stochastic},
+  \end{align}
+\end{subequations}
+i.e., the initial state $\state_{0,(j)}$ and the
+stochastic variables $\stochastic_{t,(j)}$ are samples of random variables.
+Monte Carlo simulations enable us to draw macro-economic conclusions,
+e.g., the evolution of the amount of consumption of the average individual
+over time.

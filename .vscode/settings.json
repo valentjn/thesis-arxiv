@@ -1,0 +1,7 @@
+{
+  "files.trimTrailingWhitespace": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/*.aux": true,
+  }
+}

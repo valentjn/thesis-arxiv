@@ -1,0 +1,34 @@
+\printbibliography[%
+  % change title
+  title=Bibliography,
+  % use custom heading
+  heading=myheading,
+  % print custom note
+  postnote=mypostnote,
+]
+
+\iftoggle{partialCompileMode}{
+  \cleardoublepage
+}{
+  \cleardoublepage
+  \thispagestyle{empty}
+  \null
+  \cleardoubleevenpage
+  
+  \thispagestyle{empty}
+  \newgeometry{
+    bindingoffset=0mm,
+    inner=0mm,
+    outer=0mm,
+    top=0mm,
+    bottom=0mm,
+  }
+  
+  \vspace*{\fill}
+  
+  \begin{center}
+    \includegraphics[scale=2]{sunset}
+  \end{center}
+  
+  \vspace*{\fill}
+}

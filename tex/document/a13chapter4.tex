@@ -1,0 +1,1162 @@
+\section{Proofs for Chapter 4}
+\label{sec:a13chapter4}
+
+\disableornamentsfornextheadingtrue
+\subsection{Combinatorial Proof of the Combination Technique}
+\label{sec:a131proofCombiTechnique}
+
+\addtocontents{lop}{\protect\fi}
+
+\begin{definition}[binomial coefficient for integer parameters]
+  \label{def:binomialCoefficient}
+  The binomial coefficient $\binom{n}{k}$ is defined for
+  $n \in \natz$ and $k \in \integer$ as
+  \begin{equation}
+    \binom{n}{k}
+    \ceq
+    \begin{cases}
+      \frac{n (n - 1) \dotsm (n - (k-1))}{k!},&0 < k < n,\\
+      1,&(k = 0) \lor (k = n),\\
+      0,&(k < 0) \lor (k > n).
+    \end{cases}
+  \end{equation}
+\end{definition}
+
+\begin{lemma}[inclusion-exclusion counting lemma]
+  \label{lemma:inclusionExclusionCountingLemma}
+  For $a \in \natz$, $r \ge a$, and $s \in \integer$, we have
+  \begin{equation}
+    \sum_{q=0}^a (-1)^q \binom{a}{q} \binom{r-q}{s}
+    = \binom{r-a}{s-a}.
+  \end{equation}
+\end{lemma}
+
+\begin{proof}
+  We apply the upper negation formula
+  (see Eq. (5.14) of \cite{Graham94Concrete})
+  to the second binomial of the \lhs:
+  \begin{subequations}
+    \begin{align}
+      \sum_{q=0}^a (-1)^q \binom{a}{q} \binom{r-q}{s}
+      &= (-1)^s \sum_{q=0}^a \binom{a}{0+q} \binom{(s-r-1)+q}{s} (-1)^q.\\
+      \intertext{%
+        This sum can be simplified using the identity
+        in Eq.\ (5.24) of \cite{Graham94Concrete}
+        (the sum has already been written in the same way as in
+        \cite{Graham94Concrete}):%
+      }
+      \cdots
+      &= (-1)^{s+a} \binom{s-r-1}{s-a}.\\
+      \intertext{%
+        Applying the upper negation formula again,%
+      }
+      \cdots
+      &= \binom{r-a}{s-a},
+    \end{align}
+  \end{subequations}
+  we obtain the desired quantity.
+\end{proof}
+
+\addtocontents{lop}{\protect\iffalse}
+
+\propCombiTechniqueOne*
+
+\begin{proof}
+  Let $q = 0, \dotsc, d - 1$ and $\gp{\*l,\*i} \in \regsgset{n}{d}$, i.e.,
+  $\normone{\*l} \le n$ and $\*i \in \hiset{\*l}$.
+  Note that for $\*l' \in \natz^d$, we have
+  $\fgset{\*l'} \ni \gp{\*l,\*i} \iff \*l' \ge \*l$.
+  Hence,
+  \begin{subequations}
+    \begin{align}
+      \setsize{
+        \{\*l' \mid \normone{\*l'} = n - q,\; \fgset{\*l'} \ni \gp{\*l,\*i}\}
+      }
+      &= \setsize{
+        \{\*l' \mid \normone{\*l'} = n - q,\; \*l' \ge \*l\}
+      }\\
+      &= \setsize{
+        \{\*a \in \natz^d \mid \normone{\*a} = n - q - \normone{\*l}\}
+      }\\
+      \intertext{%
+        by mapping $\*a \ceq \*l' - \*l$.
+        The size of the last set is
+        known as the number of \term{weak compositions}
+        of $n - q - \normone{\*l}$ into $d$ parts
+        and can be computed as%
+      }
+      \cdots
+      &= \binom{n - q - \normone{\*l} + d - 1}{d - 1},
+    \end{align}
+  \end{subequations}
+  see Theorem 2.2 of \cite{Bona15Introduction}.
+  Now, we can use \cref{lemma:inclusionExclusionCountingLemma}
+  with the values
+  $a \ceq s \ceq d - 1$ and
+  $r \ceq n - \normone{\*l} + d - 1$
+  to conclude that the \lhs of the assertion
+  \eqref{eq:combiTechniqueOne} equals
+  \begin{equation}
+    \sum_{q=0}^{d-1} (-1)^q \binom{d-1}{q} \cdot
+    \binom{n - q - \normone{\*l} + d - 1}{d - 1}
+    = \binom{n - \normone{\*l}}{0}
+    = 1,
+  \end{equation}
+  proving the proposition.
+\end{proof}
+
+\addtocontents{lop}{\protect\fi}
+
+\begin{shortlemma}[relation is equivalence relation]
+  \label{lemma:combiTechniqueEquivalenceRelation}
+  $\eq$ is an equivalence relation.
+\end{shortlemma}
+
+\begin{proof}
+  We check reflexivity, symmetry, and transitivity of $\eq$:
+  \begin{itemize}
+    \item
+    \emph{Reflexivity:}
+    Using the same level $\*l' = \*l''$ implies
+    $T_{\*l',\*l'} = \{t \mid l'_t < l_t\}$.
+    For all $t \notin T_{\*l',\*l'}$, we have $l'_t \ge l_t$.
+    Consequently, $\*l' \eq \*l'$.
+    
+    \item
+    \emph{Symmetry:}
+    We have
+    $\*l' \eq \*l'' \iff \*l'' \eq \*l'$, since
+    $T_{\*l',\*l''} = T_{\*l'',\*l'}$ and
+    $\min\{l'_t, l''_t\} = \min\{l''_t, l'_t\}$.
+    
+    \item
+    \emph{Transitivity:}
+    Let $\*l' \eq \hat{\*l}$, $\hat{\*l} \eq \*l''$, and
+    $t \notin T_{\*l',\*l''}$.
+    From the definition of $T_{\*l',\*l''}$,
+    it holds that either $l'_t \not= l''_t$ or $l'_t = l''_t \ge l_t$.
+    As $l'_t = l''_t \ge l_t$ already implies $\min\{l'_t, l''_t\} \ge l_t$,
+    we assume that $l'_t \not= l''_t$.
+    Here, we have three cases:
+    \begin{itemize}
+      \item
+      \mbox{\emph{Case 1:} ${l'_t \not= \hat{l}_t = l''_t}$.}
+      $t \notin T_{\*l',\hat{\*l}}$ implies $l'_t \ge l_t$ and
+      $l''_t = \hat{l}_t \ge l_t$.
+      Therefore, $\min\{l'_t, l''_t\} \ge l_t$.
+      
+      \item
+      \mbox{\emph{Case 2:} ${l'_t = \hat{l}_t \not= l''_t}$.}
+      Analogously to the first case, we conclude $\min\{l'_t, l''_t\} \ge l_t$.
+      
+      \item
+      \mbox{\emph{Case 3:} ${l'_t \not= \hat{l}_t \not= l''_t}$.}
+      $t \notin T_{\*l',\hat{\*l}}$ implies $l'_t \ge l_t$ and
+      $t \notin T_{\*l'',\hat{\*l}}$ implies $l''_t \ge l_t$.
+      Hence, $\min\{l'_t, l''_t\} \ge l_t$.
+    \end{itemize}
+    Therefore, it holds that $\min\{l'_t, l''_t\} \ge l_t$
+    for all $t \notin T_{\*l',\*l''}$, i.e., $\*l' \eq \*l''$.
+  \end{itemize}
+  This shows that $\eq$ is an equivalence relation.
+\end{proof}
+
+\addtocontents{lop}{\protect\iffalse}
+
+\lemmaCombiTechniqueIdenticalValues*
+
+\begin{proof}
+  First, we note that $T_{\*l',\*l''} \not= \emptyset$.
+  Otherwise, for $T_{\*l',\*l''} = \emptyset$,
+  we have $\min\{l'_t, l''_t\} \ge l_t$
+  for all $t = 1, \dotsc, d$, which implies $\*l' \ge \*l$, i.e.,
+  $\fgset{\*l'} \ni \gp{\*l,\*i}$.
+  This contradicts the fact that $\*l' \in L$, where $L$ is defined
+  in \eqref{eq:combiTechniqueSpecialLevelSet}
+  (which holds as our equivalence relation is only defined on $L$).
+  Therefore, $T_{\*l',\*l''} \not= \emptyset$ must hold.
+  Without loss of generality,
+  we assume that $T_{\*l',\*l''} = \{1, \dotsc, m\}$
+  for some $m \in \{1, \dotsc, d\}$.
+  
+  Let
+  \begin{equation}
+    S \ceq \gp{\*l,\*i} + \spn\{\stdbasis{1}, \dotsc, \stdbasis{m}\}
+    = \{\gp{\*l,\*i} + \textstyle\sum_{t=1}^m c_t \stdbasis{t} \mid
+    c_1, \dotsc, c_m \in \real\}
+  \end{equation}
+  be the $m$-dimensional affine subspace of $\real^d$
+  through $\gp{\*l, \*i}$
+  parallel to the dimensions $1, \dotsc, m$,
+  where $\stdbasis{t}$ is the $t$-th standard basis vector.
+  It holds that $S \cap \fgset{\*l'} = S \cap \fgset{\*l''}$ due to
+  $l'_t = l''_t$ for $t \le m$.%
+  \footnote{%
+    In more detail:
+    If we have an $\gp{\hat{\*l},\hat{\*i}} \in S \cap \fgset{\*l'}$,
+    then $\fa{t \le m}{\hat{l}_t \le l'_t = l''_t}$ and
+    $\fa{t > m}{\hat{l}_t = l_t \le l''_t}$, i.e.,
+    $\hat{\*l} \le \*l''$ and therefore
+    $\gp{\hat{\*l},\hat{\*i}} \in S \cap \fgset{\*l''}$.%
+  }
+  
+  On this $m$-dimensional grid $S \cap \fgset{\*l'} = S \cap \fgset{\*l''}$,
+  the full grid interpolants $\fgintp{\*l'}$ and $\fgintp{\*l''}$
+  coincide, as both interpolate the function values given by
+  the objective function $\objfun$:
+  \begin{equation}
+    \label{eq:proofCombiTechniqueIdenticalValues1}
+    \restrictfcn{\fgintp{\*l'}}{S \cap \fgset{\*l'}}
+    = \restrictfcn{\objfun}{S \cap \fgset{\*l'}}
+    =  \restrictfcn{\fgintp{\*l''}}{S \cap \fgset{\*l'}}.
+  \end{equation}
+  However, this does not suffice to conclude
+  $\fgintp{\*l'}(\gp{\*l,\*i}) = \fgintp{\*l''}(\gp{\*l,\*i})$,
+  since $\gp{\*l,\*i} \notin \fgset{\*l'}$.
+  
+  To this end, we recall from \eqref{eq:interpFullGridMV} that
+  \begin{equation}
+    \fgintp{\*l'}
+    = \sum_{\*i'=\*0}^{\*2^{\*l'}} \interpcoeff{\*l',\*i'}
+    \basis{\*l',\*i'},\quad
+    \interpcoeff{\*l',\*i'} \in \real.
+  \end{equation}
+  This implies that the $m$-variate restricted interpolant
+  $\restrictfcn{\fgintp{\*l'}}{S \cap \clint{\*0, \*1}}$ can be written as
+  \begin{subequations}
+    \begin{align}
+      (\restrictfcn{\fgintp{\*l'}}{S \cap \clint{\*0, \*1}})
+      (\*x_{\range{1}{m}})
+      &\mathrel{\righthphantom{=}{\ceq}}
+      \sum_{\*i'_{\range{1}{m}}=\*0}^{\*2^{\*l'_{\range{1}{m}}}}
+      \interpcoefftilde{\*l'_{\range{1}{m}},\*i'_{\range{1}{m}}}
+      \basis{\*l'_{\range{1}{m}},\*i'_{\range{1}{m}}}(\*x_{\range{1}{m}}),\quad
+      \*x_{\range{1}{m}} \in \clint{0, 1}^m,\\
+      \interpcoefftilde{\*l'_{\range{1}{m}},\*i'_{\range{1}{m}}}
+      &\ceq \sum_{\*i'_{\range{m+1}{d}}=\*0}^{\*2^{\*l'_{\range{m+1}{d}}}}
+      \interpcoeff{\*l',\*i'}
+      \basis{\*l'_{\range{m+1}{d}},\*i'_{\range{m+1}{d}}}%
+      (\gp{\*l_{\range{m+1}{d}},\*i_{\range{m+1}{d}}})
+    \end{align}
+  \end{subequations}
+  by factoring out tensor product factors corresponding to dimensions
+  $m + 1, \dotsc, d$.
+  The subscripts $\range{1}{m}$ and $\range{m+1}{d}$ denote
+  the entries with respect to the dimensions $1, \dotsc, m$ and
+  $m + 1, \dotsc, d$, respectively.
+  As a result,
+  both $\restrictfcn{\fgintp{\*l'}}{S \cap \clint{\*0, \*1}}$
+  and, analogously,
+  $\restrictfcn{\fgintp{\*l''}}{S \cap \clint{\*0, \*1}}$
+  are interpolants of $\objfun$ in
+  $\ns{\*l'_{\range{1}{m}}} = \ns{\*l''_{\range{1}{m}}}$.
+  Due to \thmref{lemma:tensorProductLinearIndependence},
+  it follows from \eqref{eq:proofCombiTechniqueIdenticalValues1}
+  that they must be the same:
+  \begin{equation}
+    \restrictfcn{\fgintp{\*l'}}{S \cap \clint{\*0, \*1}}
+    = \restrictfcn{\fgintp{\*l''}}{S \cap \clint{\*0, \*1}}.
+  \end{equation}
+  Consequently, $\fgintp{\*l'}(\gp{\*l,\*i}) = \fgintp{\*l''}(\gp{\*l,\*i})$
+  as $\gp{\*l,\*i} \in S \cap \clint{\*0, \*1}$.
+\end{proof}
+
+\lemmaCombiTechniqueCharacterization*
+
+\begin{proof}
+  ``$\subset$'':
+  Let $\*l' \in L_0$.
+  We have to prove that
+  $\fa{t \in T_{L_0}}{l'_t = l^\ast_t}$ and
+  $\fa{t \notin T_{L_0}}{l'_t \ge l_t}$.
+  The first statement is clear by the definition of $T_{L_0}$.
+  Therefore, let $t \notin T_{L_0}$.
+  By the definition of $T_{L_0}$,
+  we have either
+  $\ex{\hat{\*l} \in L_0}{l'_t \not= \hat{l}_t}$ or
+  $\fa{\hat{\*l} \in L_0}{l'_t = \hat{l}_t \ge l_t}$.
+  In the latter case, we obtain $l'_t \ge l_t$
+  (e.g., by setting $\hat{\*l}$ to $\*l'$).
+  In the former case, there is an $\hat{\*l} \in L_0$ such that
+  $l'_t \not= \hat{l}_t$.
+  Due to $\*l' \eq \hat{\*l}$
+  (since $\*l'$ and $\hat{\*l}$ are both contained in the same
+  equivalence class $L_0$) and $t \notin T_{\*l',\hat{\*l}}$,
+  we have $\min\{l'_t, \hat{l}_t\} \ge l_t$.
+  This implies $\fa{t \notin T_{L_0}}{l'_t \ge l_t}$, as desired.
+  
+  ``$\supset$'':
+  Let $\*l' \in L$ such that
+  $\fa{t \in T_{L_0}}{l'_t = l^\ast_t}$ and
+  $\fa{t \notin T_{L_0}}{l'_t \ge l_t}$.
+  Furthermore,
+  let $\*l'' \in L_0$ be an arbitrary representative of $L_0$.
+  We prove that $\*l' \eq \*l''$ (i.e., $\*l' \in L_0$).
+  Note that $T_{L_0} \subset T_{\*l',\*l''}$,
+  as $t \in T_{L_0}$ implies
+  $l''_t = l^\ast_t < l_t$, which can be combined with $l'_t = l^\ast_t$
+  to $l'_t = l''_t < l_t$, i.e., $t \in T_{\*l',\*l''}$.
+  
+  To prove the equivalence of $\*l'$ and $\*l''$,
+  let $t \notin T_{\*l',\*l''}$,
+  i.e., $t \notin T_{L_0}$.
+  By assumption on $\*l'$, it holds $l'_t \ge l_t$.
+  Hence, it remains to show that $l''_t \ge l_t$ as well.
+  Again, by definition of $T_{L_0}$, we have either
+  $\ex{\hat{\*l} \in L_0}{l''_t \not= \hat{l}_t}$ or
+  $\fa{\hat{\*l} \in L_0}{l''_t = \hat{l}_t \ge l_t}$.
+  In the second case, it holds $l''_t \ge l_t$.
+  In the first case, there is an $\hat{\*l} \in L_0$ such that
+  $l''_t \not= \hat{l}_t$.
+  Due to $\*l'' \eq \hat{\*l}$
+  (since $\*l''$ and $\hat{\*l}$ are both contained in the same
+  equivalence class $L_0$) and $t \notin T_{\*l'',\hat{\*l}}$,
+  we have $\min\{l''_t, \hat{l}_t\} \ge l_t$.
+  In particular, $l''_t \ge l_t$.
+  In total, we have $\min\{l'_t, l''_t\} \ge l_t$ for all
+  $t \notin T_{\*l',\*l''}$, proving that $\*l'$ and $\*l''$ are equivalent,
+  as asserted.
+\end{proof}
+
+\propCombiTechniqueZero*
+
+\begin{proof}
+  \Cref{lemma:combiTechniqueIdenticalValues}
+  implies that the summands $\fgintp{\*l'}(\gp{\*l,\*i})$
+  corresponding to levels $\*l'$ of the same equivalence class
+  $L_0 \in \eqclasses{L}{\eq}$ are identical.
+  Let $f_{L_0}$ denote the common function value.
+  The sum in the \lhs of the assertion can be reordered to combine
+  levels of the equivalence classes $L_0 \in \eqclasses{L}{\eq}$:
+  \begin{subequations}
+    \begin{align}
+      &\sum_{q=0}^{d-1} (-1)^q \binom{d-1}{q} \cdot
+      \sum_{\substack{\normone{\*l'} = n - q\\\fgset{\*l'} \notni \gp{\*l,\*i}}}
+      \fgintp{\*l'}(\gp{\*l,\*i})\\
+      \label{eq:proofCombiTechniqueIdenticalValues2}
+      &= \sum_{L_0 \in \eqclasses{L}{\eq}} f_{L_0} \sum_{q=0}^{d-1}
+      (-1)^q \binom{d-1}{q} \cdot
+      \setsize{\{\*l' \in L_0 \mid \normone{\*l'} = n - q\}}.
+    \end{align}
+  \end{subequations}
+  It now suffices to show that the inner sum vanishes
+  for every equivalence class $L_0 \in \eqclasses{L}{\eq}$.
+  
+  To this end, we have to calculate
+  $\setsize{\{\*l' \in L_0 \mid \normone{\*l'} = n - q\}}$
+  for a fixed equivalence class $L_0$.
+  Without loss of generality,
+  let $T_{L_0} = \{1, \dotsc, m\}$ in the notation of
+  \thmref{lemma:combiTechniqueCharacterization}
+  with $1 \le m \le d$.
+  Note that the case $m = 0$ is impossible:
+  Otherwise, $T_{L_0} = \emptyset$ implies
+  $\fa{\*l' \in L_0}{\*l' \ge \*l}$ by
+  \cref{lemma:combiTechniqueCharacterization}, and
+  as equivalence classes are non-empty,
+  there is at least one $\*l' \in L_0$ with $\*l' \ge \*l$.
+  However, this is equivalent to $\fgset{\*l'} \ni \gp{\*l,\*i}$,
+  which contradicts $\*l' \in L$.
+  Hence, we have $m > 0$.
+  
+  To enumerate all levels $\*l' \in L_0$ with $\normone{\*l'} = n - q$,
+  we exploit the characterization of $L_0$ of
+  \cref{lemma:combiTechniqueCharacterization}.
+  For notational convenience, we define the vector
+  \begin{equation}
+    \hat{\*l}
+    \ceq (l^\ast_1, \dotsc, l^\ast_m,\; l_{m+1}, \dotsc, l_d),
+  \end{equation}
+  where $\*l^\ast$ is given as in \cref{lemma:combiTechniqueCharacterization}.
+  We show that $\*a \ceq (l'_t - l_t)_{t = m+1, \dotsc, d}$
+  constitutes a bijection between
+  \begin{equation}
+    \{\*l' \in L_0 \mid \normone{\*l'} = n - q\}
+    \quad\text{and}\quad
+    \{\*a \in \natz^{d-m} \mid \normone{\*a} = n - q - \normone{\hat{\*l}}\}
+    \colon
+  \end{equation}
+  \begin{itemize}
+    \item
+    Let $\*l' \in L_0$ with $\normone{\*l'} = n - q$.
+    Then, $\fa{t=m+1,\dotsc,d}{l'_t - l_t \ge 0}$
+    (by \cref{lemma:combiTechniqueCharacterization}), i.e.,
+    $\*a \in \natz^{d-m}$, and
+    \begin{equation}
+      \normone{\*a}
+      = \sum_{t=m+1}^d (l'_t - l_t)
+      = \paren*{\normone{\*l'} - \sum_{t=1}^m l'_t} -
+      \sum_{t=m+1}^d \hat{l}_t
+      = n - q - \normone{\hat{\*l}}.
+    \end{equation}
+    
+    \item
+    Conversely, let $\*a \in \natz^{d-m}$ with
+    $\normone{\*a} = n - q - \normone{\hat{\*l}}$.
+    If we define $\*l'$ as
+    \begin{equation}
+      \*l'
+      = (l^\ast_1, \dotsc, l^\ast_m,\;
+      a_1 + l_{m+1}, \dotsc, a_{d-m} + l_d),
+    \end{equation}
+    then $\fa{t=1,\dotsc,m}{l'_t = l^\ast_t < l_t}$ and
+    $\fa{t=m+1,\dotsc,d}{l'_t \ge l_t}$.
+    By \cref{lemma:combiTechniqueCharacterization},
+    we obtain $\*l' \in L_0$ and
+    \begin{equation}
+      \normone{\*l'}
+      = \normone{\hat{\*l}} + \normone{\*a}
+      = n - q.
+    \end{equation}
+  \end{itemize}
+  This bijection implies that
+  \begin{subequations}
+    \begin{align}
+      \setsize{\{\*l' \in L_0 \mid \normone{\*l'} = n - q\}}
+      &= \setsize{
+        \{\*a \in \natz^{d-m} \mid \normone{\*a} = n - q - \normone{\hat{\*l}}\}
+      }.\\
+      \intertext{%
+        This is the number of weak decompositions of
+        $n - q - \normone{\hat{\*l}}$ into $d - m$ parts:%
+      }
+      \cdots
+      &= \binom{n - q - \normone{\hat{\*l}} + d - m - 1}{d - m - 1},
+    \end{align}
+  \end{subequations}
+  see Theorem 2.2 of \cite{Bona15Introduction}.
+  We insert this quantity into the inner sum of
+  \eqref{eq:proofCombiTechniqueIdenticalValues2}:
+  \begin{subequations}
+    \label{eq:proofCombiTechniqueIdenticalValues3}
+    \begin{align}
+      &\sum_{q=0}^{d-1}
+      (-1)^q \binom{d-1}{q} \cdot
+      \setsize{\{\*l' \in L_0 \mid \normone{\*l'} = n - q\}}\\
+      &= \sum_{q=0}^{d-1} (-1)^q \binom{d-1}{q} \cdot
+      \binom{n - q - \normone{\hat{\*l}} + d - m - 1}{d - m - 1}.
+    \end{align}
+  \end{subequations}
+  Again, we apply \thmref{lemma:inclusionExclusionCountingLemma}
+  with the values $a \ceq d - 1$,
+  $r \ceq n - \normone{\hat{\*l}} + d - m - 1$, and
+  $s \ceq d - m - 1$ to infer that as claimed,
+  \eqref{eq:proofCombiTechniqueIdenticalValues3} is equal to
+  \begin{equation}
+  \label{eq:proofCombiTechniqueIdenticalValues4}
+    \binom{n - \normone{\hat{\*l}} - m}{-m}
+    = 0
+  \end{equation}
+  by the convention for binomial coefficients in \cref{def:binomialCoefficient}
+  as $-m < 0$.
+  
+  Note that for the calculation in
+  \cref{%
+    eq:proofCombiTechniqueIdenticalValues3,%
+    eq:proofCombiTechniqueIdenticalValues4%
+  }
+  to be correct,
+  we have to ensure that $n - \normone{\hat{\*l}} - m \ge 0$;
+  otherwise, the binomial coefficients would not be well-defined.
+  This is a direct consequence of the fact that $l^\ast_t < l_t$
+  for all $t = 1, \dotsc, m$
+  (see \cref{lemma:combiTechniqueCharacterization}) as
+  \begin{equation}
+    n - \normone{\hat{\*l}} - m
+    = n - \sum_{t=1}^m l^\ast_t - \sum_{\mathclap{t=m+1}}^d l_t - m
+    \ge n - \sum_{t=1}^m (l_t - 1) - \sum_{\mathclap{t=m+1}}^d l_t - m
+    = n - \normone{\*l}
+    \ge 0,
+  \end{equation}
+  where we have used $l^\ast_t \le l_t - 1$ for $t = 1, \dotsc, m$
+  and $\normone{\*l} \le n$.
+\end{proof}
+
+
+
+\fillsubsectionornament
+\subsection{Correctness Proof of the Method of Residual Interpolation}
+\label{sec:a132proofResidualInterpolation}
+
+\propInvariantResidualInterpolation*
+
+\begin{proof}
+  \newcommand*{\eqwithref}[1]{%
+    \quad\;%
+    \if\relax\detokenize{#1}\relax%
+      \mathclap{=}%
+    \else%
+      \mathclap{\overset{\eqref{eq:propInvariantResidualInterpolation#1}}{=}}%
+    \fi%
+    \quad\;%
+  }%
+  %
+  We prove the assertion by induction over $j = 1, \dotsc, m$.
+  We will need the following two equations
+  that directly follow from the algorithm
+  (\cref{%
+    line:algResidualInterpolation3,%
+    line:algResidualInterpolation2,%
+    line:algResidualInterpolation4%
+  }, respectively):%
+  \begin{subequations}
+    \begin{alignat}{3}
+      \label{eq:propInvariantResidualInterpolation5}
+      r_{\*l^{(j)}}^{(j-1)}(\gp{\*l,\*i})
+      &= r^{(j-1)}(\gp{\*l,\*i}),\quad
+      &&\*l \le \*l^{(j)},\;\;
+      &&\*i \in \hiset{\*l},\\
+      \label{eq:propInvariantResidualInterpolation6}
+      r^{(j)}(\gp{\*l,\*i})
+      &= r^{(j-1)}(\gp{\*l,\*i}) - r_{\*l^{(j)}}^{(j-1)}(\gp{\*l,\*i}),\quad
+      &&\*l \in L,\;\;
+      &&\*i \in \hiset{\*l}.
+    \end{alignat}
+  \end{subequations}
+  
+  \vspace*{-2em}
+  \pagebreak
+  
+  \noindent
+  \textbf{Induction base case:}
+  For $j = 1$, there is nothing to show for
+  \eqref{eq:propInvariantResidualInterpolation1}.
+  \Cref{eq:propInvariantResidualInterpolation2}
+  can be proven as follows:
+  \begin{equation}
+    r^{(1)}(\gp{\*l,\*i})
+    \eqwithref{6}
+    r^{(0)}(\gp{\*l,\*i}) - r_{\*l^{(1)}}^{(0)}(\gp{\*l,\*i})
+    \eqwithref{5} 0,\qquad
+    \*l \le \*l^{(1)},\; \*i \in \hiset{\*l}.
+  \end{equation}
+  \Cref{eq:propInvariantResidualInterpolation3}
+  holds as $r_{\*l^{(1)}}^{(0)} = f^{\sparse,(1)}$
+  (by \cref{line:algResidualInterpolation2} in
+  \cref{alg:residualInterpolation}) and, therefore,
+  \begin{align}
+    r^{(1)}(\gp{\*l,\*i})
+    \eqwithref{6}
+    r^{(0)}(\gp{\*l,\*i}) - r_{\*l^{(1)}}^{(0)}(\gp{\*l,\*i})
+    = \fcnval{\*l,\*i} - f^{\sparse,(1)}(\gp{\*l,\*i}),\quad
+    \*l \in L,\; \*i \in \hiset{\*l}.
+  \end{align}
+  
+  \noindent
+  \textbf{Induction step case:}
+  We show the three statements for the induction step $j \to (j + 1)$.
+  \begin{itemize}
+    \item
+    \emph{Showing \eqref{eq:propInvariantResidualInterpolation1} for $j + 1$:}
+    Let $j' = 1, \dotsc, j$, $\*l \le \*l^{(j')}$,
+    and $\*i \in \hiset{\*l}$.
+    Due to the ordering of the levels $\*l^{(1)}, \dotsc, \*l^{(m)}$,
+    we can conclude from $j + 1 > j'$ that
+    $\normone{\*l^{(j+1)}} \le \normone{\*l^{(j')}}$.
+    This implies that there must be a $t' \in \{1, \dotsc, d\}$
+    such that $l_{t'}^{(j+1)} \le l_{t'}^{(j')}$.
+    Let $S$ be the line in $\real^d$ defined by
+    \begin{equation}
+      S
+      \ceq \gp{\*l,\*i} + \spn\{\stdbasis{t'}\},
+    \end{equation}
+    where $\stdbasis{t'}$ is the $t'$-th standard basis vector.
+    It holds that $S \cap \fgset{\*l^{(j+1)}} \subset \fgset{\*l^{(j')}}$.
+    To show this, let $\gp{\*l',\*i'} \in S \cap \fgset{\*l^{(j+1)}}$
+    be arbitrary (with $\*i' \in \hiset{\*l'}$).
+    Then, $\fa{t \not= t'}{l'_t = l_t \le l_t^{(j')}}$
+    (due to $\gp{\*l',\*i'} \in S$) and
+    $l'_{t'} \le l_{t'}^{(j+1)} \le l_{t'}^{(j')}$
+    (due to $\gp{\*l',\*i'} \in \fgset{\*l^{(j+1)}}$).
+    This means that $\*l' \le \*l^{(j')}$, which implies that
+    $\gp{\*l',\*i'} \in \fgset{\*l^{(j')}}$.
+    As $\gp{\*l',\*i'}$ is arbitrary,
+    this shows $S \cap \fgset{\*l^{(j+1)}} \subset \fgset{\*l^{(j')}}$.
+    
+    Thus, we infer
+    \begin{equation}
+      \label{eq:proofPropInvariantResidualInterpolation2}
+      r_{\*l^{(j+1)}}^{(j)}(\gp{\*l',\*i'})
+      \eqwithref{5}
+      r^{(j)}(\gp{\*l',\*i'})
+      \eqwithref{2}
+      0,\quad
+      \gp{\*l',\*i'} \in S \cap \fgset{\*l^{(j+1)}}
+      \subset \fgset{\*l^{(j')}},\;
+      i' \in \hiset{\*l'},
+    \end{equation}
+    with the induction hypothesis
+    \eqref{eq:propInvariantResidualInterpolation2} for $j$.
+    Unfortunately, this does not suffice to directly conclude that
+    $r_{\*l^{(j+1)}}^{(j)}(\gp{\*l,\*i}) = 0$ as
+    $\gp{\*l,\*i}$ is in general not contained in $\fgset{\*l^{(j+1)}}$.
+    
+    As in the proof of \cref{lemma:combiTechniqueIdenticalValues},
+    we exploit the tensor product nature of the basis functions and
+    restrict $r_{\*l^{(j+1)}}^{(j)}$ to $S \cap \clint{0, 1}$:
+    \begin{subequations}
+      \begin{align}
+        (\restrictfcn{r_{\*l^{(j+1)}}^{(j)}}{S \cap \clint{0, 1}})(x_{t'})
+        &\mathrel{\righthphantom{=}{\ceq}}
+        \sum_{l'_{t'}=0}^{l_{t'}^{(j+1)}}
+        \sum_{i'_{t'} \in \hiset{l'_{t'}}}
+        \surplustilde[(j+1)]{l'_{t'},i'_{t'}}
+        \basis{l'_{t'},i'_{t'}}(x_{t'}),\quad
+        x_{t'} \in \clint{0, 1},\\
+        \surplustilde[(j+1)]{l'_{t'},i'_{t'}}
+        &\ceq \sum_{\*l'_{-t'}=\*0}^{\*l^{(j+1)}_{-t'}}
+        \sum_{\*i'_{-t'} \in \hiset{\*l'_{-t'}}}
+        \surplus[(j+1)]{\*l',\*i'}
+        \basis{\*l'_{-t'},\*i'_{-t'}}(\gp{\*l_{-t'},\*i_{-t'}}),
+      \end{align}
+    \end{subequations}
+    where the subscript $-t'$ indicates all entries but the $t'$-th.
+    As a consequence, this shows that
+    $\restrictfcn{r_{\*l^{(j+1)}}^{(j)}}{S \cap \clint{0, 1}} \in
+    \ns{l_{t'}^{(j+1)}}$ is an interpolant of the zero function
+    (by \eqref{eq:proofPropInvariantResidualInterpolation2}).
+    Due to the linear independence of the univariate basis functions,
+    we conclude
+    \begin{equation}
+      \restrictfcn{r_{\*l^{(j+1)}}^{(j)}}{S \cap \clint{0, 1}}
+      \equiv 0.
+    \end{equation}
+    Consequently, we obtain
+    $r_{\*l^{(j+1)}}^{(j)}(\gp{\*l,\*i}) = 0$
+    as $\gp{\*l,\*i} \in S \cap \clint{\*0, \*1}$.
+    
+    \item
+    \emph{Showing \eqref{eq:propInvariantResidualInterpolation2} for $j + 1$:}
+    Let $j' = 1, \dotsc, j + 1$, $\*l \le \*l^{(j')}$,
+    and $\*i \in \hiset{\*l}$.
+    For the case $j' \le j$, we obtain
+    \begin{equation}
+      \label{eq:proofPropInvariantResidualInterpolation1}
+      r^{(j+1)}(\gp{\*l,\*i})
+      \eqwithref{6}
+      r^{(j)}(\gp{\*l,\*i}) - r_{\*l^{(j+1)}}^{(j)}(\gp{\*l,\*i})
+      = 0
+    \end{equation}
+    due to $r^{(j)}(\gp{\*l,\*i}) = 0$ by induction hypothesis
+    (\cref{eq:propInvariantResidualInterpolation2}) and
+    $r_{\*l^{(j+1)}}^{(j)}(\gp{\*l,\*i}) = 0$ as shown above
+    (\cref{eq:propInvariantResidualInterpolation1} for $j + 1$).
+    
+    For the case $j' = j + 1$,
+    \cref{eq:proofPropInvariantResidualInterpolation1}
+    still holds as the difference between
+    $r^{(j)}(\gp{\*l,\*i})$ and $r_{\*l^{(j+1)}}^{(j)}(\gp{\*l,\*i})$
+    vanishes due to \eqref{eq:propInvariantResidualInterpolation5}
+    for $j + 1$
+    (here, we need $\*l \le \*l^{(j+1)}$).
+    
+    \item
+    \emph{Showing \eqref{eq:propInvariantResidualInterpolation3} for $j + 1$:}
+    Let $\*l \in L$ and $\*i \in \hiset{\*l}$.
+    Then,
+    \begin{subequations}
+      \begin{align}
+        r^{(j+1)}(\gp{\*l,\*i})
+        &\eqwithref{6}
+        r^{(j)}(\gp{\*l,\*i}) - r_{\*l^{(j+1)}}^{(j)}(\gp{\*l,\*i}).\\
+        \intertext{%
+          The first term can replaced with the induction hypothesis
+          (\eqref{eq:propInvariantResidualInterpolation3} for $j$).
+          For the second term, note that
+          $r_{\*l^{(j+1)}}^{(j)}
+          = \sum_{\*l' \in \levelset} \sum_{\*i' \in \hiset{\*l'}}
+          \surplus[(j+1)]{\*l',\*i'} \basis{\*l',\*i'}
+          = f^{\sparse,(j+1)} - f^{\sparse,(j)}$ by definition.
+          Hence, we obtain as desired%
+        }
+        \cdots
+        &\eqwithref{} (\fcnval{\*l,\*i} - f^{\sparse,(j)}(\gp{\*l,\*i})) -
+        (f^{\sparse,(j+1)}(\gp{\*l,\*i}) - f^{\sparse,(j)}(\gp{\*l,\*i}))\\
+        &\eqwithref{} \fcnval{\*l,\*i} - f^{\sparse,(j+1)}(\gp{\*l,\*i}).
+      \end{align}
+    \end{subequations}
+  \end{itemize}
+  This shows the validity of the statements in
+  \eqref{eq:propInvariantResidualInterpolationStatements}
+  for $j + 1$.
+\end{proof}
+
+
+
+\subsection{Correctness Proof of Hierarchization with Breadth-First Search}
+\label{sec:a133proofBFS}
+
+\propInvariantBFS*
+
+\begin{proof}
+  We start with two observations:
+  
+  \begin{itemize}
+    \item
+    First, due to the breadth-first search nature of \cref{alg:BFS} and the
+    hierarchical relation \eqref{eq:directAncestor},
+    all grid points with level sum $< q$ are \pop{}ped before
+    the first point with level sum $\ge q$ is \pop{}ped.
+    
+    \item
+    Second, after \pop{}ping all grid points with
+    level sum $< q$, the output values of the grid points with
+    level sum $\le q$ remain unchanged for the rest of the algorithm:
+    If \cref{line:algBFS2} of the algorithm updates the output value of a point
+    $(\*l, \*i)$ in the iteration of $(\*l', \*i') \in \liset$ with
+    $\normone{\*l'} \ge q$, then \cref{line:algBFS1} implies
+    $\*l \ge \*l'$ and thus, $\normone{\*l} \ge \normone{\*l'} \ge q$.
+    However, $\normone{\*l} = q$ is not possible as
+    this would imply that $\normone{\*l} = \normone{\*l'}
+    \implies (\*l, \*i) = (\*l', \*i')$ by \cref{line:algBFS1},
+    but $(\*l, \*i) = (\*l', \*i')$ is explicitly excluded in the
+    \texttt{\algorithmicfor} loop of \cref{line:algBFS1}.
+    Therefore, we must have $\normone{\*l} > q$.
+    Hence, if a point $(\*l, \*i)$ with level sum $\ge q$ has been \pop{}ped,
+    only surpluses of points with level sum $> q$ may be updated.
+  \end{itemize}
+  
+  \noindent
+  Now, we prove the asserted claim by induction over $q$.
+  
+  \noindent
+  \textbf{Induction base case:}
+  For $q = 0$, \cref{alg:BFS} sets $\linout{\*l,\*i}$ to
+  $\fcnval{\*l,\*i}$ in \cref{line:algBFS3}.
+  As the sum in \eqref{eq:propInvariantBFS} is empty,
+  the claim is correct for $q = 0$.
+  
+  \noindent
+  \textbf{Induction step case:}
+  Let $\linout[(q)]{\*l',\*i'}$ and
+  $\linout[(q+1)]{\*l',\*i'}$
+  be the surpluses after \pop{}ping all
+  grid points with level sum $< q$ and $< q + 1$, respectively.
+  We show the induction step $q \to (q + 1)$, i.e.,
+  we assume that the assertion is true for $q$
+  and prove that after \pop{}ping all grid points with level sum $< q + 1$,
+  it holds
+  \begin{equation}
+    \label{eq:proofPropInvariantBFS1}
+    \linout[(q+1)]{\*l,\*i}
+    = \fcnval{\*l,\*i} -
+    \largesum{\normone{\*l'} < q+1} \linout[(q+1)]{\*l',\*i'}
+    \fundbasis{\*l',\*i'}(\gp{\*l,\*i}),\quad
+    (\*l, \*i) \in \liset,\;\;
+    \normone{\*l} = q+1.
+  \end{equation}
+  Therefore, let $(\*l, \*i) \in \liset$ fulfill $\normone{\*l} = q+1$.
+  The update in \cref{line:algBFS2} can safely be applied
+  with all grid points $(\*l', \*i')$ with level sum $q$.
+  The grid points $(\*l', \*i')$ that do not satisfy the relation in the set in
+  \cref{line:algBFS1} do not contribute as
+  $\fundbasis{\*l',\*i'}(\gp{\*l,\*i}) = 0$
+  due to the necessary condition \eqref{eq:fundamentalPropertyImplicationMV}.
+  By summing all updates from \cref{line:algBFS2}, we obtain
+  \begin{subequations}
+    \begin{align}
+      \linout[(q+1)]{\*l,\*i}
+      &= \linout[(q)]{\*l,\*i} -
+      \largesum{\normone{\*l'} = q} \linout[(q)]{\*l',\*i'}
+      \fundbasis{\*l',\*i'}(\gp{\*l,\*i}).\\
+      \intertext{%
+        After inserting the induction hypothesis
+        for the first $\linout[(q)]{\*l,\*i}$, we have%
+      }
+      \cdots
+      &= \paren*{
+        \fcnval{\*l,\*i} -
+        \largesum{\normone{\*l'} < q} \linout[(q)]{\*l',\*i'}
+        \fundbasis{\*l',\*i'}(\gp{\*l,\*i})
+      } -
+      \largesum{\normone{\*l'} = q} \linout[(q)]{\*l',\*i'}
+      \fundbasis{\*l',\*i'}(\gp{\*l,\*i})\\
+      &= \hphantom{\Biggl(}\fcnval{\*l,\*i} -
+      \largesum{\normone{\*l'} < q + 1} \linout[(q)]{\*l',\*i'}
+      \fundbasis{\*l',\*i'}(\gp{\*l,\*i}).
+    \end{align}
+  \end{subequations}
+  As noted above, we have
+  $\fa{(\*l', \*i'),\, \normone{\*l'} < q + 1}{
+    \linout[(q)]{\*l',\*i'} = \linout[(q+1)]{\*l',\*i'}
+  }$
+  (the values of points with level sum $< q + 1$
+  do not change after \pop{}ping all points with level sum $< q$).
+  This shows the induction claim \eqref{eq:proofPropInvariantBFS1}.
+\end{proof}
+
+
+
+\disableornamentsfornextheadingtrue
+\subsection{%
+  Proof for the Correctness of the Unidirectional Principle on
+  Spatially Adaptive Sparse Grids%
+}
+\label{sec:a134proofCorrectnessUnidirectionalPrincipleSASG}
+
+\lemmaChainExistenceSufficient*
+
+\begin{proof}
+  We prove the assertion by induction over $j = 0, \dotsc, d$.
+  
+  For $j = 0$, the operator $\upop{\emptyset}$ is by definition
+  \eqref{eq:upopProduct} the identity operator $\idop$.
+  The assumption $(\upop{\emptyset})_{\*k'',\*k'} \not= 0$
+  implies that $\*k' = \*k''$, since the identity matrix is diagonal.
+  Therefore, the chain $(\chain{0})$ from $\*k'$ to $\*k''$ is given by
+  $\chain{0} = \*k'$, which is contained in $\liset$.
+  
+  For the induction step $j \to (j+1)$, we split \cref{eq:upopProduct},
+  i.e.,
+  \begin{equation}
+    \upop{t_1,\dotsc,t_{j+1}}
+    = \upop{t_{j+1}} \upop{t_j} \dotsm \upop{t_1}
+    = \upop{t_{j+1}} \upop{t_1,\dotsc,t_j},
+  \end{equation}
+  and infer by assumption
+  \begin{equation}
+    \label{eq:proofLemmaChainExistenceSufficient1}
+    0
+    \not= (\upop{t_1,\dotsc,t_{j+1}})_{\*k'',\*k'}
+    = \sum_{\*k \in \liset} (\upop{t_{j+1}})_{\*k'',\*k}
+    (\upop{t_1,\dotsc,t_j})_{\*k,\*k'}.
+  \end{equation}
+  Consequently,
+  there is at least one summation index $\*k$
+  for which both factors do not vanish.
+  The first factor $(\upop{t_{j+1}})_{\*k'',\*k}$ can by definition
+  only be non-zero if $\*k \samepole{t_{j+1}} \*k''$.
+  The second factor $(\upop{t_1,\dotsc,t_j})_{\*k,\*k'}$ being
+  non-zero implies that by induction hypothesis,
+  $\liset$ contains the chain $(\chain{0}, \dotsc, \chain{j})$
+  from $\*k'$ to $\*k$ with respect to $(t_1, \dotsc, t_j)$.
+  The combination of both statements leads to
+  the chain $(\chain{0}, \dotsc, \chain{j}, \chain{j+1})$ from $\*k'$
+  to $\*k''$ with respect to $(t_1, \dotsc, t_{j+1})$.
+  All points of the chain are contained in $\liset$.
+\end{proof}
+
+\lemmaChainExistenceNecessary*
+
+\begin{proof}
+  Again, we prove the claim by induction over $j = 0, \dotsc, d$.
+  
+  For $j = 0$, the operator $\upop{\emptyset}$ is the identity operator.
+  Therefore, the \lhs of \eqref{eq:lemmaChainExistenceNecessary} is one
+  (due to $\chain{0} = \*k'$).
+  The \rhs is by convention also one, as it is an empty product.
+  
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  For the induction step $j \to (j+1)$, we consider again
+  \begin{equation}
+    \label{eq:proofLemmaChainExistenceNecessary1}
+    (\upop{t_1,\dotsc,t_{j+1}})_{\chain{j+1},\*k'}
+    = \sum_{\*k \in \liset} (\upop{t_{j+1}})_{\chain{j+1},\*k}
+    (\upop{t_1,\dotsc,t_j})_{\*k,\*k'}
+  \end{equation}%
+  similar to \eqref{eq:proofLemmaChainExistenceSufficient1}.
+  Recall that
+  \begin{subequations}
+    \begin{alignat}{4}
+      \chainuv{j}_t
+      &= k''_t
+      &&\;\;\text{and}\;\;
+      &\chainuv{j+1}_t
+      &= k''_t
+      &&\quad\text{for } t \in \{t_1, \dotsc, t_j\},\\
+      \label{eq:prooflemmaChainExistenceNecessary}
+      \chainuv{j}_t
+      &= k'_t
+      &&\;\;\text{and}\;\;
+      &\chainuv{j+1}_t
+      &= k''_t
+      &&\quad\text{for } t = t_{j+1},\\
+      \chainuv{j}_t
+      &= k'_t
+      &&\;\;\text{and}\;\;
+      &\chainuv{j+1}_t
+      &= k'_t
+      &&\quad\text{for } t \notin \{t_1, \dotsc, t_j, t_{j+1}\}.
+    \end{alignat}
+  \end{subequations}
+  We now argue that all summands of
+  \eqref{eq:proofLemmaChainExistenceNecessary1} vanish,
+  except the summand with index $\chain{j}$.
+  There are two cases for the summation index $\*k$,
+  if we assume $\*k \not= \chain{j}$:
+  \begin{itemize}
+    \item
+    If there is a $t \in \{t_1, \dotsc, t_j\}$ with $k_t \not= k''_t$,
+    then we have $k_t \not= k''_t = \chainuv{j+1}_t$.
+    Consequently, $\chain{j+1} \not\samepole{t_{j+1}} \*k$ and
+    $(\upop{t_{j+1}})_{\chain{j+1},\*k} = 0$ due to \eqref{eq:upopEntries},
+    i.e., the first factor of the $\*k$-th summand in
+    \eqref{eq:proofLemmaChainExistenceNecessary1} vanishes.
+    
+    \item
+    If there is a $t \notin \{t_1, \dotsc, t_j\}$ with $k_t \not= k'_t$,
+    then the second factor $(\upop{t_1,\dotsc,t_j})_{\*k,\*k'}$
+    of the $\*k$-th summand in
+    \eqref{eq:proofLemmaChainExistenceNecessary1} vanishes.
+    Indeed, if we assume the contrary,
+    then \cref{lemma:chainExistenceSufficient} implies that there is
+    a chain from $\*k'$ to $\*k$ with respect to $(t_1, \dotsc, t_j)$.
+    However, by definition of the chain, this means that
+    $\*k'$ and $\*k$ coincide in all other dimensions
+    (which are not in $\{t_1, \dotsc, t_j\}$).
+    This contradicts $k_t \not= k'_t$ and therefore
+    $(\upop{t_1,\dotsc,t_j})_{\*k,\*k'}$ must vanish.
+  \end{itemize}
+  We infer that only the summand $\*k = \chain{j}$ remains in
+  \eqref{eq:proofLemmaChainExistenceNecessary1}:
+  \begin{equation}
+    (\upop{t_1,\dotsc,t_{j+1}})_{\chain{j+1},\*k'}
+    = (\upop{t_{j+1}})_{\chain{j+1},\chain{j}}
+    (\upop{t_1,\dotsc,t_j})_{\chain{j},\*k'}.
+  \end{equation}
+  The first factor equals
+  \begin{equation}
+    (\upop{t_{j+1}})_{\chain{j+1},\chain{j}}
+    = (\upopuv{t_{j+1}}{\eqclass{\chain{j+1}}{\samepole{t_{j+1}}}})%
+    _{\chainuv{j+1}_{t_{j+1}},\chainuv{j}_{t_{j+1}}}
+    = (\upopuv{t_{j+1}}{\eqclass{\chain{j+1}}{\samepole{t_{j+1}}}})%
+    _{k''_{t_{j+1}},k'_{t_{j+1}}}
+  \end{equation}
+  by \cref{eq:upopEntries,eq:prooflemmaChainExistenceNecessary}
+  (and due to $\chain{j} \samepole{t_{j+1}} \chain{j+1}$).
+  The second factor equals
+  \begin{equation}
+    (\upop{t_1,\dotsc,t_j})_{\chain{j},\*k'}
+    =
+    (\upopuv{t_1}{\eqclass{\chain{1}}{\samepole{t_1}}})_{k''_{t_1},k'_{t_1}}
+    \dotsm
+    (\upopuv{t_j}{\eqclass{\chain{j}}{\samepole{t_j}}})_{k''_{t_j},k'_{t_j}}
+  \end{equation}
+  by induction hypothesis.
+  Hence, the product of both factors is
+  \begin{equation}
+    (\upop{t_1,\dotsc,t_{j+1}})_{\chain{j+1},\*k'}
+    =
+    (\upopuv{t_1}{\eqclass{\chain{1}}{\samepole{t_1}}})_{k''_{t_1},k'_{t_1}}
+    \dotsm
+    (\upopuv{t_{j+1}}{\eqclass{\chain{j+1}}{\samepole{t_{j+1}}}})%
+    _{k''_{t_{j+1}},k'_{t_{j+1}}}.
+    \vspace*{-2.5em}
+  \end{equation}
+\end{proof}
+
+\vspace*{1em}
+\pagebreak
+
+\propCorrectnessUPCharacterization*
+
+\begin{proof}
+  ``$\implies$'':
+  Let the \up be correct for $\linop$ and $(t_1, \dotsc, t_d)$
+  and $\*k', \*k'' \in \liset$ with $(\linop)_{\*k'',\*k'} \not= 0$.
+  Then, we obtain
+  \begin{equation}
+    (\upop{t_1,\dotsc,t_d})_{\*k'',\*k'}
+    = (\linop)_{\*k'',\*k'}
+    \not= 0.
+  \end{equation}
+  By \cref{lemma:chainExistenceSufficient},
+  this implies that $\liset$ contains the chain from $\*k'$ to $\*k''$
+  with respect to $(t_1, \dotsc, t_d)$.
+  
+  ``$\impliedby$'':
+  For the converse direction, we assume that there are chains
+  from $\*k'$ to $\*k''$ with respect to $(t_1, \dotsc, t_d)$
+  for all $\*k', \*k'' \in \liset$ with $(\linop)_{\*k'',\*k'} \not= 0$.
+  Let $\*k', \*k'' \in \liset$ be arbitrary.
+  There are two cases:
+  \begin{itemize}
+    \item
+    ${(\linop)_{\*k'',\*k'} \not= 0}$:
+    By assumption, $\liset$ contains the chain from $\*k'$ to $\*k''$
+    with respect to $(t_1, \dotsc, t_d)$.
+    We apply \cref{lemma:chainExistenceNecessary} with $j = d$
+    to infer
+    \begin{equation}
+      (\upop{t_1,\dotsc,t_d})_{\*k'',\*k'}
+      =
+      (\upopuv{t_1}{\eqclass{\chain{1}}{\samepole{t_1}}})_{k''_{t_1},k'_{t_1}}
+      \dotsm
+      (\upopuv{t_d}{\eqclass{\chain{d}}{\samepole{t_d}}})_{k''_{t_d},k'_{t_d}}
+      = (\linop)_{\*k'',\*k'}
+    \end{equation}
+    by the assumption \eqref{eq:tensorProductOperator} on
+    the tensor product structure of $\linop$.
+    
+    \item
+    ${(\linop)_{\*k'',\*k'} = 0}$:
+    In this case, $(\upop{t_1,\dotsc,t_d})_{\*k'',\*k'}$ must vanish as well.
+    Indeed, if we assume the contrary
+    $(\upop{t_1,\dotsc,t_d})_{\*k'',\*k'} \not= 0$,
+    then we can apply \cref{lemma:chainExistenceSufficient}
+    to obtain that $\liset$ contains the chain from $\*k'$ to $\*k''$
+    with respect to $(t_1, \dotsc, t_d)$.
+    We conclude with \cref{lemma:chainExistenceNecessary} as in the first case
+    that $(\upop{t_1,\dotsc,t_d})_{\*k'',\*k'} = (\linop)_{\*k'',\*k'} = 0$,
+    which is a contradiction.
+  \end{itemize}
+  In any case, we obtain
+  $(\upop{t_1,\dotsc,t_d})_{\*k'',\*k'} = (\linop)_{\*k'',\*k'}$,
+  from which follows the correctness of the \up\punctfix{,}
+  as $\*k'$ and $\*k''$ are arbitrary.
+\end{proof}
+
+
+
+\breakpagebeforenextheadingtrue
+\subsection{Correctness Proof of Hermite Hierarchization}
+\label{sec:a135proofHermiteHierarchization}
+
+\propInvariantHermiteHierarchization*
+
+\begin{proof}
+  We prove the assertion by induction over $l = 0, \dotsc, n$.
+  
+  For the induction base case $l = 0$ and $i \in \{0, 1\}$, we have
+  \begin{equation}
+    \sum_{i'=0}^1
+    \linout{0,i'} \deriv[q]{x}{\bspl[\wfs]{0,i'}{p}}(\gp{0,i})
+    = \kronecker{q}{0} \cdot \fcnval{0,i} +
+    \kronecker{q}{1} \cdot (\fcnval{0,1} - \fcnval{0,0})
+    = \deriv[q]{x}{\fgintp{0}}(\gp{0,i})
+  \end{equation}
+  for $q = 0, \dotsc, \frac{p-1}{2}$ by
+  \cref{%
+    line:algHermiteHierarchization1,%
+    line:algHermiteHierarchization3%
+  }
+  of \cref{alg:hermiteHierarchization}.
+  
+  For the induction step case $(l-1) \to l$,
+  it suffices to show that
+  \begin{equation}
+    \label{eq:proofPropInvariantHermiteHierarchization1}
+    \deriv[q]{x}{\fgintp{l-1}}(\gp{l,i})
+    \overset{!}{=} \sum_{l'=0}^{l-1} \sum_{i' \in \hiset{l'}}
+    \linout{l',i'} \deriv[q]{x}{\bspl[\wfs]{l',i'}{p}}(\gp{l,i}),\quad
+    i = 0, \dotsc, 2^l,\;\;
+    q = 0, \dotsc, \frac{p-1}{2}.
+  \end{equation}
+  Indeed, if \eqref{eq:proofPropInvariantHermiteHierarchization1} holds,
+  then we obtain by
+  \cref{line:algHermiteHierarchization6,line:algHermiteHierarchization8}
+  of \cref{alg:hermiteHierarchization}
+  \begin{subequations}
+    \begin{align}
+      \deriv[q]{x}{\fgintp{l}}(\gp{l,i})
+      &= \deriv[q]{x}{\fgintp{l-1}}(\gp{l,i}) +
+      \deriv[q]{x}{r^{(l)}_l}(\gp{l,i})\\
+      &= \sum_{l'=0}^{l-1} \sum_{i' \in \hiset{l'}}
+      \linout{l',i'} \deriv[q]{x}{\bspl[\wfs]{l',i'}{p}}(\gp{l,i}) +
+      \sum_{i' \in \hiset{l}}
+      \linout{l,i'} \deriv[q]{x}{\bspl[\wfs]{l,i'}{p}}(\gp{l,i})\\
+      &= \sum_{l'=0}^l \sum_{i' \in \hiset{l'}}
+      \linout{l',i'} \deriv[q]{x}{\bspl[\wfs]{l',i'}{p}}(\gp{l,i}),
+    \end{align}
+  \end{subequations}
+  which is the desired relation
+  \eqref{eq:propInvariantHermiteHierarchization}
+  for level $l$.
+  
+  To prove \eqref{eq:proofPropInvariantHermiteHierarchization1},
+  we separate two cases:
+  \begin{itemize}
+    \item
+    \mbox{${i \notin \hiset{l}}$: In this case,}
+    the ``true'' level of $\gp{l,i}$ is actually $\le l - 1$.
+    Therefore, we can apply the induction hypothesis
+    for \cref{eq:propInvariantHermiteHierarchization} to
+    obtain \eqref{eq:proofPropInvariantHermiteHierarchization1}.
+    
+    \item
+    \mbox{${i \in \hiset{l}}$: In this case,}
+    we cannot directly apply the induction hypothesis,
+    as it only holds for grid points of levels $\le l - 1$.
+    However, we note that in
+    \eqref{eq:proofPropInvariantHermiteHierarchization1},
+    the term $\deriv[q]{x}{\fgintp{l-1}}(\gp{l,i})$
+    is the $q$-th derivative of the Hermite interpolant of
+    the data $\deriv[q']{x}{\fgintp{l-1}}(\gp{l,i\pm1})$
+    ($q' = 0, \dotsc, \frac{p-1}{2}$),
+    as determined in \cref{line:algHermiteHierarchization4}
+    of \cref{alg:hermiteHierarchization}.
+    The ``true'' level of the grid points $\gp{l,i\pm1}$ is
+    actually $\le l - 1$ due to $i \in \hiset{l}$.
+    Hence, we can apply the induction hypothesis
+    for \cref{eq:propInvariantHermiteHierarchization}
+    to conclude that the interpolated data of
+    $\deriv[q]{x}{\fgintp{l-1}}(\gp{l,i})$ are given by
+    \begin{equation}
+      \deriv[q']{x}{\fgintp{l-1}}(\gp{l,i\pm1})
+      = \deriv[q']{x}{
+        \bracket*{
+          \sum_{l'=0}^{l-1} \sum_{i' \in \hiset{l'}}
+          \linout{l',i'} \bspl[\wfs]{l',i'}{p}
+        }
+      }(\gp{l,i\pm1}),\quad
+      q' = 0, \dotsc, \frac{p-1}{2}.
+    \end{equation}
+    The linear combination in square brackets
+    is a polynomial of degree $\le p$ on the interval
+    $\clint{\gp{l,i-1}, \gp{l,i+1}}$
+    by construction of the hierarchical basis functions
+    $\bspl[\wfs]{l',i'}{p}$ ($l' = 0, \dotsc, l - 1$, $i' \in \hiset{l'}$).
+    Due to the uniqueness of Hermite interpolation
+    (\cref{lemma:hermiteInterpolation}),
+    the interpolation polynomial of the data must
+    coincide on $\clint{\gp{l,i-1}, \gp{l,i+1}}$
+    with the term in square brackets.
+    In particular, as $\gp{l,i} \in \clint{\gp{l,i-1}, \gp{l,i+1}}$,
+    we obtain the claim \eqref{eq:proofPropInvariantHermiteHierarchization1}.
+  \end{itemize}
+  In both cases, we obtain the desired relation
+  \eqref{eq:proofPropInvariantHermiteHierarchization1}.
+\end{proof}
+
+\corAlgHermiteHierarchizationCorrectness*
+
+\begin{proof}
+  By \cref{prop:invariantHermiteHierarchization} ($q = 0$), we have
+  \begin{equation}
+    \sum_{l'=0}^n \sum_{i' \in \hiset{l'}}
+    \linout{l',i'} \bspl[\wfs]{l',i'}{p}(\gp{l,i})
+    = \sum_{l'=0}^l \sum_{i' \in \hiset{l'}}
+    \linout{l',i'} \bspl[\wfs]{l',i'}{p}(\gp{l,i})
+    = \fgintp{l}(\gp{l,i}),\quad
+    l \le n,\; i \in \hiset{l},
+  \end{equation}
+  as $\bspl[\wfs]{l',i'}{p}(\gp{l,i}) = 0$ if $l' > l$
+  (weakly fundamental property \eqref{eq:weaklyFundamentalProperty}).
+  \Cref{line:algHermiteHierarchization8} of
+  \cref{alg:hermiteHierarchization} implies
+  $\fgintp{l}(\gp{l,i})
+  = \fgintp{l-1}(\gp{l,i}) + r^{(l)}_l(\gp{l,i})$, and by
+  \cref{line:algHermiteHierarchization5,line:algHermiteHierarchization7},
+  the second summand $r^{(l)}_l(\gp{l,i})$ equals
+  $\fcnval{l,i} - \fgintp{l-1}(\gp{l,i})$,
+  which cancels out the first summand, resulting in
+  $\fgintp{l}(\gp{l,i}) = \fcnval{l,i}$.
+  Combining these statements, we obtain
+  \begin{equation}
+    \sgintp(\gp{l,i})
+    = \fcnval{l,i},\quad
+    l \le n,\; i \in \hiset{l},
+    \quad\text{where}\quad
+    \sgintp
+    \ceq \sum_{l'=0}^n \sum_{i' \in \hiset{l'}}
+    \linout{l',i'} \bspl[\wfs]{l',i'}{p}.
+  \end{equation}
+  This means that $\sgintp$ is the correct hierarchical interpolant
+  of the given function values
+  (see \cref{eq:hierarchizationInterpolant}).
+  Due to the uniqueness of hierarchical surpluses,
+  the coefficients $\linout{l,i}$
+  (which are the output of \cref{alg:hermiteHierarchization})
+  must coincide with the surpluses $\surplus{l,i}$.
+\end{proof}

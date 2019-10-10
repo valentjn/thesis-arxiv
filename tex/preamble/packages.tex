@@ -1,0 +1,210 @@
+% language-specific things (hyphenation, ...)
+\usepackage[ngerman,american]{babel}
+
+% set input encoding to Unicode (needed for PDFLaTeX)
+\usepackage[utf8]{inputenc}
+
+% biblatex package wants to have csquotes (otherwise: warning)
+\usepackage{csquotes}
+
+% lower-case page header
+\usepackage[markcase=upper]{scrlayer-scrpage}
+
+% dummy texts
+\usepackage[math]{blindtext}
+
+% amsmath with improvements
+\usepackage{mathtools}
+
+% math theorems
+\usepackage{amsthm}
+
+% format math theorems
+\usepackage{thmtools}
+
+% for setting size of text area
+\usepackage{geometry}
+
+% check mode
+\iftoggle{checkMode}{
+  % show non-whitelisted hyphenations
+  \usepackage[mark]{lua-check-hyphen}
+}{}
+
+% debug mode
+\iftoggle{debugMode}{
+  % show boxes, glues, and kerning
+  \usepackage{lua-visual-debug}
+}{}
+
+% use GoMono as typewriter font
+\usepackage[
+  % otherwise, bold is not available ("undefined font shape" warnings)
+  type1,
+  % scale to match main font size
+  scale=0.88,
+]{GoMono}
+
+% use TeX Gyre Heros as sans-serif font
+\usepackage{tgheros}
+
+% need T1 font encoding for Charter,
+% otherwise there will be "undefined font shape" warnings
+\usepackage[T1]{fontenc}
+
+% use Bitstream Charter as main font
+\usepackage[bitstream-charter]{mathdesign}
+
+% micro-typographic adjustments
+\usepackage[
+  % don't deactivate extensions due to document class draft option
+  final,
+  % increase letter spacing in small-caps
+  tracking=smallcaps,
+  % font expansion: don't stretch/shrink lines by more than 1%,
+  % default of 2% looks a bit weird
+  stretch=10,
+  shrink=10,
+]{microtype}
+
+% reference last page of document
+\usepackage{lastpage}
+
+% extract number from page reference
+\usepackage{refcount}
+
+% graphics
+\usepackage{graphicx}
+
+% colors, load colortbl for coloring table rows
+\usepackage[table]{xcolor}
+
+% contours around text
+\usepackage{contour}
+
+% additional space in table cells
+\usepackage{cellspace}
+
+% custom float captions, subfigures
+\usepackage{subcaption}
+
+% allows to put float caption beside image
+\usepackage{sidecap}
+
+% L, C, R column types for tables
+\usepackage{array}
+
+% X column type for tables (filling rest of line)
+\usepackage{tabularx}
+
+% more beautiful tables
+\usepackage{booktabs}
+
+% table cells spanning multiple rows
+\usepackage{multirow}
+
+% for controlling space in enumerate and itemize
+\usepackage{enumitem}
+
+% disable "Column type for cellspace package moved to 'C'." warning
+% when loading siunitx
+% (this is due to the cellspace package loaded above)
+\usepackage{expl3}
+\ExplSyntaxOn
+\msg_redirect_name:nnn{siunitx}{moved-cellspace-column}{none}
+\ExplSyntaxOff
+
+% consistent style of units and numbers
+\usepackage[binary-units=true]{siunitx}
+
+% watermarks and flip book
+\usepackage{everypage}
+
+% rules left of theorems
+\usepackage[framemethod=tikz]{mdframed}
+
+% drawings
+\usepackage{tikz}
+
+% styling of table of contents
+\usepackage{tocbasic}
+
+% local table of contents (mini TOC)
+\usepackage{etoc}
+
+% wrap text around boxes
+\usepackage{wrapfig}
+
+% initials/dropped captial letters at beginning of chapters
+\usepackage{lettrine}
+
+% inclusion of external PDFs
+\usepackage{pdfpages}
+
+% reference current chapter, section, subsection, ...
+\usepackage{nameref}
+
+% line spacing (one and a half lines)
+\usepackage[onehalfspacing]{setspace}
+
+% filter specific warnings
+\usepackage{silence}
+
+% patch hard-coded stuff in packages
+\usepackage{regexpatch}
+
+% allow breaking after hyphens in long URLs
+\usepackage[hyphens]{url}
+
+% PDF links
+\usepackage{hyperref}
+
+% algorithms
+\usepackage{algorithmicx}
+
+% pseudo-code
+\usepackage[noend]{algpseudocode}
+
+% create custom PDF bookmarks
+\usepackage{bookmark}
+
+% table of symbols and acronyms
+\iftoggle{partialCompileMode}{
+  % these packages are necessary so that LaTeX doesn't complain
+  % about undefined counters when using \includeonly
+  \usepackage{substr}
+  \usepackage{longtable}
+}{
+  \usepackage[
+    % show glossary in table of contents
+    toc,
+    % don't append full stop to entries
+    nopostdot,
+    % only print the page number of the first occurrence
+    indexonlyfirst,
+    % write name of glossary in uppercase in page header
+    ucmark,
+    % disable hyperlinks to glossary on each use
+    nohypertypes=main,
+  ]{glossaries}
+}
+
+% BibLaTeX
+\usepackage[
+  % abbreviate author names
+  giveninits=true,
+  % only show years in dates
+  date=year,
+  % use alphabetic style instead of numeric
+  style=alphabetic,
+  % only use first author's name for the style
+  maxalphanames=1,
+]{biblatex}
+
+% named references
+\usepackage[
+  % capitalize names automatically
+  capitalise,
+  % mark all of "Lemma 1" as a link, not only "1"
+  nameinlink,
+]{cleveref}

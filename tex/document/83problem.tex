@@ -1,0 +1,496 @@
+\section{Transaction Costs Problem}
+\label{sec:83problem}
+
+\minitoc[-6mm]{70mm}{4}
+
+\vspace{-1.5em}
+
+\paragraph{Description}
+
+In the \term{transaction costs problem,}
+the individual can invest their money risk-free in bonds
+(with a fixed interest rate similar to a bank account)
+or in $m_{\vstock} \in \nat$ different risk-affected stocks
+\cite{Schober18Solving}.
+Every stock transaction,
+i.e., buy $\buy_{t,j}$ or sell $\sell_{t,j}$,
+inflicts transaction costs $\tac \buysell_{t,j}$ ($\tac \in \nonnegreal$)
+proportional to the amount $\buysell_{t,j}$ bought or sold
+($j = 1, \dotsc, m_{\vstock}$).
+The individual only wants to invest a fixed
+amount $\wealth_0$ in stocks, i.e., we omit the individual's income.
+
+
+
+\subsection{Unnormalized Problem}
+\label{sec:831unnormalized}
+
+\paragraph{Consumption and state transition}
+
+In the following,
+$\stock_{t,j}$ denotes the fraction of the total wealth $\wealth_t$
+that is invested in the $j$-th stock.
+We combine these \term{stock fractions} $\stock_{t,j}$
+in a vector $\vstock_t \ceq (\stock_{t,1}, \dotsc, \stock_{t,m_{\vstock}})$;
+similarly, $\vbuysell_t \ceq (\buysell_{t,1}, \dotsc, \buysell_{t,m_{\vstock}})$
+combines buy and sell amounts.
+Then, the consumption can be computed as a residual variable
+(i.e., a variable that can be fully computed from $\state$ and $\policy$
+and is thus omitted from $\policy$),
+which is given by
+\begin{equation}
+  \consume_t
+  \ceq (1 - \sumfcn(\vstock_t)) \wealth_t - \bond_t -
+  (1 + \tac) \sumfcn(\vbuy_t) + (1 - \tac) \sumfcn(\vsell_t),
+\end{equation}
+where $\sumfcn(\*a) \ceq \tr{\*1} \*a$
+is the sum of all entries of $\*a$.
+The state transition is computed by adding the returns of bonds and stocks:%
+\begin{equation}
+  \wealth_{t+1}
+  \ceq \bond_t \bondreturn_t +
+  \tr{(\vstock_t \wealth_t + \vbuy_t - \vsell_t)} \vstockreturn_t,\qquad
+  \vstock_{t+1}
+  \ceq \frac{
+    (\vstock_t \wealth_t + \vbuy_t - \vsell_t) \compmult \vstockreturn_t
+  }{\wealth_{t+1}},
+\end{equation}
+where $\bondreturn_t \in \real$ is the bond interest rate,
+$
+  \vstockreturn_t
+  = (\stockreturn_{t,1}, \dotsc, \stockreturn_{t,m_{\vstock}})
+  \in \real^{m_{\vstock}}
+$
+is the vector of (stochastic) stock return rates, and
+$\compmult$ is component-wise multiplication.
+
+
+
+\subsection{Normalization}
+\label{sec:832normalized}
+
+\paragraph{State transition}
+
+The above equations can be normalized with respect to the wealth
+$\wealth_t$:
+By setting
+$\normconsume_t  \ceq \consume_t/\wealth_t$,
+$\normbond_t     \ceq \bond_t   /\wealth_t$, and
+$\vnormbuysell_t \ceq \vbuysell_t/\wealth_t$, we obtain
+\begin{subequations}
+  \label{eq:normalizedTCPStateTransition}
+  \begin{align}
+    \normconsume_t
+    &\mathrel{\righthphantom{=}{\ceq}}
+    (1 - \sumfcn(\vstock_t)) - \normbond_t -
+    (1 + \tac) \sumfcn(\vnormbuy_t) + (1 - \tac) \sumfcn(\vnormsell_t),\\
+    \wealthratio_{t+1}
+    &\ceq \normbond_t \bondreturn_t +
+    \tr{(\vstock_t + \vnormbuy_t - \vnormsell_t)} \vstockreturn_t,
+    \qquad(= \wealth_{t+1}/\wealth_t)\\
+    \vstock_{t+1}
+    &\mathrel{\righthphantom{=}{\ceq}}
+    \frac{
+      (\vstock_t + \vnormbuy_t - \vnormsell_t) \compmult \vstockreturn_t
+    }{\wealthratio_{t+1}},
+  \end{align}
+\end{subequations}
+where $\normconsume_t$ and $\wealthratio_{t+1}$ are residual
+variables that specify \term{normalized consumption} and
+\term{wealth ratio,} respectively.
+All in all, the resulting dynamic portfolio choice model has
+the following variables:
+\begin{itemize}
+  \item
+  $\centerhphantom{d}{m_{\stochastic}} = m_{\vstock}$
+  state variables $\normstate_t$:
+  Stock fractions $\stock_{t,1}, \dotsc, \stock_{t,m_{\vstock}}$
+  
+  \item
+  $\centerhphantom{m_{\policy}}{m_{\stochastic}} = 2m_{\vstock} + 1$
+  policy variables $\normpolicy_t$:
+  Normalized bonds $\normbond_t$,
+  normalized buy amounts $\normbuy_{t,1}, \dotsc, \normbuy_{t,m_{\vstock}}$ and
+  normalized sell amounts $\normsell_{t,1}, \dotsc, \normsell_{t,m_{\vstock}}$
+  
+  \item
+  $m_{\stochastic} = m_{\vstock}$
+  stochastic variables $\stochastic_t$:
+  Stock return rates $\stockreturn_{t,1}, \dotsc, \stockreturn_{t,m_{\vstock}}$
+\end{itemize}
+The state space and policy space constraints are given by
+\begin{subequations}
+  \label{eq:normalizedTCPConstraints}
+  \newcommand*{\centereqline}[1]{%
+    \mathclap{\hphantom{\mathrm{(8.99a)}}#1}%
+  }%
+  \begin{gather}
+    \label{eq:normalizedTCPConstraintsShort}
+    \centereqline{
+      \vstock_t \ge \*0,\qquad
+      \sumfcn(\vstock_t) \le 1,\qquad
+      \normbond_t \ge 0,\qquad
+      \vnormbuysell_t \ge \*0,\qquad
+      \vnormsell_t \le \vstock_t,\qquad
+      \wealthratio_{t+1} \ge 0,
+    }\\
+    \label{eq:normalizedTCPConstraintsLong}
+    \centereqline{
+      \normconsume_{\min} + \normbond_t +
+      (1 + \tac) \sumfcn(\vnormbuy_t) - (1 - \tac) \sumfcn(\vnormsell_t)
+      \le 1 - \sumfcn(\vstock_t),
+    }
+  \end{gather}
+\end{subequations}
+where $\normconsume_{\min} \in \nonnegreal$ is some minimal consumption
+that must be maintained.
+
+\paragraph{Bellman equation}
+
+Consequently, the Bellman equation \eqref{eq:gridBellmanCET}
+after the certainty-equiva\-lent transformation has to be
+normalized as well.
+By setting $\normcetvalueintp_t(\state_t^{(k)})
+\ceq \cetvalueintp_t(\state_t^{(k)})/\wealth_t$, we obtain
+\begin{subequations}
+  \begin{align}
+    &\hphantom{=}\hspace{0.6em} \normcetvalueintp_t(\state_t^{(k)})
+    = \wealth_t^{-1} \cetvalueintp_t(\state_t^{(k)})\\
+    &= \max_{\policy_t} \left(
+      \left(
+        \left(
+          \wealth_t^{-1} \consume_t(\state_t^{(k)}, \policy_t)
+        \right)^{1-\riskav} +
+        \patience \expectation[t]{
+          \left(
+            \wealth_t^{-1} \cetvalueintp_{t+1}(
+              \statefcn_t(\state_t^{(k)}, \policy_t, \stochastic_t)
+            )
+          \right)^{1-\riskav}
+        }
+      \right)^{1/(1-\riskav)}
+    \right)\\
+    \label{eq:normalizedTCPBellmanEquation}
+    &= \max_{\normpolicy_t} \left(
+      \left(
+        \normconsume_t(\state_t^{(k)}, \normpolicy_t)^{1-\riskav} +
+        \patience \expectation[t]{
+          \bigl(
+            \wealthratio_{t+1} \normcetvalueintp_{t+1}(
+              \normstatefcn_t(\state_t^{(k)}, \normpolicy_t, \stochastic_t)
+            )
+          \bigr)^{1-\riskav}
+        }
+      \right)^{1/(1-\riskav)}
+    \right).
+  \end{align}
+\end{subequations}
+This means that compared with
+\eqref{eq:gridBellmanCET},
+the value function in the expectation has to be multiplied by
+the wealth ratio $\wealthratio_{t+1}$ introduced above in
+\eqref{eq:normalizedTCPStateTransition}.
+Since there is no inheritance, the optimal terminal solution
+is to sell all stocks and consume everything:
+\begin{equation}
+  \normcetvalueintp_t(\state_T^{(k)})
+  = 1 - \tac \sumfcn(\vstock_T^{(k)}),\quad
+  \normbond_T^{\opt}(\state_T^{(k)})
+  = 0,\quad
+  \vnormbuy[\opt]_T(\state_T^{(k)})
+  = \*0,\quad
+  \vnormsell[\opt]_T(\state_T^{(k)})
+  = \vstock_T^{(k)}.
+\end{equation}
+
+
+
+\subsection{State Space Cropping}
+\label{sec:833cropping}
+
+\paragraph{Sparse grids on non-rectangular domains}
+
+Unfortunately, the constraint $\sumfcn(\vstock_t) \le 1$
+from \cref{eq:normalizedTCPConstraints} limits the feasible state space
+region to a proper subset (which is the unit simplex)
+of the unit hypercube $\clint{\*0, \*1}$,
+which impedes the direct application of sparse grids.
+There are three possible remedies:
+transforming the unit hypercube to the feasible state space,
+applying extrapolation techniques as discussed in
+\cref{sec:825interpolation}, or
+choosing a model-tailored approach to obtain
+function values outside the feasible state space.
+
+\paragraph{Virtual selling of stocks}
+
+We choose the third remedy and \term{virtually sell,}
+if $\sumfcn(\vstock_t) > 1$,
+as many stocks as needed to meet the constraint $\sumfcn(\vstock_t) \le 1$.
+We already might need to sell stocks
+even if $\sumfcn(\vstock_t)$ is smaller but close to one
+in order to satisfy the minimum consumption requirement
+\eqref{eq:normalizedTCPConstraintsLong}.
+In detail, we replace $\vstock_t$ by $\normcropfactor \vstock_t$
+whenever $\normcropfactor < 1$,
+where $\normcropfactor \in \posreal$ is a \term{cropping factor}
+that is determined by
+\begin{equation}
+  \label{eq:virtualSelling}
+  \Bigl[
+    1 - \tac\, \bigl(
+      \sumfcn(\vstock_t) - \sumfcn(\normcropfactor\vstock_t)
+    \bigr)
+  \Bigr]
+  \cdot \bigl(1 - \sumfcn(\normcropfactor\vstock_t)\bigr)
+  = \normconsume_{\min}.
+\end{equation}
+Here, $\bigl(\sumfcn(\vstock_t) - \sumfcn(\normcropfactor\vstock_t)\bigr)$
+is the amount of virtually sold stocks.
+Hence, the term in square brackets is the fraction of wealth
+that is still available after deducting the induced transaction costs.
+The product of this term with
+$\bigl(1 - \sumfcn(\normcropfactor\vstock_t)\bigr)$
+is the fraction of wealth that can be consumed after the virtual selling,
+which needs to be at least $\normconsume_{\min}$.
+Solving \cref{eq:virtualSelling} for $\normcropfactor$ and
+choosing the positive solution, we finally obtain
+\begin{equation}
+  \newcommand*{\sumX}{\sumfcn(\vstock_t)}
+  \newcommand*{\cMin}{\normconsume_{\min}}
+  \normcropfactor
+  \ceq \frac{
+    \tac\, \bigl(1 + \sumX\bigr) - 1 +
+    \sqrt{
+      \tac^2\, \bigl(1 - \sumX\bigr)^2
+      - 2 \tac\, \bigl(2 \cMin - 1 + \sumX\bigr) + 1
+    }
+  }{
+    2 \tac \sumX
+  }.
+\end{equation}
+
+
+
+\subsection{Euler Equation Errors}
+\label{sec:834eulerErrors}
+
+\paragraph{Motivation}
+
+Due to the curse of dimensionality,
+reasonably accurate full grid reference solutions
+of the transaction costs problem can only be computed
+if the number $m_{\vstock}$ of stocks is small.
+Mainly (but not only) in higher-dimensional settings,
+a different means of assessing the
+quality of sparse grid solutions is desirable.
+We use Euler equation errors to measure the deviation in
+the first-order optimality conditions.
+
+\paragraph{Derivation}
+
+In the following, we fix the state $\normstate_t \in \clint{\*0, \*1}$
+for which we want to compute the Euler equation error.
+We abbreviate
+the
+value function interpolant
+$
+  \normcetvalueintp_t
+  \ceq \normcetvalueintp_t(\normstate_t)
+$,
+the state transition function
+$
+  \normstatefcn_t
+  \ceq \normstatefcn_t(\normstate_t, \normpolicy_t, \stochastic_t)
+$,
+the wealth ratio
+$
+  \wealthratio_{t+1}
+  \ceq \wealthratio_{t+1}(
+    \normstate_t, \normpolicy_t, \stochastic_t
+  )
+$, and
+the consumption
+$
+  \normconsume_t
+  \ceq \normconsume_t(\normstate_t, \normpolicy_t)
+$.
+The Lagrangian of the optimization problem corresponding
+to the Bellman equation \eqref{eq:normalizedTCPBellmanEquation}
+of the normalized transaction costs problem
+with respect to the problem's constraints
+\eqref{eq:normalizedTCPConstraints} is given by
+{%
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  \begin{equation}
+    \begin{split}
+      \lagrangian_t(\normstate_t, \normpolicy_t, \*\multiplier)
+      &\ceq \left(
+        (\normconsume_t)^{1-\riskav} +
+        \patience \expectation[t]{
+          \bigl(
+            \wealthratio_{t+1}\;
+            \normcetvalueintp_{t+1}(\normstatefcn_t)
+          \bigr)^{1-\riskav}
+        }
+      \right)^{1/(1-\riskav)}\\
+      &\hspace*{6mm} {}
+      - \multiplier_1 \normbond_t
+      - \tr{\*\multiplier_2} \vnormbuy_t
+      - \tr{\*\multiplier_3} \vnormsell_t
+      + \tr{\*\multiplier_4}\; (\vnormsell_t - \vstock_t)
+      + \multiplier_5\; (\normconsume_{\min} - \normconsume_t)
+    \end{split}
+  \end{equation}%
+}%
+with $
+\*\multiplier \ceq (
+  \multiplier_1,
+  \*\multiplier_2,
+  \*\multiplier_3,
+  \*\multiplier_4,
+  \multiplier_5
+)$,
+$\multiplier_1, \multiplier_5 \in \real$, and
+$\*\multiplier_2, \*\multiplier_3, \*\multiplier_4 \in \real^{m_{\vstock}}$.
+According to the first-order conditions
+\term{(Karush--Kuhn--Tucker (KKT) conditions),}
+the partial derivative
+$
+  \partialderiv{\partialdiff \normbond_t}{\lagrangian_t}(
+    \normstate_t, \normpolicy_t, \*\multiplier
+  )
+$
+with respect to $\normbond_t$
+vanishes in the exact optimum
+$\normpolicy_t = \optnormpolicyfcn_t \ceq \optnormpolicyfcn_t(\normstate_t)$,
+i.e.,
+{%
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  \begin{equation}
+    \label{eq:eulerErrorFirstOrderCondition}
+    \partialderiv{\partialdiff \normbond_t}{
+      \left(
+        (\normconsume_t^{\opt})^{1-\riskav} +
+        \patience \expectation[t]{
+          \bigl(
+            \wealthratio_{t+1}^{\opt}\;
+            \normcetvalueintp_{t+1}(\normstatefcn[\opt]_t)
+          \bigr)^{1-\riskav}
+        }
+      \right)^{1/(1-\riskav)}
+    }
+    - \multiplier_1
+    - \multiplier_5
+    \partialderiv{\partialdiff \normbond_t}{\normconsume_t^{\opt}}
+    = 0,
+  \end{equation}%
+}%
+where
+$
+  \normstatefcn[\opt]_t
+  \ceq \normstatefcn_t(\normstate_t, \optnormpolicyfcn_t, \stochastic_t)
+$,
+$
+  \wealthratio_{t+1}^{\opt}
+  \ceq \wealthratio_{t+1}(
+    \normstate_t, \optnormpolicyfcn_t, \stochastic_t
+  )
+$, and
+$
+  \normconsume_t^{\opt}
+  \ceq \normconsume_t(\normstate_t, \optnormpolicyfcn_t)
+$.
+We now neglect binding constraints,
+i.e., we assume that $\multiplier_1 = \multiplier_5 = 0$,
+otherwise we cannot compute the error.
+After calculating the derivatives,
+\cref{eq:eulerErrorFirstOrderCondition} becomes
+{%
+  \setlength{\abovedisplayskip}{9pt}%
+  \setlength{\belowdisplayskip}{9pt}%
+  \begin{equation}
+    \patience \bondreturn_t
+    \cdot \expectationsign[t]\Bigl[
+      \bigl(
+        \normcetvalueintp_t
+        - \tr{(\gradient{\normstate_t}{\normcetvalueintp_t})}
+        \normstatefcn[\opt]_t
+      \bigr) \cdot
+      \bigl(
+        \wealthratio_{t+1}^{\opt}\; \normcetvalueintp_t
+      \bigr)^{-\riskav}
+    \Bigr]
+    = (\normconsume_t^{\opt})^{-\riskav}.
+  \end{equation}%
+}%
+This equation can be used as an error measure by substituting
+$\optnormpolicyfcn_t$ for the interpolated optimum
+$\optnormpolicyintp_t = \optnormpolicyintp_t(\normstate_t)$.
+By multiplying the resulting equation by
+$
+  (\normconsume_t^{\opt,\sparse})^{\riskav}
+  \ceq (\normconsume_t(\normstate_t, \optnormpolicyintp_t))^{\riskav}
+$, we obtain the
+\term{unit-free Euler equation errors $\eulererror_t(\normstate_t)$}
+with respect to $\normbond_t$:
+\begin{equation}
+  \eulererror_t(\normstate_t)
+  \ceq \Bigl|
+    1 - \Bigl(
+      \patience \bondreturn_t (\normconsume_t^{\opt,\sparse})^{\riskav}
+      \cdot \expectationsign[t]\Bigl[
+        \bigl(
+          \normcetvalueintp_t
+          - \tr{(\gradient{\normstate_t}{\normcetvalueintp_t})}
+          \normstatefcn[\opt,\sparse]_t
+        \bigr) \cdot
+        \bigl(
+          \wealthratio_{t+1}^{\opt,\sparse}\;
+          \normcetvalueintp_t
+        \bigr)^{-\riskav}
+      \Bigr]
+    \Bigr)^{-1/\riskav}
+  \Bigr|
+\end{equation}
+with
+$
+  \normstatefcn[\opt,\sparse]_t
+  \ceq \normstatefcn_t(\normstate_t, \optnormpolicyintp_t, \stochastic_t)
+$ and
+$
+  \wealthratio_{t+1}^{\opt,\sparse}
+  \ceq \wealthratio_{t+1}(
+    \normstate_t, \optnormpolicyintp_t, \stochastic_t
+  )
+$.
+
+\paragraph{Weighted Euler equation errors}
+
+However, the state space cropping as introduced above
+distorts Euler equation errors:
+The error $\eulererror_t(\normstate_t)$ does not vanish
+even for the exact solution and even inside the feasible state space.
+This is because the cropping already occurs for large stock holdings
+$\sumfcn(\normstate_t)$ that are less than one,
+as stocks have to be sold to maintain
+minimum consumption $\normconsume_{\min}$.
+Numerical experiments show that due to this issue,
+the error attains large values in the region near the hyperplane
+$\sumfcn(\normstate_t) = 1$.
+Economically, this region is not significant
+as such large stock fractions are highly unusual,
+which is confirmed by Monte Carlo simulations.
+We therefore use the \term{weighted Euler equation error}
+\begin{equation}
+  \weightedeulererror_t(\normstate_t)
+  \ceq \bigl(1 - \sumfcn(\normstate_t)\bigr) \cdot
+  \eulererror_t(\normstate_t)
+\end{equation}
+instead of $\eulererror_t$,
+although other strategies exist
+such as restricting the state domain where the error is computed or
+weighting the error with the probability that a given state
+occurs in Monte Carlo simulations.

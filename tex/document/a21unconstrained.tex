@@ -1,0 +1,186 @@
+\section{Unconstrained Problems}
+\label{sec:a21unconstrained}
+
+\disableornamentsfornextheadingtrue
+\vspace{-5mm}
+\subsection{Bivariate Unconstrained Problems}
+\label{sec:a211bivariateUnconstrained}
+
+\paragraph{Branin02}
+
+The function originates from \cite{Munteanu98Global}.
+Compared to \cite{Munteanu98Global},
+we changed the domain from $\clint{-5, 10} \times \clint{0, 15}$
+to $\clint{-5, 15}^2$,
+which seems more common in recent literature \cite{Gavana13Global}.
+In addition, \cite{Munteanu98Global} uses the reciprocal function value,
+while searching for the maximum instead of the minimum.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+    \centertestfunline{
+      \vspace*{-10mm}
+      \testobjfunscaled{Bra02}(\xscaled)
+      \ceq \paren*{
+        -\,\frac{51\xse{1}^2}{40\pi^2} +
+        \frac{5\xse{1}}{\pi} + \xse{2} - 6
+      }^2 +
+      \paren*{10 - \frac{5}{4\pi}} \cos(\xse{1}) \cos(\xse{2})
+    }\\
+    \centertestfunline{
+      {} + \ln(\xse{1}^2 + \xse{2}^2 + 1) + 10,\hspace*{35mm}
+    }\notag\\
+    \centertestfunline{
+      \xscaled \in \clint{-5, 15}^2,\quad
+      \xoptscaled = (-3.196988424804, 12.52625788532),
+    }\\
+    \centertestfunline{
+      \testobjfunscaled{Bra02}(\xoptscaled) = 5.558914403894
+    }
+  \end{gather}
+\end{subequations}
+
+\pagebreak
+
+\paragraph{GoldsteinPrice}
+
+This function originates from \cite{Goldstein71Descent},
+where the function was stated without bounds for the optimization domain.
+We took the domain $\clint{-2, 2}^2$ from \cite{Gavana13Global}.
+In addition, we scaled the function values by the factor $10^{-4}$
+for the sake of plotting.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+    \centertestfunline{
+      \testobjfunscaled{GoP}(\xscaled)
+      \ceq 10^{-4} \cdot \paren*{
+        1 + (\xse{1} + \xse{2} + 1)^2
+        (19 - 14\xse{1} + 3\xse{1}^2 - 14\xse{2} +
+        6\xse{1}\xse{2} + 3\xse{2}^2)
+      }
+    }\\
+    \centertestfunline{
+      \hspace*{25mm}
+      {} \cdot
+      \paren*{
+        30 + (2\xse{1} - 3\xse{2})^2
+        (18 - 32\xse{1} + 12\xse{1}^2 + 48\xse{2} -
+        36\xse{1}\xse{2} + 27\xse{2}^2)
+      },
+    }\notag\\
+    \centertestfunline{
+      \xscaled \in \clint{-2, 2}^2,\quad
+      \xoptscaled = (0, -1),
+    }\\
+    \centertestfunline{
+      \testobjfunscaled{GoP}(\xoptscaled) = 3 \cdot 10^{-4}
+    }
+  \end{gather}
+\end{subequations}
+
+\paragraph{Schwefel06}
+
+This function originates from \cite{Schwefel77Numerische}.
+We changed the domain from $\clint{-3, 5} \times \clint{-1, 7}$ to
+$\clint{-6, 4}^2$, such that the optimum point is not located at the
+center of the optimization domain.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+    \centertestfunline{
+      \testobjfunscaled{Sch06}(\xscaled)
+      \ceq \max(
+        \abs{\xse{1} + 2\xse{2} - 7},
+        \abs{2\xse{1} + \xse{2} - 5}
+      ),
+    }\\
+    \centertestfunline{
+      \xscaled \in \clint{-6, 4}^2,\quad
+      \xoptscaled = (1, 3),\quad
+      \testobjfunscaled{Sch06}(\xoptscaled) = 0
+    }
+  \end{gather}
+\end{subequations}
+
+\subsection{\texorpdfstring{$d$}{d}-Variate Unconstrained Problems}
+\label{sec:a212dvariateUnconstrained}
+
+\paragraph{Ackley}
+
+The form of this function originates from \cite{Ackley87Connectionist},
+where it was stated only for two variables.
+We use the generalization to $d$ variables from \cite{Gavana13Global}.
+The optimization domain $\clint{1.5, 6.5}^d$
+was chosen such that it does not contain $\*0$,
+where the gradient of the objective function becomes singular.
+Otherwise, the function would not be continuously differentiable,
+which would be a disadvantage for spline-based approaches
+(see Schwefel06 and Schwefel22 for functions with discontinuous derivatives).
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+   \centertestfunline{
+      \testobjfunscaled{Ack}(\xscaled)
+      \ceq -20 \exp\paren*{-\frac{\norm[2]{\xscaled}}{5\sqrt{d}}} -
+      \exp\paren*{\frac{1}{d} \sum_{t=1}^d \cos(2\pi \xse{t})} +
+      20 + \econst,
+    }\\
+    \centertestfunline{
+      \xscaled \in \clint{1.5, 6.5}^d,\quad
+      \xoptscaled = 1.974451986484 \cdot \*1,\quad
+      \testobjfunscaled{Ack}(\xoptscaled) = 6.559645375628
+    }
+  \end{gather}
+\end{subequations}
+
+\paragraph{Alpine02}
+
+This function originates from \cite{Clerc99Swarm}.
+We changed the domain from $\clint{0, 10}^d$ to $\clint{2, 10}^d$
+to exclude the singularities of the derivative of the objective function
+at $\xse{t} = 0$.
+In addition, the author of \cite{Clerc99Swarm} searched for maximal points.
+For minimization, we changed the sign of the objective function.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+    \centertestfunline{
+      \testobjfunscaled{Alp02}(\xscaled)
+      \ceq -\prod_{t=1}^d \sqrt{\xse{t}} \sin(\xse{t}),\qquad
+      \xscaled \in \clint{2, 10}^d,
+    }\\
+    \centertestfunline{
+      \xoptscaled = 7.917052684666 \cdot \*1,\quad
+      \testobjfunscaled{Alp02}(\xoptscaled) = -2.808131180070^d
+    }
+  \end{gather}
+\end{subequations}
+
+\paragraph{Schwefel22}
+
+This function originates from \cite{Schwefel77Numerische}.
+We changed the domain from $\clint{-10, 10}^d$ to
+$\clint{-3, 7}^d$, such that the optimum point is not located at the
+center of the optimization domain.
+\vspace{-1.6em}
+
+\begin{subequations}
+  \begin{gather}
+    \centertestfunline{
+      \testobjfunscaled{Sch22}(\xscaled)
+      \ceq \sum_{t=1}^d \abs{\xse{t}} +
+      \prod_{t=1}^d \abs{\xse{t}},\qquad
+      \xscaled \in \clint{-3, 7}^d,
+    }\\
+    \centertestfunline{
+      \xoptscaled = \*0,\quad
+      \testobjfunscaled{Sch22}(\xoptscaled) = 0
+    }
+  \end{gather}
+\end{subequations}

@@ -1,0 +1,80 @@
+\setdictum{%
+  Beware of bugs in the above code;\\
+  I have only proved it correct, not tried it.%
+}{%
+  Donald E.\ Knuth \cite{Knuth77Notes}%
+}
+
+\longchapter{%
+  Application 2: Musculoskeletal Models%
+}{%
+  Application 2:\texorpdfstring{\\}{ }Musculoskeletal Models%
+}{%
+  Application 2 -- Musculoskeletal Models%
+}
+\label{chap:70muscle}
+
+\initial{0em}{E}{xisting musculoskeletal models of muscle-tendon complexes,}
+e.g., of the human upper limb, can mainly be divided into two different types.
+\term{Lumped-parameter musculoskeletal models,}
+for example Hill-type models based on multi-body simulations
+\multicite{Roehrle16Two,Valentin18Gradient},
+constitute the most common type.
+These models assume that the components of the musculoskeletal system
+are rigid.
+The mechanics is reduced to point masses
+associated with their moment of inertia;
+thus, these models can be described by few parameters.
+
+\term{Continuum-mechanical musculoskeletal models} form the other type.
+Their advantage is that they are more detailed and, hence, more realistic.
+However, their increased complexity leads to higher computational costs.
+As an example, we consider an inverse problem (see \cref{chap:10introduction})
+that involves a continuum-mechanical simulation of such a
+musculoskeletal model,
+where we search values of model parameters
+such that a specific movement is attained.
+Each iteration of the solution process for such an inverse problem
+may take hours or even days, depending on the model at hand.
+
+Surrogate methods based on sparse grids help to decrease the complexity
+in two ways:
+First, the evaluation of surrogates is obviously drastically cheaper
+than the solution of the inverse problem.
+Second, the particular choice of sparse grids decreases the number
+of necessary samples to construct the surrogates.
+As for the previous application,
+the choice of B-splines as hierarchical basis functions enables
+the evaluation of continuously differentiable surrogate gradients.
+For the example of inverse problems, this means that
+gradient-based optimization methods may be employed,
+which significantly accelerates convergence compared to gradient-free methods.
+
+This chapter is split into three sections.
+First, in \cref{sec:71model}, we introduce a continuum-mechanical
+model of the human upper limb.
+Second, in \cref{sec:72methodology}, we list the types of inverse problems
+of interest.
+Finally, in \cref{sec:73results}, we present numerical results
+regarding the solution of these inverse problems.
+
+The results of this chapter are based on a collaboration with
+Prof.\ Oliver Röhrle, PhD, and Dr.\ Michael Sprenger
+(both SimTech/University of Stuttgart, Germany).%
+\footnote{%
+  Michael Sprenger left the University of Stuttgart in 2015.%
+}
+The collaborators contributed the biomechanical model
+with its theory, its geometry, and its implementation,
+while the author of this thesis contributed the
+sparse grid/B-spline methodology and
+computed the numerical results.
+Note that the results have already been
+published in a paper \cite{Valentin18Gradient},
+which we will follow closely in this chapter.
+
+\input{document/71model}
+\input{document/72methodology}
+\input{document/73results}
+
+\cleardoublepage

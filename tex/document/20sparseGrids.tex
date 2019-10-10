@@ -1,0 +1,101 @@
+\setdictum[0.6\textwidth]{%
+  We combine two sparse grid approximations
+  and call it ``deep sparse grids,\hspace{-0.1em}''
+  because everything is deep today!%
+}{%
+  In a talk at the 5th Workshop on\\Sparse Grids and Applications%
+}
+
+\longchapter{%
+  Sparse Grids with Arbitrary Tensor Product Bases%
+}{%
+  Sparse Grids with Arbitrary\texorpdfstring{\\}{ }Tensor Product Bases%
+}{%
+  Sparse Grids with Arbitrary Tensor Product Bases%
+}
+\label{chap:20sparseGrids}
+
+\initial[lhang=0.06]{0.1em}{S}{parse grids are a versatile tool}
+in computational mathematics and scientific computing.
+As already mentioned in \cref{chap:10introduction},
+their motivation is to ease the curse of dimensionality,
+which states that the number of full grid points
+grows exponentially in the dimensionality $d$ of the underlying domain.
+Their general formulation and the possibility to employ sparse grids in a
+regular, dimensionally adaptive, or spatially adaptive fashion
+opens a broad field of theoretical and practical applications
+to sparse grids.
+
+Sparse grids have been known for at least half a century,
+albeit not under this name.
+A paper by Smolyak \cite{Smolyak63Quadrature} is usually regarded
+as the first modern treatment of sparse grids in the form
+of the combination technique \cite{Garcke13Sparse}.
+Additionally, there are close connections to
+hyperbolic crosses \cite{Temljakov82Approximation}
+and to Boolean interpolation operators
+\multicite{Delvos82Dvariate,Delvos89Boolean}.
+The term \term{sparse grids} was coined by Zenger in 1991
+\cite{Zenger91Sparse}.
+Some important subsequent work for hierarchical bases was done by
+Bungartz and Griebel
+\multicite{%
+  Bungartz92Duenne,%
+  Griebel92Combination,%
+  Bungartz98Finite,%
+  Bungartz04Sparse%
+}.
+Since then, sparse grids have been applied to various fields,
+for instance,
+data mining
+\multicite{Garcke01Data,Pandey08Regression,Pflueger10Spatially},
+interpolation
+\cite{Sickel11Spline},
+quadrature
+\cite{Gerstner98Numerical},
+density estimation
+\multicite{Griebel10Finite,Peherstorfer14Density},
+PDEs
+\multicite{Balder94Adaptive,Bungartz98Finite,Nobile16Adaptive}, and
+optimization
+\multicite{Ferenczi05Globale,Donahue09Robust,Valentin16Hierarchical}.
+Various software toolboxes for sparse grids have been developed
+\multicite{Klimke05Algorithm,Pflueger10Spatially,Stoyanov18User}.
+For a general introduction to sparse grids,
+see the tutorial by Garcke \cite{Garcke13Sparse} or
+the more extensive survey by Bungartz and Griebel
+\cite{Bungartz04Sparse}.
+
+This chapter provides a consistent notational framework
+for the definition of sparse grids with general basis functions.
+The reason not to employ specific bases such as the common hat functions
+or B-splines of higher degrees is two-fold:
+First, we will define various new ``flavors'' of B-splines,
+which is easier if the choice of basis is left open.
+Second, most of the statements and theorems that we will make in this
+thesis will hold for general basis functions
+(in some cases with additional assumptions)
+and not just for B-splines.
+
+Besides the derivation of sparse grids with
+coarser boundary points in \cref{sec:241coarseBoundary},
+this section is mostly
+a repetition of the definition of sparse grids with general basis functions.
+Our notation and presentation will roughly follow
+\cite{Pflueger10Spatially} and \cite{Garcke13Sparse}.
+A more detailed introduction to sparse grids can be found in
+\cite{Bungartz04Sparse}.
+Original contributions of the thesis in this chapter
+are the formalization of the hierarchical splitting for
+arbitrary basis functions in \cref{sec:21nodalSpaces,sec:22hierSubspaces} and
+the definition of sparse grids with coarse boundary in
+\cref{sec:241coarseBoundary}.
+
+
+
+\input{document/21nodalSpaces}
+\input{document/22hierSubspaces}
+\input{document/23sparseGrids}
+\input{document/24boundary}
+
+\cleardoublepage
