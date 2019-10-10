@@ -9,3 +9,9 @@ fromScratch:
 	$(LATEX) && $(GLOSSARY) && \
 	$(LATEX) && $(GLOSSARY) && \
 	$(LATEX)
+
+fromRepo:
+	cd tex && $(LATEX) && $(LATEX) && $(LATEX)
+
+archive:
+	git ls-files bib gfx tex | xargs tar -czvf arxiv.tar.gz
