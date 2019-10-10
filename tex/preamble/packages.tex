@@ -49,6 +49,12 @@
 % otherwise there will be "undefined font shape" warnings
 \usepackage[T1]{fontenc}
 
+% fix for arXiv ("Undefined control sequence. \mdseries@rm")
+\makeatletter
+\edef\bfseries@rm{b}
+\edef\mdseries@rm{m}
+\makeatother
+
 % use Bitstream Charter as main font
 \usepackage[bitstream-charter]{mathdesign}
 
