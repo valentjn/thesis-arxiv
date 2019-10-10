@@ -14,5 +14,5 @@ fromRepo:
 	cd tex && $(LATEX) && $(LATEX) && $(LATEX)
 
 archive:
-	git ls-files bib/ gfx/ tex/ 00README.XXX thesis.bbl thesis.gls thesis.tex | \
+	git ls-files gfx/ tex/ 00README.XXX thesis.bbl thesis.gls thesis.tex | \
 	xargs tar -czvf arxiv.tar.gz
