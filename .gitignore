@@ -1,7 +1,7 @@
 /arxiv.tar.gz
-/tex/thesis.*
-/tex/**/*.aux
+/thesis.*
+/**/*.aux
 
-!/tex/thesis.bbl
-!/tex/thesis.gls
-!/tex/thesis.tex
+!/thesis.bbl
+!/thesis.gls
+!/thesis.tex
