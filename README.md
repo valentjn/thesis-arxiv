@@ -51,7 +51,7 @@ Per the [license][license], you must at least do the following:
 
 * Attribute the author and reproduce the copyright notice: Copyright © 2019 Julian Valentin
 * Link to the license: [licensed under CC-BY-SA 4.0][license]
-* Link to the thesis: https://arxiv.org/abs/1910.05379
+* Link to the thesis: [https://arxiv.org/abs/1910.05379][arxiv]
 * List modifications, if any
 
 Modified versions must be licensed under the CC-BY-SA 4.0 license as well (share alike), or a compatible license.
