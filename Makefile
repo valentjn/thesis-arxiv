@@ -5,6 +5,7 @@ BIBER = biber thesis
 GLOSSARY = python3 tools/buildGlossary.py -q -o thesis.gls thesis
 
 fromScratch:
+	rm thesis.bbl thesis.gls && \
 	$(LATEX) && $(BIBER) && $(GLOSSARY) && \
 	$(LATEX) && $(GLOSSARY) && \
 	$(LATEX) && $(GLOSSARY) && \
