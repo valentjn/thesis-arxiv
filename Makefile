@@ -1,7 +1,7 @@
 LATEX = max_print_line=10000 error_line=254 half_error_line=238 \
 	python3 tools/filterOutput.py \
 	pdflatex -interaction=nonstopmode thesis.tex
-BIBER = biber thesis
+BIBER = biber --input-directory bib thesis
 GLOSSARY = python3 tools/buildGlossary.py -q -o thesis.gls thesis
 
 fromScratch:
