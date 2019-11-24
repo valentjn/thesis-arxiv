@@ -1,0 +1,11 @@
+language: minimal
+
+dist: bionic
+
+addons:
+  apt:
+    update: true
+    packages:
+    - texlive-latex-base
+
+script: make fromScratch && make archive
