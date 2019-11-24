@@ -4,14 +4,13 @@ BIBER = biber thesis
 GLOSSARY = python3 tools/buildGlossary.py -q -o thesis.gls thesis
 
 fromScratch:
-	cd tex && \
 	$(LATEX) && $(BIBER) && $(GLOSSARY) && \
 	$(LATEX) && $(GLOSSARY) && \
 	$(LATEX) && $(GLOSSARY) && \
 	$(LATEX)
 
 fromRepo:
-	cd tex && $(LATEX) && $(LATEX) && $(LATEX)
+	$(LATEX) && $(LATEX) && $(LATEX)
 
 archive:
 	git ls-files gfx/ tex/ 00README.XXX thesis.bbl thesis.gls thesis.tex | \
