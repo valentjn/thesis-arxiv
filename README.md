@@ -1,6 +1,10 @@
 Source Code of Julian Valentin's PhD Thesis (arXiv version)
 ===========================================================
 
+[![Travis CI status](https://img.shields.io/travis/valentjn/thesis-arxiv/master)](https://travis-ci.org/valentjn/thesis-arxiv)
+[![PDF download](https://img.shields.io/badge/PDF%20download-arXiv-darkred)][arxiv]
+[![CC-BY-SA 4.0 license](https://img.shields.io/badge/license-CC--BY--SA%204.0-blue)][license]
+
 This is the source code of the [arXiv version][arxiv] of the PhD thesis of Julian Valentin.
 
 The thesis is titled **B-Splines for Sparse Grids: Algorithms and Application to Higher-Dimensional Optimization**. It was submitted to the University of Stuttgart, Germany, and it was successfully defended on April 2, 2019.
