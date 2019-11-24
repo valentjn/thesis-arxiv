@@ -6,6 +6,13 @@ addons:
   apt:
     update: true
     packages:
-    - texlive-latex-base
+    - biber
+    - tex-gyre
+    - texlive-bibtex-extra
+    - texlive-fonts-extra
+    - texlive-lang-german
+    - texlive-latex-extra
+    - texlive-plain-generic
+    - texlive-science
 
 script: make fromScratch && make archive
