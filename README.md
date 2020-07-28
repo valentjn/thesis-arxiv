@@ -3,13 +3,13 @@ Source Code of Julian Valentin's PhD Thesis (arXiv version)
 
 [![Travis CI status](https://img.shields.io/travis/valentjn/thesis-arxiv/master)](https://travis-ci.org/valentjn/thesis-arxiv)
 [![PDF download](https://img.shields.io/badge/PDF%20download-arXiv-darkred)][arxiv]
-[![CC-BY-SA 4.0 license](https://img.shields.io/badge/license-CC--BY--SA%204.0-blue)][license]
+[![CC BY-SA 4.0 license](https://img.shields.io/badge/license-CC%20BY--SA%204.0-blue)][license]
 
 This is the source code of the [arXiv version][arxiv] of the PhD thesis of Julian Valentin.
 
 The thesis is titled **B-Splines for Sparse Grids: Algorithms and Application to Higher-Dimensional Optimization**. It was submitted to the University of Stuttgart, Germany, and it was successfully defended on April 2, 2019.
 
-The code is provided here as is, without any further support or warranty. The thesis is Copyright © 2019 Julian Valentin. It is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC-BY-SA 4.0)][license].
+The code is provided here as is, without any further support or warranty. The thesis is Copyright © 2019 Julian Valentin. It is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)][license].
 
 Download
 --------
@@ -54,11 +54,11 @@ This applies to source code and compiled documents (e.g., PDF), as a whole and t
 Per the [license][license], you must at least do the following:
 
 * Attribute the author and reproduce the copyright notice: Copyright © 2019 Julian Valentin
-* Link to the license: [licensed under CC-BY-SA 4.0][license]
+* Link to the license: [licensed under CC BY-SA 4.0][license]
 * Link to the thesis: [https://arxiv.org/abs/1910.05379][arxiv]
 * List modifications, if any
 
-Modified versions must be licensed under the CC-BY-SA 4.0 license as well (share alike), or a compatible license.
+Modified versions must be licensed under the CC BY-SA 4.0 license as well (share alike), or a compatible license.
 
 Versions and Changes
 --------------------
