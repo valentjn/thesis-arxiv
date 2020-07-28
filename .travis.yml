@@ -1,18 +1,19 @@
-language: minimal
+os: "linux"
+dist: "bionic"
 
-dist: bionic
+language: "minimal"
 
 addons:
   apt:
     update: true
     packages:
-    - biber
-    - tex-gyre
-    - texlive-bibtex-extra
-    - texlive-fonts-extra
-    - texlive-lang-german
-    - texlive-latex-extra
-    - texlive-plain-generic
-    - texlive-science
+      - "biber"
+      - "tex-gyre"
+      - "texlive-bibtex-extra"
+      - "texlive-fonts-extra"
+      - "texlive-lang-german"
+      - "texlive-latex-extra"
+      - "texlive-plain-generic"
+      - "texlive-science"
 
-script: make fromScratch && make archive
+script: "make fromScratch && make archive"
