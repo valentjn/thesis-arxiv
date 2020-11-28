@@ -1,0 +1,36 @@
+name: "CI"
+
+on:
+  push:
+    branches:
+      - "develop"
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - "develop"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "CI - Build Job"
+    runs-on: "ubuntu-20.04"
+
+    steps:
+      - name: "Checkout Repository"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Checkout Head of PR Instead of Merge Commit"
+        if: "${{ github.event_name == 'pull_request' }}"
+        run: "git checkout HEAD^2"
+
+      - name: "Install LaTeX Dependencies"
+        run: "sudo apt-get update && sudo apt-get -y install biber tex-gyre texlive-bibtex-extra texlive-fonts-extra texlive-lang-german texlive-latex-extra texlive-plain-generic texlive-science"
+
+      - name: "Build Thesis"
+        run: "make fromScratch"
+
+      - name: "Create Archive"
+        run: "make archive"

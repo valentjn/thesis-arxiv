@@ -1,7 +1,7 @@
 Source Code of Julian Valentin's PhD Thesis (arXiv version)
 ===========================================================
 
-[![Travis CI status](https://img.shields.io/travis/valentjn/thesis-arxiv/master)](https://travis-ci.org/valentjn/thesis-arxiv)
+[![CI](https://github.com/valentjn/thesis-arxiv/workflows/CI/badge.svg?branch=develop)](https://github.com/valentjn/thesis-arxiv/actions?query=workflow%3ACI+branch%3Adevelop)
 [![PDF download](https://img.shields.io/badge/PDF%20download-arXiv-darkred)][arxiv]
 [![CC BY-SA 4.0 license](https://img.shields.io/badge/license-CC%20BY--SA%204.0-blue)][license]
 
