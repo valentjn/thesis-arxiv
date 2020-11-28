@@ -3,7 +3,7 @@
 % ======================================================================
 
 % prevent "Label `1' multiply defined" warnings when using
-% KOMA-Script's \ifthispageodd together with \includeonly
+% KOMA-Script's \Ifthispageodd together with \includeonly
 \newcounter{scbookpg}
 \renewcommand*{\is@thispageodd}{%
   \@bsphack
@@ -53,7 +53,7 @@
     )/2\relax%
     \ifnum\number\flipbookindex>0%
       \begin{tikzpicture}[remember picture,overlay,scale=1]
-        \ifthispageodd{
+        \Ifthispageodd{
           \node[anchor=south east,inner sep=0pt,xshift=-7mm,yshift=7mm]
           at (current page.south east) [above left] {%
             \includegraphics[scale=0.8,trim={7mm 10mm 7mm 10mm},clip]{%
